@@ -79,8 +79,8 @@ of these files, run `python3 agents/publish_agentsmd.py` (it syncs, commits with
 |---|---|
 | the rule files | `AGENTS.md` and `agents/*.md` |
 | the decisions list | II.1 in `agents/RESEARCH.md` (with its Superseded list) |
-| the handoff file / handoff section | `R/HANDOFF.md`, section 10 (subsections 10.1, 10.2, ...) |
-| the manual | `R/NEXT-AGENT.md` |
+| the handoff file / handoff section | research line: `R/HANDOFF.md`, section 10 (subsections 10.1, 10.2, ...); other lines: `notes/handoff/<line>.md` on `main`, section 1 (e.g. `notes/handoff/agent-rules.md`) |
+| the manual | research line: `R/NEXT-AGENT.md`; other lines: the top of their handoff file |
 | the task trail | the path the brief names: `R/tasks/<task-id>.md` for the research line, `notes/tasks/<task-id>.md` on `main` for other lines (I.8) |
 | the progress ledger | `notes/ledger/<line>.md` on `main`, one per line of work, `<line>` a short slug the master picks when the line starts (e.g. `notes/ledger/agent-rules.md`, `notes/ledger/tests.md`) |
 | the run rules | `agents/OPERATIONS.md` I.5-I.7 |
