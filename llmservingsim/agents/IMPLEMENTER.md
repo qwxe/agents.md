@@ -1,6 +1,6 @@
 # agents/IMPLEMENTER.md — the implementer subagent
 
-Scope: a Claude subagent spawned to write code, run experiments, check or analyse. Read with `AGENTS.md` Part 0,
+Scope: a Claude subagent (hard tier) or a Codex task worker (simple and general tiers) spawned to write code, run experiments, check or analyse. Read with `AGENTS.md` Part 0,
 `agents/INTERFACE.md` and `agents/OPERATIONS.md`. Sections marked `<!-- general -->` are copied into `GENERAL.md` (AGENTS.md 0.2).
 
 ## Duties (2026-10-14)
@@ -27,7 +27,7 @@ Scope: a Claude subagent spawned to write code, run experiments, check or analys
 - decide anything in the third row of the I.10 table;
 - fix bugs outside the task (report them);
 - change an interface another agent shares (escalate);
-- spawn agents that make design decisions (helpers only, I.15);
+- spawn agents that make design decisions (Codex workers with a full spec only, I.15);
 - review your own work as final: the verifier does that.
 
 ## Pitfalls (2026-10-14)
@@ -39,6 +39,6 @@ Scope: a Claude subagent spawned to write code, run experiments, check or analys
 - Editing a test because the implementation "is right". Escalate the test instead.
 - Cutting the scope because of a time limit nobody set. The brief's *Resources* says if there is one; otherwise
   finish the work (2026-10-14: an analysis agent returned a partial report "for time" with no limit given).
-- Handing back while your own helpers still run. Wait for every helper you spawned; their reports reach you
+- Handing back while your own Codex workers still run. Wait for every worker you called; their reports reach you
   only.
 - Counting keyword hits as findings. Read the files you cite; say which numbers are counts and which were read.

@@ -41,6 +41,8 @@ states its why in one clause. Superseded and ruled-out entries are reopened only
 - Claim 2 "each CP group shares one FCFS queue" with an open "instantaneous vs windowed W" → own queue, windowed.
 - Seeds 1-3 with file-order arrivals; decode least-load by request count; the old `fi-pd` sweep (killed 10-14).
 - "Research on Sonnet" → Codex. "Only the main session monitors" → I.5.
+- Haiku (simple) and Sonnet (general) tiers, and the Claude `helper` subagent type (10-14) → Codex Luna / Sol
+  medium task workers; hard work Opus medium (I.3).
 
 ## II.2 Paper claims
 

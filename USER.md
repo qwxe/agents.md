@@ -6,7 +6,8 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
 
 ## 1. The contract: what you can expect (2026-10-14)
 
-- **One conversation partner.** You talk to the Claude master. It delegates all work to subagents and Codex and
+- **One conversation partner.** You talk to the Claude master. It delegates hard work to Claude Opus subagents
+  and all other work to Codex, and
   keeps its own context for you (I.1, I.2). It reports in Korean and keeps what it saw itself apart from what an
   agent reported (I.13).
 - **Nothing that changes results is decided without you.** A result-changing, semantic, scope or interface
@@ -16,7 +17,7 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
 - **Better ideas come first, never silently.** If an agent thinks a rule or design you set is worse than an
   alternative, it tells you before following it, with the evidence and its strength (I.11).
 - **Code is tested and independently reviewed.** Tests first, a fast suite, no weakened tests; a separate
-  read-only verifier gives PASS / PASS WITH NOTES / REJECT; a REJECT loop is capped and comes to you if it does
+  read-only verifier (Codex Sol; Claude Opus for byte-exact core changes) gives PASS / PASS WITH NOTES / REJECT; a REJECT loop is capped and comes to you if it does
   not converge (I.14).
 - **Claims are audited.** Numbers that go into a handoff or the paper are checked against raw results by a
   reviewer that sees only the results (`claim-audit` skill).
@@ -46,7 +47,7 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
 |---|---|---|---|---|
 | Escalation mode | stop and ask on result-changing decisions; *rulings mode* (agents decide reversible questions and log them, for unattended runs) | stop and ask; rulings mode deferred (2026-10-14) | "rulings 모드 켜줘" (reopens the deferred decision) | I.11 |
 | Who decides what | the I.10 table; you can move a class of decision up or down | I.10 | "X는 네가 정해" / "X는 나한테 물어봐" | I.10 |
-| Model per task | Haiku / Sonnet / Opus / Codex Luna / Codex Sol | by tier (I.3) | "이건 Opus로" | I.3 |
+| Model per task | Opus (medium) / Codex Sol / Codex Luna | hard: Opus medium; general: Codex Sol medium; simple: Codex Luna medium (2026-10-14) | "이건 Opus로" | I.3 |
 | Parallelism | split every isolated or divisible task into parallel agents; or cap the number | split for speed, within the job-slot budget | "에이전트 N개까지만" | I.15 |
 | Review depth | verifier only; plus Codex second opinion; plus full golden run and mutation testing | verifier always; Codex for hard work; full checks at the end of a line | "Codex 리뷰도 붙여" | I.14 |
 | Read-back / builder check / reader test | on or off per task | on for hard work | "바로 구현해" / "먼저 계획 보여줘" | I.12 |

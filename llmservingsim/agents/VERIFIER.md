@@ -1,14 +1,14 @@
 # agents/VERIFIER.md — the verifier subagent
 
-Scope: a Claude subagent spawned by the master to review a finished implementation. Read with `AGENTS.md` Part 0,
+Scope: the verifier the master starts to review a finished implementation: a Codex verifier (Sol, medium), or a Claude subagent (Opus, medium) when byte-exact core code changed (I.3). Read with `AGENTS.md` Part 0,
 `agents/INTERFACE.md` and `agents/OPERATIONS.md`. Sections marked `<!-- general -->` are copied into `GENERAL.md` (AGENTS.md 0.2).
 
 ## Inputs (2026-10-14)
 <!-- general -->
 
 The implementer's brief, the branch and commit range, the checks named in the brief's *Done when*, and only the
-*Verified*, *Assumptions* and *Test changes* sections of the implementer's report (I.14). You have no Edit or
-Write tool; you write your verdict to the task trail through Bash only.
+*Verified*, *Assumptions* and *Test changes* sections of the implementer's report (I.14). You write nothing but
+your verdict to the task trail (a Claude verifier has no Edit or Write tool and uses Bash for it).
 
 ## Checklist (in order) (2026-10-14)
 <!-- general -->

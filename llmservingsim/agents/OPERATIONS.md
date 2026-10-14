@@ -4,7 +4,7 @@ Sections: I.5 runs, slots and monitoring · I.6 git · I.7 processes and cleanup
 I.20 hooks ·
 I.16 the general git/process rules that I.6 and I.7 specialise.
 
-Scope: every Claude agent that runs, builds, commits or kills anything in this repository. Repository-specific (machine, container, slots); I.16 is copied into `GENERAL.md` (AGENTS.md 0.2).
+Scope: every Claude agent and Codex task worker that runs, builds, commits or kills anything in this repository. Repository-specific (machine, container, slots); I.16 is copied into `GENERAL.md` (AGENTS.md 0.2).
 
 ## I.5 Runs, slots and monitoring (2026-10-14)
 
@@ -19,7 +19,7 @@ Scope: every Claude agent that runs, builds, commits or kills anything in this r
   | `build` | 1 | one C++ build, `-j4` or less |
   | `excl` | runs alone | anything bigger than one sim run |
 
-- Never run work on vCPUs outside your slot (it halves 8 parallel runs). Codex is the only exception (I.4).
+- Never run work on vCPUs outside your slot (it halves 8 parallel runs). A Codex research call is the only exception (I.4).
 - `slotrun` admits a `sim` job only when MemAvailable leaves 800 MB of peak plus 500 MB. A slow queue with free
   slots usually means low memory. Long FI/TraceLab runs above about 1.2 GB: keep about 4 in flight.
 - `validate-par` and the K=8 throughput script queue their own `slotrun` jobs: call them directly. Never run two
@@ -92,10 +92,10 @@ User, 2026-10-14: runs that take compute or sit on the critical path of the goal
 
 - **What.** Every job that holds compute (a job slot, a build, a long test, anything at high CPU or memory) and
   every job on the critical path of the current goal, from launch to exit.
-- **Who.** The agent that launched it, or a helper it spawns for the purpose. The master does not poll: it learns
-  of anomalies and completion from that agent and keeps the progress ledger current. A launcher that must end
-  its turn before the job does hands the monitoring to a helper (Haiku) whose brief is the job, the checks and
-  whom to tell.
+- **Who.** The agent that launched it. A Codex worker returns before a long job ends, so its caller runs the
+  health loop below in the background and acts on what it reports (calling a Codex Luna worker for checks it
+  needs). The master does not poll: the loop prints only on an anomaly or at exit, and the master keeps the
+  progress ledger current.
 - **Mechanism.** A completion notification alone does not catch a hang. Run both: the job (or its wait) in the
   background so its exit wakes the agent, and a health loop that checks every ~180 s and prints only on an
   anomaly or at the end.
@@ -133,7 +133,7 @@ and comments. It is a safety net against mistakes, not against deliberate evasio
 | I.16 (stash) | bare `git stash` (also with options only), `git stash push`, `save`, `clear`, `pop`/`drop` without a ref | `git stash list`, `show`, `apply`, `pop`/`drop stash@{n}`, `--help`/`-h` | a WIP commit on your branch |
 | 0.3 rule 4 | `timeout ... slotrun ...` | `slotrun sim timeout N cmd`, `timeout N <other cmd>` | let slotrun manage the job; kill by PID if it hangs |
 | 0.3 rule 7 (token) | a printer (`cat tac nl less more head tail xxd od hexdump strings base64 sort cut grep rg sed awk ...`) with `gh_token`/`hf_token` as a file operand or as `< file` | the credential helper `$(tr -d "\r\n" < gh_token)`; `ls`, `test -f`, `wc -c <`, `chmod` on the file; searching for the word: `grep [-A N] [-m N] gh_token <files>`, `rg -g '*.md' gh_token` | use the credential helper (I.6); if the hook misreads a search, give the pattern with `-e gh_token` |
-| I.4 | `--dangerously-bypass-approvals-and-sandbox` as an argument of any command except text commands (echo, printf, grep, sed, awk, cat, git) | mentioning the flag in text | `codex exec -s read-only` |
+| I.4 | `--dangerously-bypass-approvals-and-sandbox` as an argument of any command except text commands (echo, printf, grep, sed, awk, cat, git) | mentioning the flag in text | `codex exec -s read-only`; a task worker uses `-s workspace-write` or `-s danger-full-access` (I.4) |
 | 0.3 rule 7 (commit) | `git commit` whose change adds a GitHub (`gh?_`, `github_pat_`), Hugging Face (`hf_`), `sk-` or AWS `AKIA` key, or a private-key header, or adds a file named `gh_token`/`hf_token`. The index is checked; with `-a`, `-i`, `-o` or pathspecs, `git diff HEAD` is checked instead. The block message names `file:line` and the kind, never the value. | mentions such as `ghp_` without a token-length tail; `--dry-run`; `-sm msg` and `-mmsg` checked as index-only | remove the secret, or unstage the file |
 
 **Known limits** (accepted for precision; the user, 2026-10-14):

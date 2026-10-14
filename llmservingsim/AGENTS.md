@@ -13,10 +13,10 @@ each agent reads its own set (0.1). Section ids (I.x, II.x) are stable and uniqu
 | reader | what you are | read |
 |---|---|---|
 | **Claude master agent** | The Claude session the user talks to directly. | This file, `USER.md` (what it owes the user and the user's options), `agents/MASTER.md`, `agents/INTERFACE.md`, `agents/RESEARCH.md` II.1, its progress ledger (0.4); `agents/OPERATIONS.md` when managing runs; `agents/CODEX.md` when calling Codex; a skill whenever its trigger fires (catalog). |
-| **Claude implementer** | A subagent spawned to build, run, check or analyse. Its brief starts with its role. | This file, `agents/INTERFACE.md`, `agents/IMPLEMENTER.md`, `agents/OPERATIONS.md`, `agents/RESEARCH.md` II.1; `agents/CODEX.md` when calling Codex; `agents/SIM-REFERENCE.md` when touching `serving/`, `profiler/` or `bench/`; other `agents/RESEARCH.md` sections and the activity skills the brief names. |
-| **Claude verifier** | A subagent spawned to review a finished implementation. | This file, `agents/INTERFACE.md`, `agents/VERIFIER.md`, `agents/OPERATIONS.md`, `agents/RESEARCH.md` II.1, `agents/CODEX.md` (it runs the Codex review), the implementer's brief and the report sections I.14 names. |
-| **Claude helper** | A subagent spawned for search, collection, monitoring or a fully specified launch. | This file, `agents/INTERFACE.md` I.10-I.13 and I.19, `agents/OPERATIONS.md`. |
-| **Codex** | A Codex CLI process started by a Claude agent. Its brief starts with "Role: Codex research worker". | **Only 0.1 and "Codex's own rules" in `agents/CODEX.md`.** Ignore every other rule: they are for Claude. |
+| **Claude implementer** | A subagent (Opus) spawned for hard-tier work: build, run, check or analyse. Its brief starts with its role. | This file, `agents/INTERFACE.md`, `agents/IMPLEMENTER.md`, `agents/OPERATIONS.md`, `agents/RESEARCH.md` II.1; `agents/CODEX.md` when calling Codex; `agents/SIM-REFERENCE.md` when touching `serving/`, `profiler/` or `bench/`; other `agents/RESEARCH.md` sections and the activity skills the brief names. |
+| **Claude verifier** | A subagent (Opus) spawned to review a finished implementation that changed byte-exact core code. | This file, `agents/INTERFACE.md`, `agents/VERIFIER.md`, `agents/OPERATIONS.md`, `agents/RESEARCH.md` II.1, `agents/CODEX.md` (it runs the Codex review), the implementer's brief and the report sections I.14 names. |
+| **Codex research worker** | A Codex CLI process started by a Claude agent for research. Its brief starts with "Role: Codex research worker". | **Only 0.1, "Codex's own rules" in `agents/CODEX.md`, and the task documents its brief names.** Ignore every other rule: they are for Claude. |
+| **Codex task worker / verifier** | A Codex CLI process doing simple or general work, or reviewing a change outside the byte-exact core (I.3). Its brief starts with "Role: Codex task worker" or "Role: Codex verifier". | 0.1, 0.3, "Codex's own rules" in `agents/CODEX.md`, `agents/INTERFACE.md` I.10-I.14, `agents/OPERATIONS.md`, and `agents/IMPLEMENTER.md` (task worker) or `agents/VERIFIER.md` (verifier); `agents/SIM-REFERENCE.md` when touching `serving/`, `profiler/` or `bench/`. Skip Claude-only mechanics (subagent types, `SendMessage`). |
 | **The user** | The person the master talks to. | `USER.md`: the contract, what the agents need, the options you can choose. |
 | Other tools (Cursor, Copilot, …) | Editors working on the stock simulator. | 0.3 and `agents/SIM-REFERENCE.md`. |
 
@@ -169,13 +169,13 @@ follow that pointer.
 | | I.8 | Records: language, handoff, results folders, assumption trail, FINDINGS, LIMITATIONS. |
 | `agents/MASTER.md` | I.1 | Roles and spawning. |
 | | I.2 | Delegation, context budget, receiving reports, memory as pointers. |
-| | I.3 | Model choice: Haiku / Sonnet / Opus / Codex tiers. |
+| | I.3 | Model choice: hard = Opus medium; general = Codex Sol medium; simple = Codex Luna medium; research = Codex. |
 | | I.17 | The progress ledger. |
 | | I.9 | Handing over to the next session: when; the procedure is the `handover` skill. |
 | `.claude/skills/*/SKILL.md` | — | Procedures loaded on demand: `handover` (I.9), `spawn-agent` (I.12, I.15), `review` (I.14), `lit-search`, `claim-audit`, `paper-write`, `ideation`, `design-note`, `experiment-plan`, `debug`. |
 | `agents/IMPLEMENTER.md` | — | Implementer duties, limits, pitfalls. |
 | `agents/VERIFIER.md` | — | Verifier checklist, verdict format, limits. |
-| `agents/CODEX.md` | I.4 | Codex's own rules; how Claude agents call the Codex CLI; model table; Codex in this repository. |
+| `agents/CODEX.md` | I.4 | Codex's own rules (research worker, task worker, verifier); how Claude agents call the Codex CLI; sandboxes; model table; Codex in this repository. |
 | `agents/OPERATIONS.md` | I.5 | Runs, slots, monitoring, validation timing (test suite, quick and full golden checks). |
 | | I.6 | Git: branches, commits, pushing results. |
 | | I.7 | Processes and cleanup. |
@@ -189,4 +189,4 @@ follow that pointer.
 | `GENERAL.md` | — | Generated (0.2): the `<!-- general -->` sections, with general wording. Do not edit. |
 | `agents/gen_general.py` | — | The GENERAL.md generator and `--check`. |
 | `agents/publish_agentsmd.py` | — | Syncs the rule files to https://github.com/qwxe/agents.md (0.2). |
-| `.claude/agents/*.md` | — | Custom subagent types `implementer`, `verifier`, `helper` (I.12). |
+| `.claude/agents/*.md` | — | Custom subagent types `implementer`, `verifier` (I.12); both Opus. |

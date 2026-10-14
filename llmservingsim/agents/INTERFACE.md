@@ -1,6 +1,6 @@
 # agents/INTERFACE.md — how agents work together
 
-Scope: every Claude agent (master, implementer, verifier). Codex: skip this file. Sections marked `<!-- general -->` are copied into `GENERAL.md` by the generator
+Scope: every Claude agent (master, implementer, verifier), and Codex task workers and verifiers for I.10-I.14. Codex research workers: skip this file. Sections marked `<!-- general -->` are copied into `GENERAL.md` by the generator
 (AGENTS.md 0.2).
 
 Sections (each heading carries the date it was last changed): I.10 decision rights · I.11 escalation · I.12 the brief (interface down) · I.13 the report (interface up)
@@ -57,7 +57,8 @@ Two kinds of open decision (user, 2026-10-14):
   rule it thinks is worse without saying so (user, 2026-10-14). Only alternatives with a material difference in
   results, cost or risk; several go in one message. A subagent raises it in an escalation report; the master
   raises it with the user.
-- Codex does not escalate; it lists open points in its answer.
+- Codex cannot be asked mid-call: it stops at a non-obvious decision, finishes the independent work and returns
+  the escalation (this format) in its report; the caller answers with a new call that quotes the answer.
 
 ## I.12 The brief (interface down) (2026-10-14)
 <!-- general -->
@@ -66,8 +67,8 @@ Every spawn gets a brief with these headings, in this order. A heading with noth
 is written to the task trail and the spawn message gives its path plus anything short; it never pastes earlier
 conversation.
 
-1. **Role line and task id.** "Role: Claude subagent (<implementer|verifier|helper>), not the master" or "Role:
-   Codex research worker"; the task id `T<YYYYMMDD>-<slug>`; the language of the report.
+1. **Role line and task id.** "Role: Claude subagent (<implementer|verifier>), not the master" or "Role:
+   Codex <research worker|task worker|verifier>"; the task id `T<YYYYMMDD>-<slug>`; the language of the report.
 2. **Read first.** The role's rule files (the repository's `AGENTS.md` lists them per role) and the task's own documents,
    each with when to read it. The subagent type's prompt repeats the rule files; the brief names them anyway,
    because a prompt is an instruction, not a guaranteed load.
@@ -88,12 +89,13 @@ prompt tells the agent which rule files to read; the repository's `AGENTS.md` li
 
 | role | subagent type | tools |
 |---|---|---|
-| implementer | `implementer` | all (may spawn helpers and call Codex, I.15) |
-| verifier | `verifier` | no Edit/Write/Agent: read-only by permission; calls Codex through its CLI |
-| helper (search, collect, monitor, launch) | `helper` | all except Agent |
-| Codex | — (CLI, I.4) | read-only sandbox; the brief names Codex's own rules |
+| implementer (hard tier) | `implementer` | all (may call Codex workers, I.15) |
+| verifier (byte-exact core changes) | `verifier` | no Edit/Write/Agent: read-only by permission; calls Codex through its CLI |
+| Codex task worker (simple, general) | — (CLI, I.4) | sandbox by I.4; the brief names Codex's own rules and the rule files |
+| Codex verifier (other changes) | — (CLI, I.4) | sandbox by I.4; the brief names the verifier checklist |
+| Codex research worker | — (CLI, I.4) | read-only sandbox; the brief names Codex's own rules |
 
-The model is still set on every spawn (I.3).
+The model and the effort are still set on every spawn (I.3).
 
 - **Tier.** The tier of a task is the one the brief's *Resources* names, not the subagent type's default model.
 - **Order for hard work**: design note -> builder check -> brief -> reader test -> spawn -> read-back. One fresh
@@ -152,8 +154,8 @@ reported.
 <!-- general -->
 
 **Scope of review.** Every code change gets a verifier review. Results of runs and analyses that feed a decision,
-a handoff or the paper go through the `claim-audit` skill instead. Helper work (search, collection, monitoring) is
-not reviewed.
+a handoff or the paper go through the `claim-audit` skill instead. Simple-tier work (search, collection,
+monitoring) is not reviewed.
 
 **Tests.**
 - Code changes come with tests, written first: the test commit (failing, or `xfail(strict=True)` for a known bug)
@@ -175,11 +177,13 @@ not reviewed.
   regression test for a fix fails when the fix is reverted.
 
 **Review.**
-- Every implementation is reviewed by a separate verifier subagent that the master spawns after the implementer
-  reports (Sonnet; Opus when byte-exact core code changed). The verifier did not write the code.
+- Every implementation is reviewed by a separate verifier that the master starts after the implementer reports:
+  a Codex verifier (Sol, medium) through the CLI, or a Claude verifier subagent (Opus, medium) when byte-exact
+  core code changed (I.3). The verifier did not write the code.
 - The verifier gets the brief, the diff, the repository, and only the *Verified*, *Assumptions* and *Test
   changes* sections of the implementer's report, not its narrative, so it is not anchored on the implementer's
-  reasoning. It is read-only by permission (I.12).
+  reasoning. It is read-only: a Claude verifier by permission (I.12); a Codex verifier writes nothing but its
+  verdict, checked below.
 - For hard-tier work a second, independent opinion comes from a Codex review (I.4) of the same diff. Model review
   is evidence, not an oracle; exact checks win.
 - The verifier checks, in order: (1) the diff against the brief: scope, and any behaviour the brief did not ask
@@ -199,7 +203,7 @@ not reviewed.
   hard-tier work is run by the verifier through the Codex CLI and reported separately.
 - **Fix loop with a cap.** On REJECT the master resumes the implementer with the findings; the re-review covers
   only the fix range and marks each finding ADDRESSED / NOT ADDRESSED. After three rounds, one new agent a tier
-  higher (if already Opus: a fresh Opus at higher effort, with a Codex Sol second opinion) gets one attempt; after that the master takes it to the user. Never loop until the verifier is quiet.
+  higher (Codex work goes to Opus; if already Opus: a fresh Opus at higher effort, with a Codex Sol second opinion) gets one attempt; after that the master takes it to the user. Never loop until the verifier is quiet.
   A disputed finding goes to the user.
 
 ## I.15 Parallel work and spawn depth (2026-10-14)
@@ -217,9 +221,9 @@ not reviewed.
   says what the others own.
 - **Merging parallel work.** When branches built in parallel are combined, a verifier checks the combination for
   conflicting implicit decisions (the same thing done two ways), not only for textual conflicts.
-- **Depth two.** Master -> subagent -> helper. A subagent may spawn helpers (Codex, or a Haiku/Sonnet helper for
-  search, collection or a fully specified launch), never an agent that makes design decisions; that goes through
-  the master. A helper's report reaches its spawner only.
+- **Depth two.** Master -> Claude subagent -> Codex worker. A Claude subagent may call Codex workers (research,
+  search, collection, a fully specified launch or task), never one that makes design decisions; that goes
+  through the master. Codex spawns no agents. A worker's report reaches its caller only.
 
 ## I.19 Untrusted input (2026-10-14)
 <!-- general -->

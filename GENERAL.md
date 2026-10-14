@@ -119,7 +119,8 @@ Two kinds of open decision (user, 2026-10-14):
   rule it thinks is worse without saying so (user, 2026-10-14). Only alternatives with a material difference in
   results, cost or risk; several go in one message. A subagent raises it in an escalation report; the master
   raises it with the user.
-- Codex does not escalate; it lists open points in its answer.
+- Codex cannot be asked mid-call: it stops at a non-obvious decision, finishes the independent work and returns
+  the escalation (this format) in its report; the caller answers with a new call that quotes the answer.
 
 ## I.12 The brief (interface down) (2026-10-14)
 
@@ -129,8 +130,8 @@ Every spawn gets a brief with these headings, in this order. A heading with noth
 is written to the task trail and the spawn message gives its path plus anything short; it never pastes earlier
 conversation.
 
-1. **Role line and task id.** "Role: Claude subagent (<implementer|verifier|helper>), not the master" or "Role:
-   Codex research worker"; the task id `T<YYYYMMDD>-<slug>`; the language of the report.
+1. **Role line and task id.** "Role: Claude subagent (<implementer|verifier>), not the master" or "Role:
+   Codex <research worker|task worker|verifier>"; the task id `T<YYYYMMDD>-<slug>`; the language of the report.
 2. **Read first.** The role's rule files (the repository's `AGENTS.md` lists them per role) and the task's own documents,
    each with when to read it. The subagent type's prompt repeats the rule files; the brief names them anyway,
    because a prompt is an instruction, not a guaranteed load.
@@ -151,12 +152,13 @@ prompt tells the agent which rule files to read; the repository's `AGENTS.md` li
 
 | role | subagent type | tools |
 |---|---|---|
-| implementer | `implementer` | all (may spawn helpers and call Codex, I.15) |
-| verifier | `verifier` | no Edit/Write/Agent: read-only by permission; calls Codex through its CLI |
-| helper (search, collect, monitor, launch) | `helper` | all except Agent |
-| Codex | — (CLI, I.4) | read-only sandbox; the brief names Codex's own rules |
+| implementer (hard tier) | `implementer` | all (may call Codex workers, I.15) |
+| verifier (byte-exact core changes) | `verifier` | no Edit/Write/Agent: read-only by permission; calls Codex through its CLI |
+| Codex task worker (simple, general) | — (CLI, I.4) | sandbox by I.4; the brief names Codex's own rules and the rule files |
+| Codex verifier (other changes) | — (CLI, I.4) | sandbox by I.4; the brief names the verifier checklist |
+| Codex research worker | — (CLI, I.4) | read-only sandbox; the brief names Codex's own rules |
 
-The model is still set on every spawn (I.3).
+The model and the effort are still set on every spawn (I.3).
 
 - **Tier.** The tier of a task is the one the brief's *Resources* names, not the subagent type's default model.
 - **Order for hard work**: design note -> builder check -> brief -> reader test -> spawn -> read-back. One fresh
@@ -217,8 +219,8 @@ reported.
 Source: `agents/INTERFACE.md` I.14
 
 **Scope of review.** Every code change gets a verifier review. Results of runs and analyses that feed a decision,
-a handoff or the paper go through the `claim-audit` skill instead. Helper work (search, collection, monitoring) is
-not reviewed.
+a handoff or the paper go through the `claim-audit` skill instead. Simple-tier work (search, collection,
+monitoring) is not reviewed.
 
 **Tests.**
 - Code changes come with tests, written first: the test commit (failing, or `xfail(strict=True)` for a known bug)
@@ -240,11 +242,13 @@ not reviewed.
   regression test for a fix fails when the fix is reverted.
 
 **Review.**
-- Every implementation is reviewed by a separate verifier subagent that the master spawns after the implementer
-  reports (Sonnet; Opus when byte-exact core code changed). The verifier did not write the code.
+- Every implementation is reviewed by a separate verifier that the master starts after the implementer reports:
+  a Codex verifier (Sol, medium) through the CLI, or a Claude verifier subagent (Opus, medium) when byte-exact
+  core code changed (I.3). The verifier did not write the code.
 - The verifier gets the brief, the diff, the repository, and only the *Verified*, *Assumptions* and *Test
   changes* sections of the implementer's report, not its narrative, so it is not anchored on the implementer's
-  reasoning. It is read-only by permission (I.12).
+  reasoning. It is read-only: a Claude verifier by permission (I.12); a Codex verifier writes nothing but its
+  verdict, checked below.
 - For hard-tier work a second, independent opinion comes from a Codex review (I.4) of the same diff. Model review
   is evidence, not an oracle; exact checks win.
 - The verifier checks, in order: (1) the diff against the brief: scope, and any behaviour the brief did not ask
@@ -264,7 +268,7 @@ not reviewed.
   hard-tier work is run by the verifier through the Codex CLI and reported separately.
 - **Fix loop with a cap.** On REJECT the master resumes the implementer with the findings; the re-review covers
   only the fix range and marks each finding ADDRESSED / NOT ADDRESSED. After three rounds, one new agent a tier
-  higher (if already Opus: a fresh Opus at higher effort, with a Codex Sol second opinion) gets one attempt; after that the master takes it to the user. Never loop until the verifier is quiet.
+  higher (Codex work goes to Opus; if already Opus: a fresh Opus at higher effort, with a Codex Sol second opinion) gets one attempt; after that the master takes it to the user. Never loop until the verifier is quiet.
   A disputed finding goes to the user.
 
 ## I.15 Parallel work and spawn depth (2026-10-14)
@@ -283,9 +287,9 @@ Source: `agents/INTERFACE.md` I.15
   says what the others own.
 - **Merging parallel work.** When branches built in parallel are combined, a verifier checks the combination for
   conflicting implicit decisions (the same thing done two ways), not only for textual conflicts.
-- **Depth two.** Master -> subagent -> helper. A subagent may spawn helpers (Codex, or a Haiku/Sonnet helper for
-  search, collection or a fully specified launch), never an agent that makes design decisions; that goes through
-  the master. A helper's report reaches its spawner only.
+- **Depth two.** Master -> Claude subagent -> Codex worker. A Claude subagent may call Codex workers (research,
+  search, collection, a fully specified launch or task), never one that makes design decisions; that goes
+  through the master. Codex spawns no agents. A worker's report reaches its caller only.
 
 ## I.19 Untrusted input (2026-10-14)
 
@@ -319,13 +323,14 @@ Three levels (user, 2026-10-14):
    the user, and does that discussion itself. Keeps its context under about 256K tokens (I.2). Edits to the
    rule files and other documents the user marks as important are done
    by the master itself.
-2. **Claude subagents** — do the implementation work, hard or simple, plus runs, checks and analyses. Two roles:
-   the **implementer** (`agents/IMPLEMENTER.md`) builds and runs; the **verifier** (`agents/VERIFIER.md`) reviews a
-   finished implementation and only reports (I.14). A subagent may spawn **helpers** for search, collection or
-   fully specified launches (I.15).
-3. **Codex** — does the research for the master and for Claude subagents: documents, papers, deployed source
-   code. Any agent may call it. Example: a subagent implementing algorithm B from document A asks Codex to look up
-   A and B and how a deployed framework implements B, then builds on the answer.
+2. **Claude subagents (Opus)** — do the hard-tier work only (I.3): the **implementer** (`agents/IMPLEMENTER.md`)
+   builds and runs hard work; the **verifier** (`agents/VERIFIER.md`) reviews a finished implementation that
+   changed byte-exact core code and only reports (I.14).
+3. **Codex** — does every other task (I.3, I.4): research (documents, papers, deployed source code), simple and
+   general implementation, runs, checks, analyses, and the review of changes outside the byte-exact core. Any
+   Claude agent may call it. Example: a subagent implementing algorithm B from document A asks Codex to look up
+   A and B and how a deployed framework implements B, then builds on the answer; it hands the fully specified
+   launches and value collection that follow to Codex workers (I.15).
 
 Every spawn starts its brief with the spawned session's role and names the rule files for that role (I.12). When a request holds several
 independent pieces of work, spawn one agent per piece, in parallel, each on its own branch, tree, notes folder and
@@ -380,14 +385,19 @@ ledger), so it can recover the state without rereading agent exchanges and the h
 
 Source: `agents/MASTER.md` I.3
 
-Set the model explicitly on every spawn. Between two tiers, use the higher one.
+User, 2026-10-14: "어려운 작업은 모두 opus 5.5 medium, 나머지 작업은 전부 codex (sol, luna 등.)". Hard work goes to
+Claude Opus at medium effort; everything else goes to Codex. This supersedes the Haiku (simple) and Sonnet
+(general) tiers. Set the model and the effort explicitly on every spawn. Between two tiers, use the higher one.
 
 | tier | model | for |
 |---|---|---|
-| simple | Haiku | Mechanical work with a clear spec: setup commands, searching files, collecting values from logs, tables from finished results, checks with a known expected output, launching fully specified runs, killing listed PIDs. |
-| general | Sonnet | Ordinary multi-step work: running an existing harness over a grid, reproducing and comparing runs, small well-scoped script changes, write-ups of its own runs. |
-| hard | Opus | Design or judgement: experiment design, adapting a policy, core algorithm work, diagnosing mismatches, hangs or non-determinism, changes that must stay byte-exact, anything that may need to stop and ask. |
-| research | Codex (I.4) | Docs, papers, deployed source code. Luna for lookups, Sol for judgement. |
+| hard | Claude Opus 5.5, effort `medium` (a Claude subagent: model `opus`, effort `medium` on the spawn) | Design or judgement: experiment design, adapting a policy, core algorithm work, diagnosing mismatches, hangs or non-determinism, changes that must stay byte-exact, the review of byte-exact changes, anything that may need to stop and ask. |
+| general | Codex Sol, effort `medium` (I.4 task worker) | Ordinary multi-step work: running an existing harness over a grid, reproducing and comparing runs, small well-scoped script changes, write-ups of its own runs, the review of changes outside the byte-exact core. |
+| simple | Codex Luna, effort `medium` (I.4 task worker) | Mechanical work with a clear spec: setup commands, searching files, collecting values from logs, tables from finished results, checks with a known expected output, launching fully specified runs, killing listed PIDs. |
+| research | Codex (I.4 research worker) | Docs, papers, deployed source code. Luna for lookups, Sol for judgement. |
+
+A Codex Sol judgement (research, ranking, a review) is a second opinion; the design decision it informs stays
+with the hard tier, the master and the user.
 
 ## I.9 Handing over to the next session (2026-10-14)
 
@@ -436,7 +446,7 @@ Source: `agents/IMPLEMENTER.md` "You do not"
 - decide anything in the third row of the I.10 table;
 - fix bugs outside the task (report them);
 - change an interface another agent shares (escalate);
-- spawn agents that make design decisions (helpers only, I.15);
+- spawn agents that make design decisions (Codex workers with a full spec only, I.15);
 - review your own work as final: the verifier does that.
 
 ## Implementer: Pitfalls (2026-10-14)
@@ -449,7 +459,7 @@ Source: `agents/IMPLEMENTER.md` "Pitfalls"
 - Editing a test because the implementation "is right". Escalate the test instead.
 - Cutting the scope because of a time limit nobody set. The brief's *Resources* says if there is one; otherwise
   finish the work (2026-10-14: an analysis agent returned a partial report "for time" with no limit given).
-- Handing back while your own helpers still run. Wait for every helper you spawned; their reports reach you
+- Handing back while your own Codex workers still run. Wait for every worker you called; their reports reach you
   only.
 - Counting keyword hits as findings. Read the files you cite; say which numbers are counts and which were read.
 
@@ -458,8 +468,8 @@ Source: `agents/IMPLEMENTER.md` "Pitfalls"
 Source: `agents/VERIFIER.md` "Inputs"
 
 The implementer's brief, the branch and commit range, the checks named in the brief's *Done when*, and only the
-*Verified*, *Assumptions* and *Test changes* sections of the implementer's report (I.14). You have no Edit or
-Write tool; you write your verdict to the task trail through Bash only.
+*Verified*, *Assumptions* and *Test changes* sections of the implementer's report (I.14). You write nothing but
+your verdict to the task trail (a Claude verifier has no Edit or Write tool and uses Bash for it).
 
 ## Verifier: Checklist (in order) (2026-10-14)
 
@@ -513,19 +523,50 @@ Source: `agents/CODEX.md` I.4
 
 ### Codex's own rules
 
-Codex is a research worker. It works read-only; it never commits, pushes or launches runs or long jobs; it answers in
-the language the brief asks for; it cites a source (URL, paper, file path) for each claim and marks what it could
-not verify; it lists open points instead of deciding them; it never prints token or credential files. Its output is a second opinion that the caller verifies.
+Codex works in one of three roles; the first line of the brief names it ("Role: Codex research worker", "Role:
+Codex task worker", "Role: Codex verifier").
+
+- **Every role.** Answer in the language the brief asks for. Never print token or credential files and never put a
+  token in a remote URL. Never decide a non-obvious question (the brief, the decisions list and the code do not
+  settle it, and the choices differ in behaviour, results, interfaces or scope): finish the work that does not
+  depend on it, then stop and return the question with two or three options, what changes under each and your
+  recommendation. Say what you verified and what you did not.
+- **Research worker.** Read-only: never edit, commit, push or launch anything. Cite a source (URL, paper, file
+  path) for each claim and mark what you could not verify. Your output is a second opinion that the caller verifies.
+- **Task worker** (simple and general work). Read the rule files your brief names before anything else: the rules
+  that must never be broken, the run rules, and the role file of the work (implementer duties, or the verifier
+  checklist). Work only in the worktree and branch the brief names and write only the files it gives you.
+  Launch runs, kill processes, commit and push only where the brief orders it, and then exactly as the run rules
+  say: runs through the job slots, kill by PID, name your files when staging, never force-push. Tests first, never
+  weaken a test. Never wait on a long run inside your own call: launch it detached, record its id and PID, and
+  return; the caller monitors it and, when it ends, calls a new task worker for the steps after it (summaries,
+  commits). Short tests run inside the call. End with the report headings the brief names, written to the task
+  trail.
+- **Verifier.** A task worker that reviews and never fixes: follow the verifier checklist the brief names; write
+  nothing but your verdict to the task trail; the reviewed tree's status and HEAD are unchanged at the end.
 
 ### Calling Codex (Claude agents)
 
-Run it on the host, not inside a build or run container; it needs no job slot (the one exception to "no
-CPU outside your slot"), but don't run many at once. `--search` enables live web search for literature work.
+Run it on the host, not inside a build or run container. A research call needs no job slot (the one exception
+to "no CPU outside your slot"), but don't run many at once; a task worker's tests and runs take the slots its
+brief gives it. `--search` enables live web search for literature work.
 
 ```
-timeout 600 "$CODEX" [--search] exec --ephemeral -s read-only --color never -m <model> -c model_reasoning_effort="<level>" \
-  -C <repo> -o "$SCRATCH/codex_last.txt" "<prompt>" </dev/null >"$SCRATCH/codex.out" 2>"$SCRATCH/codex.err"
+timeout <secs> "$CODEX" [--search] exec --ephemeral -s <sandbox> [--add-dir <dir>] --color never -m <model> \
+  -c model_reasoning_effort="<level>" -C <tree> -o "$SCRATCH/codex_last.txt" "<prompt>" \
+  </dev/null >"$SCRATCH/codex.out" 2>"$SCRATCH/codex.err"
 ```
+
+| role | sandbox | timeout |
+|---|---|---|
+| research worker | `-s read-only` | 600 s |
+| task worker or verifier that edits, tests or commits in a worktree | `-s workspace-write --add-dir <main repo>/.git` (a worktree's git metadata lives in the main repository's `.git`) | sized to the task, default 3600 s |
+| task worker that launches runs, uses the container runtime, kills processes or pushes | `-s danger-full-access` (workspace-write blocks the network and, unverified, the container socket) | as above |
+
+- Call task workers in the background so their exit wakes the caller; `-C` is the worker's own worktree. One
+  task worker per tree at a time (one writer per file, I.15).
+- The guard hooks that block forbidden commands watch the Claude agent's own shell only, not the commands Codex
+  runs. A task worker's brief therefore always names the rules that must never be broken.
 
 - `$CODEX` is the installed codex binary; where it lives on this machine is in the repository's `AGENTS.md`.
 - Always `</dev/null` (else it waits on stdin); for a long brief pass `-` and pipe it on stdin. The answer is in
@@ -534,6 +575,8 @@ timeout 600 "$CODEX" [--search] exec --ephemeral -s read-only --color never -m <
 
 | job | model | flags |
 |---|---|---|
+| simple-tier task (I.3): mechanical work with a clear spec | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` |
+| general-tier task (I.3), and the verifier for changes outside the byte-exact core | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` |
 | find docs/papers/source, summarise with sources | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` |
 | judge assumptions, complexity, pros/cons; choose what to investigate; mixed jobs | Sol Light | `-m gpt-6.1-sol -c model_reasoning_effort="low"` |
 | correctness checks, hard counterexamples, comparing designs | Sol Medium+ | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (or `high`/`xhigh`) |
@@ -545,6 +588,10 @@ Source: `agents/CODEX.md` "Codex pitfalls"
 - Running without `</dev/null`: it waits on stdin forever.
 - Omitting the reasoning effort: it runs at `low`.
 - Relying on an answer without opening its sources: Codex output is a second opinion.
+- Assuming the guard hooks protect a task worker: they watch the Claude agent's shell only, so the brief must name
+  the rules that must never be broken.
+- A task worker waiting on a long run inside its call: the call's timeout kills it mid-run. Launch detached and
+  return; the caller monitors.
 
 ## I.18 Monitoring running work (2026-10-14)
 
@@ -554,10 +601,10 @@ User, 2026-10-14: runs that take compute or sit on the critical path of the goal
 
 - **What.** Every job that holds compute (a job slot, a build, a long test, anything at high CPU or memory) and
   every job on the critical path of the current goal, from launch to exit.
-- **Who.** The agent that launched it, or a helper it spawns for the purpose. The master does not poll: it learns
-  of anomalies and completion from that agent and keeps the progress ledger current. A launcher that must end
-  its turn before the job does hands the monitoring to a helper (Haiku) whose brief is the job, the checks and
-  whom to tell.
+- **Who.** The agent that launched it. A Codex worker returns before a long job ends, so its caller runs the
+  health loop below in the background and acts on what it reports (calling a Codex Luna worker for checks it
+  needs). The master does not poll: the loop prints only on an anomaly or at exit, and the master keeps the
+  progress ledger current.
 - **Mechanism.** A completion notification alone does not catch a hang. Run both: the job (or its wait) in the
   background so its exit wakes the agent, and a health loop that checks every ~180 s and prints only on an
   anomaly or at the end.
@@ -781,8 +828,8 @@ Trigger: Send a finished implementation to an independent verifier and act on th
 
 ### Review by a verifier (2026-10-14)
 
-1. **Spawn a verifier** (subagent type `verifier`; Sonnet, Opus when byte-exact core code changed) with the
-   `spawn-agent` steps. The verifier did not write the code.
+1. **Start a verifier** with the `spawn-agent` steps: a Codex verifier (Sol, medium), or the Claude subagent type
+   `verifier` (Opus, medium) when byte-exact core code changed. The verifier did not write the code.
 2. **Give it**: the implementer's brief; the branch and commit range (test commit to head); the checks named in
    *Done when*; and only the *Verified*, *Assumptions* and *Test changes* sections of the implementer's report,
    not its narrative.
@@ -790,8 +837,8 @@ Trigger: Send a finished implementation to an independent verifier and act on th
    checks and targeted mutation testing; for hard-tier work, also a Codex review of the same diff.
 4. **Ledger row** -> `review`.
 5. **On the verdict**: PASS -> ledger `done`, relay. PASS with notes -> relay the notes; the user decides whether
-   they become tasks. REJECT -> resume the implementer with the numbered findings (`SendMessage`), then re-review
-   the fix range only. **Cap**: after three REJECT rounds, one new agent a tier higher gets one attempt; after that
+   they become tasks. REJECT -> resume the implementer with the numbered findings (`SendMessage`; Codex: a new call with the findings), then re-review
+   the fix range only. **Cap**: after three REJECT rounds, one new agent a tier higher (Codex work goes to Opus) gets one attempt; after that
    take it to the user. A disputed finding goes to the user. The verdict is appended to the task trail.
 6. **Several reviewers** (e.g. verifier and Codex review): collect each first verdict before showing any of them
    the others'.
@@ -801,13 +848,14 @@ Trigger: Send a finished implementation to an independent verifier and act on th
 
 Source: `.claude/skills/spawn-agent/SKILL.md`
 
-Trigger: Spawn a Claude subagent or a Codex worker with a correct brief. Use every time the master (or an implementer spawning a helper) delegates a task (AGENTS I.12, I.15).
+Trigger: Spawn a Claude subagent or a Codex worker with a correct brief. Use every time the master (or an implementer calling a Codex worker) delegates a task (AGENTS I.12, I.15).
 
 ### Spawning an agent (2026-10-14)
 
-1. **Pick the role and model.** Implementer, verifier or helper (I.1, I.15) and the tier (I.3); research goes to
-   Codex (I.4). Spawn Claude subagents with their custom subagent type so the role's rule files and tool
-   permissions load mechanically.
+1. **Pick the tier, then the role and model** (I.3). Hard: a Claude subagent (implementer or verifier) on Opus
+   at effort medium, spawned with its custom subagent type so the role's rule files and tool permissions load
+   mechanically. Everything else goes to Codex (I.4): a task worker (Luna for simple, Sol medium for general), a
+   Codex verifier, or a research worker.
 2. **Give it a task id** `T<YYYYMMDD>-<slug>` and a row in the progress ledger (I.17), state `queued`.
 3. **Write the brief to the task trail with the I.12 headings, in order**, and send its path (never paste earlier
    conversation): role line and task id; read first; goal and intent (the
@@ -819,9 +867,12 @@ Trigger: Spawn a Claude subagent or a Codex worker with a correct brief. Use eve
 5. **Hard-tier work**: start from a decision-complete design note (`design-note` skill) and its builder check;
    reader-test the brief with a fresh agent; ask the agent for a read-back before it codes.
    **Small same-shaped tasks**: batch them into one brief for one agent.
-6. **Codex briefs** name "Codex's own rules" and the answer language; Codex never commits or runs jobs.
+6. **Codex briefs** name the Codex role, "Codex's own rules", the answer language, and for task workers and
+   verifiers the rule files the repository lists for them, the tree, the sandbox (I.4) and which launches,
+   commits or pushes are ordered. A research worker never commits or runs jobs.
 7. **Launch in the background** unless the next step needs the result; set the ledger row to `running`.
 8. **On its report**: act on the status word (I.13); read the full report in the task trail only as far as needed;
    update the ledger; relay to the user what matters, keeping what you observed apart from what
-   the agent reported; answer escalations (I.11) by `SendMessage` to the same agent, quoting who decided; send
+   the agent reported; answer escalations (I.11) by `SendMessage` to the same agent (Codex: a new call that quotes its report and the
+   answer), quoting who decided; send
    finished implementations to review (`review` skill).

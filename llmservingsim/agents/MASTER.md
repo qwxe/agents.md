@@ -13,13 +13,14 @@ Three levels (user, 2026-10-14):
    the user, and does that discussion itself. Keeps its context under about 256K tokens (I.2). Edits to the
    rule files and other documents the user marks as important are done
    by the master itself.
-2. **Claude subagents** — do the implementation work, hard or simple, plus runs, checks and analyses. Two roles:
-   the **implementer** (`agents/IMPLEMENTER.md`) builds and runs; the **verifier** (`agents/VERIFIER.md`) reviews a
-   finished implementation and only reports (I.14). A subagent may spawn **helpers** for search, collection or
-   fully specified launches (I.15).
-3. **Codex** — does the research for the master and for Claude subagents: documents, papers, deployed source
-   code. Any agent may call it. Example: a subagent implementing algorithm B from document A asks Codex to look up
-   A and B and how a deployed framework implements B, then builds on the answer.
+2. **Claude subagents (Opus)** — do the hard-tier work only (I.3): the **implementer** (`agents/IMPLEMENTER.md`)
+   builds and runs hard work; the **verifier** (`agents/VERIFIER.md`) reviews a finished implementation that
+   changed byte-exact core code and only reports (I.14).
+3. **Codex** — does every other task (I.3, I.4): research (documents, papers, deployed source code), simple and
+   general implementation, runs, checks, analyses, and the review of changes outside the byte-exact core. Any
+   Claude agent may call it. Example: a subagent implementing algorithm B from document A asks Codex to look up
+   A and B and how a deployed framework implements B, then builds on the answer; it hands the fully specified
+   launches and value collection that follow to Codex workers (I.15).
 
 Every spawn starts its brief with the spawned session's role and names the rule files for that role (I.12). When a request holds several
 independent pieces of work, spawn one agent per piece, in parallel, each on its own branch, tree, notes folder and
@@ -73,14 +74,19 @@ ledger), so it can recover the state without rereading agent exchanges and the h
 ## I.3 Model choice (2026-10-14)
 <!-- general -->
 
-Set the model explicitly on every spawn. Between two tiers, use the higher one.
+User, 2026-10-14: "어려운 작업은 모두 opus 5.5 medium, 나머지 작업은 전부 codex (sol, luna 등.)". Hard work goes to
+Claude Opus at medium effort; everything else goes to Codex. This supersedes the Haiku (simple) and Sonnet
+(general) tiers. Set the model and the effort explicitly on every spawn. Between two tiers, use the higher one.
 
 | tier | model | for |
 |---|---|---|
-| simple | Haiku | Mechanical work with a clear spec: setup commands, searching files, collecting values from logs, tables from finished results, checks with a known expected output, launching fully specified runs, killing listed PIDs. |
-| general | Sonnet | Ordinary multi-step work: running an existing harness over a grid, reproducing and comparing runs, small well-scoped script changes, write-ups of its own runs. |
-| hard | Opus | Design or judgement: experiment design, adapting a policy, core algorithm work, diagnosing mismatches, hangs or non-determinism, changes that must stay byte-exact, anything that may need to stop and ask. |
-| research | Codex (I.4) | Docs, papers, deployed source code. Luna for lookups, Sol for judgement. |
+| hard | Claude Opus 5.5, effort `medium` (a Claude subagent: model `opus`, effort `medium` on the spawn) | Design or judgement: experiment design, adapting a policy, core algorithm work, diagnosing mismatches, hangs or non-determinism, changes that must stay byte-exact, the review of byte-exact changes, anything that may need to stop and ask. |
+| general | Codex Sol, effort `medium` (I.4 task worker) | Ordinary multi-step work: running an existing harness over a grid, reproducing and comparing runs, small well-scoped script changes, write-ups of its own runs, the review of changes outside the byte-exact core. |
+| simple | Codex Luna, effort `medium` (I.4 task worker) | Mechanical work with a clear spec: setup commands, searching files, collecting values from logs, tables from finished results, checks with a known expected output, launching fully specified runs, killing listed PIDs. |
+| research | Codex (I.4 research worker) | Docs, papers, deployed source code. Luna for lookups, Sol for judgement. |
+
+A Codex Sol judgement (research, ranking, a review) is a second opinion; the design decision it informs stays
+with the hard tier, the master and the user.
 
 
 ## I.9 Handing over to the next session (2026-10-14)
