@@ -305,6 +305,47 @@ def test_session_start_no_ledgers(tmp_path):
         "Research ledger and handoff: see AGENTS.md 0.4 (where the current state lives)."]
 
 
+KNOWLEDGE_CATALOG = (
+    "# Knowledge catalog\n\n## pitfalls\n\n| id | title | status | updated | read_when |\n|---|---|---|---|---|\n"
+    "| pitfalls/a | A | verified | 2026-10-14 | x |\n\n"
+    "## Promotion candidates\n\n| id | type | logic | tasks | promote |\n|---|---|---|---|---|\n"
+    "| pitfalls/a | t | l | 3 | candidate |\n| pitfalls/b | t | l | 4 | candidate |\n\n"
+    "## Stale\n\n| id | title | updated |\n|---|---|---|\n| simulator/z | Z | 2026-01-01 |\n")
+
+
+def test_session_start_promotion_candidates(tmp_path):
+    (tmp_path / "knowledge").mkdir()
+    (tmp_path / "knowledge" / "KNOWLEDGE.md").write_text(KNOWLEDGE_CATALOG)
+    env = dict(os.environ, CLAUDE_PROJECT_DIR=str(tmp_path))
+    lines = run_hook("session_start.py", {}, env=env).stdout.strip().splitlines()
+    assert lines[0] == ("Knowledge base knowledge/KNOWLEDGE.md: 2 promotion candidate(s) "
+                        "(the master proposes them to the user, AGENTS.md I.21)")
+    assert "AGENTS.md 0.4" in lines[-1] and len(lines) == 2
+
+
+def test_session_start_no_candidates_section(tmp_path):
+    (tmp_path / "knowledge").mkdir()
+    (tmp_path / "knowledge" / "KNOWLEDGE.md").write_text("# Knowledge catalog\n\n## Promotion candidates\n\nnone\n")
+    env = dict(os.environ, CLAUDE_PROJECT_DIR=str(tmp_path))
+    lines = run_hook("session_start.py", {}, env=env).stdout.strip().splitlines()
+    assert lines[0].startswith("Knowledge base knowledge/KNOWLEDGE.md: 0 promotion candidate(s)")
+
+
+def test_session_start_at_most_10_lines(tmp_path):
+    led = tmp_path / "notes" / "ledger"
+    led.mkdir(parents=True)
+    for i in range(12):
+        (led / f"l{i:02d}.md").write_text("| state |\n|---|\n| running |\n")
+    (tmp_path / "knowledge").mkdir()
+    (tmp_path / "knowledge" / "KNOWLEDGE.md").write_text(KNOWLEDGE_CATALOG)
+    env = dict(os.environ, CLAUDE_PROJECT_DIR=str(tmp_path))
+    lines = run_hook("session_start.py", {}, env=env).stdout.strip().splitlines()
+    assert len(lines) <= 10
+    assert any("more in notes/ledger/" in x for x in lines)
+    assert any("2 promotion candidate(s)" in x for x in lines)
+    assert "AGENTS.md 0.4" in lines[-1]
+
+
 # --- pointer check in agents/gen_general.py -----------------------------------------------------------------
 
 

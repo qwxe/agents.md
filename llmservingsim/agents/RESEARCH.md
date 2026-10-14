@@ -3,16 +3,17 @@
 Scope: agents on research branches. Section ids (II.x) are kept from the old single-file AGENTS.md, so references to "II.1" still work. Read II.1 always; other sections when the brief names them.
 
 
-Applies to agents on research branches. Research code is **not on `main`**: it lives on `explore/pe-tracelab`
-(TraceLab era) and `explore/rate-wl-phase3` plus feature branches (II.3).
+Applies to agents on research branches. Research code is **not on `main`**: it lives on `explore/rate-wl-phase3`
+plus feature branches (II.3).
 
 ## II.1 Decisions in force
 
 Every standing user decision, newest wins. Source = where the reasoning (why) is recorded; a new row also
-states its why in one clause. Superseded and ruled-out entries are reopened only when the user names them (I.10).
+states its why in one clause. Superseded and ruled-out entries are reopened only when the user names them (I.10). (2026-10-14)
 
 | area | decision | date | source |
 |---|---|---|---|
+| Worker model routing | Sol medium by default; Luna for fully specified mechanical work; Opus only for the explicit hard criteria in I.3. Builder checks and reader tests default to Sol. Replaces the broad judgement/question and higher-tier-on-ambiguity criteria, to avoid unnecessary Opus spawns. | 2026-10-14 | User: "좋아. gpt에 대한 기준을 좀 더 명확히 해줘."; I.3 |
 | Paper themes | Three themes, all on the hole structure: (1) the `rate` cost, (2) CP-degree-aware eviction cost, (3) CP partition. The router is not a theme. | 10-13 | `EX/PAPER-ALGORITHM.md` |
 | Framework principle | The paper's system is a real framework configuration **as shipped** plus our eviction policy only. Features no framework has are out of scope. "Minimal" is conceptual: the implementation may be large (e.g. patching Mooncake master's eviction order). | 10-14 | HANDOFF 10.13 |
 | Hole lookup | The lookup that reuses blocks past a miss is part of our eviction and is **always** implemented (one lookup-function change), although SGLang/LMCache stop at the first miss. | 10-14 | — |
@@ -32,6 +33,8 @@ states its why in one clause. Superseded and ruled-out entries are reopened only
 | Scope | FCFS prefill only; inclusive lower tier only (an exclusive tier would need DRAM-bandwidth modelling). | 10-07 | `EX/SETUP.md` |
 
 **Superseded** (do not reintroduce):
+- Broad hard-tier triggers "design or judgement", "anything that may need to stop and ask" and "between two
+  tiers, use the higher one" (2026-10-14) → Worker model routing above; I.3 explicit criteria.
 - "Every arm runs the stock Dynamo KV router" and "P and D both `consistent_hash`" (10-13) → configurations A/B
   and token least-load decode above.
 - "Main configuration = one shared pool", "private tier only", "all shared, no private tier" (10-13) → A and B both.
@@ -71,7 +74,7 @@ instances. Theme 1 is load- and routing-independent; every load- or routing-depe
 
 Ruled out by exploration (keep out of proposals unless the user reopens them): "SRPT evicts long more" (an
 artifact of a cache-blind SRPT key); TTFT following C_s (it follows rho); an exclusive tier; LOAD routing for
-prefill under private tiers (chaotic). Under hit-aware SRPT `rate` loses to LRU, hence the FCFS scope.
+prefill under private tiers (chaotic). Under hit-aware SRPT `rate` loses to LRU, hence the FCFS scope. (2026-10-14)
 
 Evidence tables (claim 1 ablations, M2, queueing models, CP profile limits): `AN/CLAIM-EVIDENCE.md`.
 
@@ -82,7 +85,6 @@ Evidence tables (claim 1 ablations, M2, queueing models, CP profile limits): `AN
 | `main` | Stock LLMServingSim (`agents/SIM-REFERENCE.md`). Upstream docs and validation. |
 | `perf/fast-et-encoder` (`ea5b243`) | The fast simulator base research branches are cut from. |
 | `feat/pe-srpt` | Reviewed research code: cost-aware pool, `--return-dist`, `--queue-cost`, hit-aware SRPT, `--pd-reserve`. |
-| `explore/pe-tracelab` | fast-et + pe-srpt + every env-gated hack (II.7) + the TraceLab harness and notes (`EX`). |
 | `explore/rate-wl-phase3` | The current notes, drivers and results (`R`), worktree `.wt/p3/pe`, pushed. |
 | `feat/chash-router` | vllm-router `consistent_hash` (`--request-routing-policy CHASH`, `--chash-decode-policy hash|load`). |
 | `feat/fi-dec-tok` | `--chash-decode-policy load_tokens`. |
@@ -98,30 +100,21 @@ Evidence tables (claim 1 ablations, M2, queueing models, CP profile limits): `AN
   chunks; the NPU block is 16 tokens.
 - Research branches pin astra-sim at `99a368d`; `main` pins `d346994`.
 
-## II.4 Research environment
+## II.4 Research environment (2026-10-14)
 
-- **Machine:** WSL2, 28 vCPUs (about 8 fast cores), about 11-12 GB RAM, no GPU: only the simulator runs here,
-  never the profiler or bench.
-- **Container:** `servingsim_docker` (`scripts/docker-sim.sh`) mounts only `/home/asd/LLMServingSim` at
-  `/app/LLMServingSim`, so a worktree elsewhere is invisible to it. It exits on every host or Claude Code restart:
-  `docker start servingsim_docker`.
-- **`.wt/` layout** (restored 2026-10-12 from `archive-20261012/env-sim.tar.gz`): `.wt/bin` (slotrun, hangdump,
-  validate-par), `.wt/perf-tools/slots`, `.wt/pypy/venv` (PyPy 3.10 v7.3.19; its `python` refuses runs outside a
-  slot), `.wt/astra-build/build` (the research ASTRA-Sim build, perf pin `99a368d`), `.wt/p3/<id>` (code
-  worktrees), `.wt/p2v/<id>` (measurement trees). `.wt/` is in `.git/info/exclude`.
-- **The research build is `.wt/astra-build/build`, not `astra-sim/build`** (that is main's `d346994` build).
+Facts (machine, container, `.wt/` layout, builds, reference values) are knowledge entries; read the ones named here
+before the step they cover. (2026-10-14) Rules:
+
+- Only the simulator runs on this machine, never the profiler or bench (no GPU: `knowledge/environment/machine.md`). (2026-10-14)
+- The simulator container sees only the repository directory, and stops on every host or Claude Code restart:
+  `knowledge/environment/sim-container.md`. Layout of `.wt/`: `knowledge/environment/wt-layout.md`. (2026-10-14)
+- Research trees use the research ASTRA-Sim build, not `astra-sim/build`: `knowledge/environment/research-astra-build.md`. (2026-10-14)
 - **Code vs runs:** write code in a worktree `.wt/p3/<id>` on your own branch; never build or run inside a
-  worktree, and never nest worktrees. Run from a measurement tree `.wt/p2v/<id>`: copy `serving/` (and `bench/`),
-  symlink `configs`, `profiler`, `outputs`, `workloads`, `astra-sim/build -> ../../../astra-build/build`, and
-  `astra-sim/inputs` from `git archive 99a368d inputs`. Pass it as `SIM_TREE=.wt/p2v/<id>` (relative). One tree
-  per variant; delete it when done.
-- **Stock simulator on main:** `git submodule update --init --recursive`, then
-  `docker exec -w /app/LLMServingSim servingsim_docker bash scripts/compile.sh`, then `./serving/validate.sh`.
-- **Reference checks** (exact): `SIM_TREE=<tree> KV_DIV=1 .wt/bin/validate-par` = 59/59 + 8/8. Stock TraceLab
-  (codex n160 seed 1, 4P4D, CPU 112, LOAD, FCFS, LRU; pass env `{"KV_DIV": "1"}`): **2474048837763** (csv
-  `99bc8243`) on any tree with fix/attention-per-segment (pe-tracelab, phase3 trees); 2520592369985 only on bare
-  `perf/fast-et-encoder`. If a clock differs, check the dataset, the tree, the PyPy version, then the build.
-- Data setup, TraceLab-era harness API and regimes: `AN/ENV-DETAIL.md`.
+  worktree, and never nest worktrees. Run from a measurement tree `.wt/p2v/<id>`, built as
+  `knowledge/environment/measurement-tree.md`; one tree per variant; delete it when done. (2026-10-14)
+- Stock simulator on main: build and validate as `knowledge/environment/stock-build-main.md`. (2026-10-14)
+- Reference checks are exact; their expected values and what to check when a clock differs:
+  `knowledge/experiments/reference-clocks.md`. (2026-10-14)
 
 ## II.5 Experiment run line
 
@@ -130,9 +123,8 @@ Evidence tables (claim 1 ablations, M2, queueing models, CP profile limits): `AN
   (`fi/ds/fi_swe128K_pois_perm_r<rate>_s<seed>.jsonl`). Run ids `xFI_A_r<rate>_<arm>`, `xFI_B_r<rate>_<arm>`.
   Results `R/results/fi-A/`, `R/results/fi-B/`. Setup and state: `R/HANDOFF.md` 10.13.
 - Per rate, the LRU run goes first: ours (params), Belady (T_res, oracle) and AsymCache derive inputs from the same
-  configuration's LRU run.
-- Older lines: `R/results/fi-pd/` (killed sweep, file-order arrivals, request-count decode load); the TraceLab
-  harness `tracelab/r2/tl2_run.py::run` and `EX/infra/harness.py` (`AN/ENV-DETAIL.md`).
+  configuration's LRU run. (2026-10-14)
+- Older lines: `R/results/fi-pd/` (killed sweep, file-order arrivals, request-count decode load).
 - Analyses: `R/fi/LOADTIME.md` (phases, no steady state, stop rules), `R/fi/DECODE-NEED.md` (decode sizing),
   `R/prof/PROFILE.md` (profiling).
 
@@ -141,58 +133,51 @@ Evidence tables (claim 1 ablations, M2, queueing models, CP profile limits): `AN
 Rules (user, 2026-10-12/13):
 - **Use the whole source.** Never `--num-sessions`, never cut a session with `--max-context`, never drop single
   requests. A source whose requests exceed the served model's window is left out, except FreeInference, where a
-  session with any over-length request is dropped **whole** (the simulated model cannot serve it).
+  session with any over-length request is dropped **whole** (the simulated model cannot serve it). (2026-10-12/13)
 - **Selection:** every request fits 128Ki (input + output); the source records timing (timestamps or tool/idle
   gaps; generator-made gaps do not count); long inputs preferred (Mooncake about 10K is the floor, 30-40K the
-  target).
+  target). (2026-10-12/13)
 - **One file serves the simulator and real vLLM** (`bench`): real in-vocabulary prompt token ids, equal blocks map
-  to equal token sequences, output pinned with `max_tokens = output_toks` and `ignore_eos`.
+  to equal token sequences, output pinned with `max_tokens = output_toks` and `ignore_eos`. (2026-10-12/13)
 - **Compact files** (`blk_codec: b16k100000`, `input_blk`): the run tree's router must have `feat/wl-codec`'s
-  `serving/core/wl_codec.py` (on `feat/wl-codec`) and decoder, or prefix caching silently sees no reuse.
-- **Arrivals:** Poisson session starts at a controlled rate, random session order, recorded within-session gaps.
-- After regenerating a file, delete `R/meta/<wl>.json` and `<wl>_H.json`, or the harness keeps the old session list.
-- Never commit workload data (`workloads/tracelab/`, `workloads/raw/`, the jsonl files).
+  `serving/core/wl_codec.py` (on `feat/wl-codec`) and decoder, or prefix caching silently sees no reuse. (2026-10-12/13)
+- **Arrivals:** Poisson session starts at a controlled rate, random session order, recorded within-session gaps. (2026-10-12/13)
+- After regenerating a file, delete `R/meta/<wl>.json` and `<wl>_H.json`, or the harness keeps the old session list. (2026-10-12/13)
+- Never commit workload data (`workloads/tracelab/`, `workloads/raw/`, the jsonl files). (2026-10-12/13)
 
 Current set: **FreeInference swe-bench** (`workloads/freeinference-swebench-128K.jsonl`, 1,033 sessions, 60,773
 requests, input mean 26.5K) is the FI grid's workload; lmcache-agentic, mooncake-conversation-12031 and
 mooncake-toolagent-23608 pass the selection rules. Statistics, exclusions, generator commands and the codec:
 `AN/WORKLOADS-DETAIL.md`.
 
-## II.7 Env-gated hacks
+## II.7 Env-gated hacks (2026-10-14)
 
-On `explore/pe-tracelab` and the trees derived from it:
+Retired: TraceLab-era env-gated hacks (user, 2026-10-14); facts kept in `knowledge/experiments/env-gated-hacks.md`.
 
-| var | effect |
-|---|---|
-| `KV_DIV` | Divides every KV size. **Defaults to 10 when unset**, not 1. |
-| `RATE_POLICY`, `RATE_PARAMS`, `RATE_HOLE`, `RATE_SEG`, `RATE_SESS_STATE`, `RATE_STATS`, `RATE_NEWTOK` | `SessRatePool` modes (`rate`, `rate_q`, `rate_req`, `uni`, ...); ours = `rate` + `RATE_HOLE=after RATE_SEG=sum` + `RATE_SESS_STATE=1`. |
-| `UNI_COST`, `UNI_M`, `UNI_KRES`, `UNI_KEYC`, `UNI_SESS`, `UNI_SJ`, `UNI_MPRES` | `uni` ablations; `UNI_SJ=1` is M2. |
-| `AFFINITY=hash\|sticky\|file\|balw`, `AFFINITY_FILE`, `ST_BAL_WIN`, `ST_TSCALE` | Session-affinity prefill routing (TraceLab era). |
-| `XS_SEED`, `XS_JIT_S`, `XS_KEY=static\|hit\|hit0` | Start-time jitter; SRPT key (`hit` = hit-aware). |
-| `PP_MODE`, `PP_HOLES`, `PP_PIN`, `PP_EXCL`, `PP_STATS`, `PP_PIN_FRAC/SIDE`, `PP_EVERY` | `ProbePool` arms, pinning, statistics. `PP_EXCL` (exclusive tier) is out of scope. |
-| `PERTURB_FILE`, `WORK_PERTURB_FILE`, `DC_ATTN` | Probes that perturb hits, work or attention pricing. |
+- The variables the current run line still sets (`KV_DIV`, the `RATE_*` of the arms in II.1) are described in the
+  same entry; read it before setting one (2026-10-14).
 
-## II.8 Research pitfalls
+## II.8 Research pitfalls (2026-10-14)
 
-- **`KV_DIV` defaults to 10** on research branches; `validate-par` and `EX/lz/stock.py` do not set it, so export
-  `KV_DIV=1` for reference checks (the harnesses set it themselves).
-- **The wrong ASTRA-Sim build:** research trees must link `.wt/astra-build/build`, not `astra-sim/build`.
-- **Reference clock depends on the tree** (II.4): a mismatch against 2520592369985 is expected on fixed trees.
-- **`RATE_POLICY=rate_unif` and `rate_p` silently run as plain `rate`;** `XS_QPROT`, `XS_QW`, `XS_HD` do not exist.
-  "dist + queued protection" is `PP_MODE=dist` with `PP_PIN=1`.
-- **The `rate` protection is finite** (1e6): protected chunks can still go after every other chunk.
-- **Chunk sizes:** the lower tier evicts 256-token chunks (`memory_model.py`); the NPU block is 16 tokens.
-  `bwrap_sess.py` hard-codes 256, so it is wrong under `LT_CHUNK_TOKENS=128` (`R/fish/bwrap_fi.py` is not).
-- **Decode overflow kills the run** ("decode instance cannot admit request"): there is no admission queue.
-- **`_make_sub_batch` drops hole segments,** so sub-batch interleaving with holes is timed wrong.
-- **Closed loop:** a slower arm stretches the clock, so time windows favour it; report per-arm request counts.
-- **Unreproducible references:** `fsrun` warm-up and conv10 need `outputs/mc/*` files no branch has.
+Each item is a rule; the facts behind it are in the pitfall entry named.
+
+- Export `KV_DIV=1` for reference checks: it defaults to 10 on research branches and `validate-par` does not set
+  it (the harnesses do) (`knowledge/pitfalls/research-kv-div-default.md`). (2026-10-14)
+- Research trees link `.wt/astra-build/build`, not `astra-sim/build` (`knowledge/pitfalls/research-wrong-astra-build.md`). (2026-10-14)
+- Use only the documented `RATE_POLICY` values (`knowledge/pitfalls/research-rate-policy-silent.md`). (2026-10-14)
+- Don't treat the `rate` protection as absolute: it is finite (`knowledge/pitfalls/research-rate-protection-finite.md`). (2026-10-14)
+- Don't use `bwrap_sess.py` under `LT_CHUNK_TOKENS=128`; the lower tier evicts 256-token chunks and the NPU block is
+  16 tokens (`knowledge/pitfalls/research-chunk-sizes.md`). (2026-10-14)
+- Size decode so it never overflows: an overflow kills the run (`knowledge/pitfalls/research-decode-overflow.md`). (2026-10-14)
+- Don't trust sub-batch interleaving timings for requests with holes (`knowledge/pitfalls/research-sub-batch-holes.md`). (2026-10-14)
+- Report per-arm request counts with any time-window metric in closed loop
+  (`knowledge/pitfalls/research-closed-loop-windows.md`). (2026-10-14)
 
 ## II.9 Notes to read, in order
 
 1. `R/NEXT-AGENT.md` (the manual) and `R/HANDOFF.md` section 10 (newest first).
 2. `R/results/<grid>/README.md` for the grid you work on.
-3. `EX/PAPER-ALGORITHM.md` (the algorithm and the user's decisions), `EX/SETUP.md`, `EX/FINDINGS.md`.
+3. `EX/PAPER-ALGORITHM.md` (the algorithm and the user's decisions), `EX/SETUP.md`.
 4. `research/docs/AGENT-MANUAL.md`, `research/QUICKSTART.md`.
 5. `AN/` for the detail moved out of this file (`AGENT-RULES-OLD.md` keeps the pre-2026-10-14 rule text).
 

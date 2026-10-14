@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""SessionStart hook: point a new session at the progress ledgers (AGENTS.md I.17) without printing their contents.
+"""SessionStart hook: point a new session at the progress ledgers (AGENTS.md I.17) and the knowledge base's promotion
+candidates (AGENTS.md I.21) without printing their contents.
 
 Prints at most 10 lines to stdout (Claude Code adds SessionStart stdout to the session's context): one line per
-`notes/ledger/*.md` with the number of table rows whose state is not `done`, then one line pointing to AGENTS.md 0.4.
-Any error prints nothing and exits 0.
+`notes/ledger/*.md` with the number of table rows whose state is not `done`; one line with the number of rows in the
+"Promotion candidates" table of `knowledge/KNOWLEDGE.md` (only when that file exists); then one line pointing to
+AGENTS.md 0.4. Any error prints nothing and exits 0.
 """
 import os
 import sys
 from pathlib import Path
 
-MAX_LEDGERS = 8
+MAX_LEDGERS = 7
+CATALOG = Path("knowledge") / "KNOWLEDGE.md"
 
 
 def open_rows(path):
@@ -31,6 +34,26 @@ def open_rows(path):
     return None if state_col is None else n
 
 
+def promotion_candidates(path):
+    """Count the data rows of the table under the `Promotion candidates` heading (0 if there is no table)."""
+    n, inside, header_seen = 0, False, False
+    for line in path.read_text(errors="replace").splitlines():
+        if line.startswith("#"):
+            inside = "promotion candidates" in line.lower()
+            header_seen = False
+            continue
+        if not inside or not line.lstrip().startswith("|"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if not header_seen:
+            header_seen = True
+            continue
+        if all(set(c) <= set("-: ") for c in cells):
+            continue
+        n += 1
+    return n
+
+
 def main():
     root = Path(os.environ.get("CLAUDE_PROJECT_DIR") or Path(__file__).resolve().parents[2])
     lines = []
@@ -41,6 +64,10 @@ def main():
         lines.append(f"Progress ledger {rel}: " + ("no state column" if n is None else f"{n} row(s) not done"))
     if len(ledgers) > MAX_LEDGERS:
         lines.append(f"... and {len(ledgers) - MAX_LEDGERS} more in notes/ledger/")
+    cat = root / CATALOG
+    if cat.is_file():
+        lines.append(f"Knowledge base {CATALOG.as_posix()}: {promotion_candidates(cat)} promotion candidate(s) "
+                     "(the master proposes them to the user, AGENTS.md I.21)")
     lines.append("Research ledger and handoff: see AGENTS.md 0.4 (where the current state lives).")
     print("\n".join(lines))
     return 0
