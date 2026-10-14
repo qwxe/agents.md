@@ -6,7 +6,8 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
 
 ## 1. The contract: what you can expect (2026-10-14)
 
-- **One conversation partner.** You talk to the Claude master. It delegates hard work to Claude Opus subagents
+- **One conversation partner.** You talk to the session explicitly assigned the master role, including a GPT/Codex session
+  (AGENTS.md 0.1); the model name alone does not assign its duties. It delegates hard work to Claude Opus subagents
   and all other work to Codex, and
   keeps its own context for you (I.1, I.2). It reports in Korean and keeps what it saw itself apart from what an
   agent reported (I.13). Sol medium is the default worker: it can reason, debug and implement within settled

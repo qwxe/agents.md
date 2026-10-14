@@ -10,9 +10,15 @@ each agent reads its own set (0.1). Section ids (I.x, II.x) are stable and uniqu
 
 ## 0.1 Who reads what
 
+**Resolve the role before reading the table.** Use the role explicitly assigned by the user/session or the
+brief, never the model or provider name. A GPT/Codex session assigned master follows the master reading list
+and duties; it is not a worker merely because it uses GPT/Codex. The Claude/Codex labels below describe the
+existing invocation paths, not a way to infer a session's role. Model selection stays in I.3; provider-specific
+mechanics apply only to that provider's invocation. (2026-10-14)
+
 | reader | what you are | read |
 |---|---|---|
-| **Claude master agent** | The Claude session the user talks to directly. | This file, `USER.md` (what it owes the user and the user's options), `agents/MASTER.md`, `agents/INTERFACE.md`, `agents/RESEARCH.md` II.1, its progress ledger (0.4), the knowledge catalog `knowledge/KNOWLEDGE.md` (promotion candidates; the categories its briefs name, I.21); `agents/OPERATIONS.md` when managing runs; `agents/CODEX.md` when calling Codex; a skill whenever its trigger fires (catalog). (2026-10-14) |
+| **Claude master agent** | The session explicitly assigned the master role and talking to the user directly. | This file, `USER.md` (what it owes the user and the user's options), `agents/MASTER.md`, `agents/INTERFACE.md`, `agents/RESEARCH.md` II.1, its progress ledger (0.4), the knowledge catalog `knowledge/KNOWLEDGE.md` (promotion candidates; the categories its briefs name, I.21); `agents/OPERATIONS.md` when managing runs; `agents/CODEX.md` when calling Codex; a skill whenever its trigger fires (catalog). (2026-10-14) |
 | **Claude implementer** | A subagent (Opus) spawned for hard-tier work: build, run, check or analyse. Its brief starts with its role. | This file, `agents/INTERFACE.md`, `agents/IMPLEMENTER.md`, `agents/OPERATIONS.md`, `agents/RESEARCH.md` II.1; `agents/CODEX.md` when calling Codex; `agents/SIM-REFERENCE.md` when touching `serving/`, `profiler/` or `bench/`; other `agents/RESEARCH.md` sections, the knowledge catalog `knowledge/KNOWLEDGE.md` sections the brief names (I.21) and the activity skills the brief names. (2026-10-14) |
 | **Claude verifier** | A subagent (Opus) spawned to review a finished implementation that changed byte-exact core code. | This file, `agents/INTERFACE.md`, `agents/VERIFIER.md`, `agents/OPERATIONS.md`, `agents/RESEARCH.md` II.1, `agents/CODEX.md` (it runs the Codex review), the implementer's brief, the report sections I.14 names, and the knowledge catalog `knowledge/KNOWLEDGE.md` sections the brief names (I.21). (2026-10-14) |
 | **Codex research worker** | A Codex CLI process started by a Claude agent for research. Its brief starts with "Role: Codex research worker". | **Only 0.1, "Codex's own rules" in `agents/CODEX.md`, and the task documents and knowledge entries its brief names.** Ignore every other rule: they are for Claude. (2026-10-14) |

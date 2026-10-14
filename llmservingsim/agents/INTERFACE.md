@@ -1,6 +1,6 @@
 # agents/INTERFACE.md — how agents work together
 
-Scope: every Claude agent (master, implementer, verifier), and Codex task workers and verifiers for I.10-I.14 and I.21. Codex research workers: skip this file. Sections marked `<!-- general -->` are copied into `GENERAL.md` by the generator
+Scope: every session assigned master (AGENTS.md 0.1), every Claude implementer and verifier, and Codex task workers and verifiers for I.10-I.14 and I.21. Codex research workers: skip this file. Sections marked `<!-- general -->` are copied into `GENERAL.md` by the generator
 (AGENTS.md 0.2).
 
 Sections (each heading carries the date it was last changed): I.10 decision rights · I.11 escalation · I.12 the brief (interface down) · I.13 the report (interface up)
@@ -82,7 +82,8 @@ conversation. (2026-10-14)
 6. **Scope.** Branch, worktree, files the agent owns, files others own, what is out of scope. (2026-10-14)
 7. **Interfaces.** Signatures, file formats, flags or run ids the work must keep or produce. (2026-10-14)
 8. **Resources.** Model and selection criterion (I.3), slot budget, time expectations. An Opus brief names the
-   hard question or explicit byte-exact core preservation requirement. (2026-10-14)
+   hard question or explicit byte-exact core preservation requirement. The model here and the assigned role
+   in the role line are independent; a model name never assigns duties. (2026-10-14)
 9. **Done when.** Acceptance: the tests that must pass, the checks to run, the files to publish. (2026-10-14)
 10. **Report.** "Use I.13." (2026-10-14)
 

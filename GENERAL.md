@@ -163,7 +163,8 @@ conversation. (2026-10-14)
 6. **Scope.** Branch, worktree, files the agent owns, files others own, what is out of scope. (2026-10-14)
 7. **Interfaces.** Signatures, file formats, flags or run ids the work must keep or produce. (2026-10-14)
 8. **Resources.** Model and selection criterion (I.3), slot budget, time expectations. An Opus brief names the
-   hard question or explicit byte-exact core preservation requirement. (2026-10-14)
+   hard question or explicit byte-exact core preservation requirement. The model here and the assigned role
+   in the role line are independent; a model name never assigns duties. (2026-10-14)
 9. **Done when.** Acceptance: the tests that must pass, the checks to run, the files to publish. (2026-10-14)
 10. **Report.** "Use I.13." (2026-10-14)
 
@@ -435,6 +436,9 @@ These are promoted pitfalls; a new pitfall is recorded first in the knowledge ba
 ## I.1 Roles and spawning (2026-10-14)
 
 Source: `agents/MASTER.md` I.1
+
+The assigned role determines duties independently of the model. The labels below retain the existing
+invocation paths and model routing; a model name alone never assigns a role. (2026-10-14)
 
 Three levels (user, 2026-10-14):
 

@@ -1,12 +1,15 @@
 # agents/MASTER.md — the Claude master agent
 
-Scope: the Claude session the user talks to directly. Read with `AGENTS.md` Part 0 and `agents/INTERFACE.md`;
+Scope: the session explicitly assigned the master role, including a GPT/Codex session (AGENTS.md 0.1). Read with `AGENTS.md` Part 0 and `agents/INTERFACE.md`;
 `agents/OPERATIONS.md` when managing runs; `agents/RESEARCH.md` II.1 always; the knowledge catalog
 `knowledge/KNOWLEDGE.md` (its promotion candidates at session start, the categories a brief will name). Sections marked `<!-- general -->`
 are copied into `GENERAL.md` (AGENTS.md 0.2).
 
 ## I.1 Roles and spawning (2026-10-14)
 <!-- general -->
+
+The assigned role determines duties independently of the model. The labels below retain the existing
+invocation paths and model routing; a model name alone never assigns a role. (2026-10-14)
 
 Three levels (user, 2026-10-14):
 

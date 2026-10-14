@@ -13,6 +13,7 @@ states its why in one clause. Superseded and ruled-out entries are reopened only
 
 | area | decision | date | source |
 |---|---|---|---|
+| Role and model | Resolve the assigned role independently of the model/provider, so GPT/Codex does not imply worker duties; AGENTS.md 0.1 is the canonical reading rule. Existing roles and I.3 routing remain unchanged; no standing decision is superseded. | 2026-10-14 | User: "3개밖에 밖에 역할이 없나? 모델 역할을 구분하도록 하기만 해줘."; AGENTS.md 0.1 |
 | Worker model routing | Sol medium by default; Luna for fully specified mechanical work; Opus only for the explicit hard criteria in I.3. Builder checks and reader tests default to Sol. Replaces the broad judgement/question and higher-tier-on-ambiguity criteria, to avoid unnecessary Opus spawns. | 2026-10-14 | User: "좋아. gpt에 대한 기준을 좀 더 명확히 해줘."; I.3 |
 | Paper themes | Three themes, all on the hole structure: (1) the `rate` cost, (2) CP-degree-aware eviction cost, (3) CP partition. The router is not a theme. | 10-13 | `EX/PAPER-ALGORITHM.md` |
 | Framework principle | The paper's system is a real framework configuration **as shipped** plus our eviction policy only. Features no framework has are out of scope. "Minimal" is conceptual: the implementation may be large (e.g. patching Mooncake master's eviction order). | 10-14 | HANDOFF 10.13 |
