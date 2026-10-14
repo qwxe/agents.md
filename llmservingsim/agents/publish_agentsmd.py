@@ -73,6 +73,8 @@ def run(args, cwd=ROOT, check=True):
 
 
 def cred_args():
+    if not TOKEN.exists():
+        return []  # no token file: use git's own credential setup
     helper = '!f() { echo username=x-access-token; echo password=$(tr -d "\\r\\n" < %s); }; f' % TOKEN
     return ["-c", "credential.helper=", "-c", f"credential.helper={helper}"]
 

@@ -6,7 +6,7 @@ Sections: 0.5, 0.6, I.10, I.11, I.12, I.13, I.14, I.15, I.19, I.21, I.1, I.2, I.
 
 ---
 
-## 0.5 How to write these files (2026-10-14)
+## 0.5 How to write these files (2026-10-15)
 
 Source: `AGENTS.md` 0.5
 
@@ -19,6 +19,12 @@ exact change: the proposal (the change itself, where, why) goes up as a propose-
 promotion candidate (I.21); the user approves; then the agent edits. The change gets the same review as code: a
 verifier, plus a reader test after a restructuring edit. The commit message records whose approval it was and
 when. (2026-10-14)
+
+**Light path for recording a decision** (user, 2026-10-15: "좋아. 추천한대로 해줘. 그리고 B 라우터는 dynamo로." (one turn, session c7bfd3df, 2026-10-14T15:15Z)). A user decision is not a rule
+change: the master appends it to the decisions list verbatim (the user's words, the date, the source) right
+away, without the approval and review above, and tells the user in its next report. It records what was said and
+changes no rule. A rewording, an interpretation, or anything that changes agent behaviour takes the full path.
+Pushing such a row follows the push rule for the rule files (item 5). (2026-10-15)
 
 1. **Layout.** `AGENTS.md` is the entry: a first part that every reader needs (readers and what each reads, how
    `GENERAL.md` is generated, rules never to break, where the state lives with the map of general terms, this
@@ -62,7 +68,7 @@ when. (2026-10-14)
    own; the same rule written twice with different wording; a rule placed in a file the role that needs it does
    not read; a marked section that only makes sense in this repository. (2026-10-14)
 
-## 0.6 General terms (2026-10-14)
+## 0.6 General terms (2026-10-15)
 
 Source: `AGENTS.md` 0.6
 
@@ -71,6 +77,8 @@ follow that pointer. (2026-10-14)
 
 - **the rule files** — the agent instruction files of the repository (`AGENTS.md` and the role files it lists).
 - **the decisions list** — the one dated table of standing user decisions, with its Superseded list.
+- **the records of the user's words** — where what the user said is kept besides the decisions list: the task
+  trails, the handoffs and the session transcripts of the machine (I.11 *Search before you escalate*).
 - **the handoff file, the handoff section** — the file and section where each session appends its handover
   subsection (I.9).
 - **the manual** — reading order and standing rules for a new master session.
@@ -108,7 +116,7 @@ entries; a proposal that revives one says so and quotes the entry. (2026-10-14)
 Three things are owned separately and every brief names each: the **files** the agent may write (artifact
 owner), the **decisions** it may take (this table), and the **report** it owes and to whom (its spawner). (2026-10-14)
 
-## I.11 Escalation (2026-10-14)
+## I.11 Escalation (2026-10-15)
 
 Source: `agents/INTERFACE.md` I.11
 
@@ -129,7 +137,21 @@ Two kinds of open decision (user, 2026-10-14):
   same packet up. The master asks the user. **No level guesses.** (2026-10-14)
 - The answer goes back down through `SendMessage` to the same agent (its context is kept), quoting who decided
   and their words. A user decision that outlives the task is recorded in the decisions list by the master, so no later agent
-  asks again. (2026-10-14)
+  asks again; the master appends it verbatim right away by the light path for recording a decision (how the rule files are written) and tells the user in
+  its next report. (2026-10-15)
+- **Search before you escalate** (user, 2026-10-15: "아니. 내 말 전부를 md에 적어놓을 필요는 없어 .이전 agent가 실행하면서 남긴 기록 혹은 대화하면서 남긴 기록이 있잖아. 거기에 내 대화 내용이 있어야 해. agent.md에 그걸 포인터로 읽도록 갱신해줘."; approved option (a): any agent may search, subagents included). Before an escalation goes
+  up, the agent searches the decisions list, then the records of the user's words (the repository's `AGENTS.md`
+  says where they are and how to search them). The question then carries either the quote found, with its date
+  and source, or "searched <where> for "<words>": nothing". A decision already recorded is not asked again; if
+  it looks stale, ask only whether it still holds, quoting it. A quote that plainly settles the question
+  answers it, and the agent reports it to the master as a decision to record. A quote that conflicts with the
+  decisions list is escalated with both quotes. (2026-10-15)
+- **Say what an answer will start** (user, 2026-10-15: "그리고 내가 대답한 이후로 직접 구현을 할건지, 아니면 더 명시적으로 물어봐야 할건지도 말해줘. 이것도 규칙에 추가해줘.", session c7bfd3df, 2026-10-14T15:20:41Z). Every question or escalation that
+  reaches the user ends with what happens on each possible answer: which actions start at once without asking
+  again (spawns, runs, code changes, pushes, publishes) and which will still need a separate confirmation. An
+  answer authorises exactly the actions listed for it; anything not listed is asked again. When the user's answer
+  leaves the follow-up unclear, the master states in its next message what it is now doing and what it will still
+  ask before doing it. (2026-10-15)
 - Escalation is not failure. An agent that guessed a non-obvious decision has failed its brief even when the
   code works; the verifier rejects such a change (I.14). (2026-10-14)
 - **Propose before you follow.** When an agent sees a better rule, design or method than the one the user (or
@@ -138,6 +160,10 @@ Two kinds of open decision (user, 2026-10-14):
   rule it thinks is worse without saying so (user, 2026-10-14). Only alternatives with a material difference in
   results, cost or risk; several go in one message. A subagent raises it in an escalation report; the master
   raises it with the user. (2026-10-14)
+- **Options never hand commands to the user.** The options in an escalation are decisions for the user, never
+  commands for the user to run (a login, a commit on another machine, an install). The agents run the
+  commands, or choose an option that needs none. (user, 2026-10-14: "command는 나한테 요청을 맡길 필요 없어.")
+  (2026-10-14)
 - Codex cannot be asked mid-call: it stops at a non-obvious decision, finishes the independent work and returns
   the escalation (this format) in its report; the caller answers with a new call that quotes the answer. (2026-10-14)
 
@@ -577,6 +603,11 @@ tiers, use the higher one" criteria. Set the model and effort explicitly on ever
   task. Sol returns a concrete hard question with the evidence collected, hypotheses tested and the remaining
   blocker; the caller assigns only that part to Opus. Use existing logs and authorised checks first; extra
   simulator runs still require approval. The three-round review escalation in I.14 remains in force. (2026-10-14)
+- **When Codex is unusable** (the Codex CLI fails on authentication or availability), give Sol-tier work to a
+  Claude Sonnet subagent (`model: sonnet`, effort medium) and Luna-tier work to a Claude Haiku subagent
+  (`model: haiku`), with the same brief, role rules and limits as the Codex worker it replaces. The hard tier
+  stays Opus. Record the fallback and the Codex error in the brief's *Resources*. (user, 2026-10-14: "codex
+  사용이 불가능한 경우 이전처럼 sonnet 이하를 사용하는 걸로") (2026-10-14)
 - **Checks use Sol by default.** Builder checks and reader tests (I.12) use independent Codex Sol medium
   workers, including checks of Opus briefs. If a check exposes a hard question, report it to its owner rather
   than silently solving it or spawning Opus. Review model selection remains I.14. (2026-10-14)

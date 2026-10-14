@@ -6,15 +6,24 @@ Scope: agents on research branches. Section ids (II.x) are kept from the old sin
 Applies to agents on research branches. Research code is **not on `main`**: it lives on `explore/rate-wl-phase3`
 plus feature branches (II.3).
 
-## II.1 Decisions in force
+## II.1 Decisions in force (2026-10-15)
 
 Every standing user decision, newest wins. Source = where the reasoning (why) is recorded; a new row also
 states its why in one clause. Superseded and ruled-out entries are reopened only when the user names them (I.10). (2026-10-14)
+
+**Row format** (user, 2026-10-15: "좋아. 추천한대로 해줘. 그리고 B 라우터는 dynamo로." (one turn, session c7bfd3df, 2026-10-14T15:15Z)). Every new row carries the user's words verbatim, with
+the date and the source (a trail path or a session id; the master appends it by the light path, AGENTS.md 0.5).
+A decision that rejects an option names the rejected option and its reason, and says it is reopened only when the
+user names it. Existing rows are not rewritten except to add a missing quote. Session ids below are Claude Code
+session transcripts (`~/.claude/projects/-home-asd-LLMServingSim/<id>.jsonl`). The date of a row is the KST
+(UTC+9, the user's local) date of the turn; the source gives the session id and the UTC stamp, e.g. a turn at
+15:15Z is dated the next day. (2026-10-15)
 
 | area | decision | date | source |
 |---|---|---|---|
 | Role and model | Resolve the assigned role independently of the model/provider, so GPT/Codex does not imply worker duties; AGENTS.md 0.1 is the canonical reading rule. Existing roles and I.3 routing remain unchanged; no standing decision is superseded. | 2026-10-14 | User: "3개밖에 밖에 역할이 없나? 모델 역할을 구분하도록 하기만 해줘."; AGENTS.md 0.1 |
 | Worker model routing | Sol medium by default; Luna for fully specified mechanical work; Opus only for the explicit hard criteria in I.3. Builder checks and reader tests default to Sol. Replaces the broad judgement/question and higher-tier-on-ambiguity criteria, to avoid unnecessary Opus spawns. | 2026-10-14 | User: "좋아. gpt에 대한 기준을 좀 더 명확히 해줘."; I.3 |
+| Codex fallback | When Codex is unusable (auth or availability failure), Sol-tier work goes to a Claude Sonnet subagent (medium) and Luna-tier work to a Claude Haiku subagent; the hard tier stays Opus. See I.3. | 2026-10-14 | User: "codex 사용이 불가능한 경우 이전처럼 sonnet 이하를 사용하는 걸로."; I.3 |
 | Paper themes | Three themes, all on the hole structure: (1) the `rate` cost, (2) CP-degree-aware eviction cost, (3) CP partition. The router is not a theme. | 10-13 | `EX/PAPER-ALGORITHM.md` |
 | Framework principle | The paper's system is a real framework configuration **as shipped** plus our eviction policy only. Features no framework has are out of scope. "Minimal" is conceptual: the implementation may be large (e.g. patching Mooncake master's eviction order). | 10-14 | HANDOFF 10.13 |
 | Hole lookup | The lookup that reuses blocks past a miss is part of our eviction and is **always** implemented (one lookup-function change), although SGLang/LMCache stop at the first miss. | 10-14 | — |
@@ -22,8 +31,12 @@ states its why in one clause. Superseded and ruled-out entries are reopened only
 | Claim 2 | Cost = expectation at eviction time from the instance's **own** queue with **windowed** W/lambda/rho (eviction != execution); the reader's group is fixed at eviction (an eviction that crosses a threshold re-homes the session). No part split, no burstiness test. | 10-13/14 | `R/qacf` |
 | Hardware | H100 (`RWL_HW=H100`, H100NVL-long profiles). Decode instances `mem_size` 141 GB (H200-class) so decode capacity does not bind. | 10-12/13 | `R/fi/NOTES.md` |
 | Model, layout | FI runs: Qwen/Qwen3-30B-A3B-Instruct-2507, tp1, **2P6D** (8 GPUs; 2P is the floor under "prefill takes as much load as possible, decode never saturates"). | 10-13 | `R/models/NOTES.md`, `R/fi/DECODE-NEED.md` |
-| Configurations | Run **both**. **A:** prefill `consistent_hash` (vllm-router, session sticky) + private CPU tier 128 GiB per prefill instance. **B:** SGLang HiCache + Mooncake shared L3 (one pool, 2 x 128 GiB) + per-instance staging L2 = 2 x device KV pool (SGLang `--hicache-ratio 2`, LRU, L3 ⊇ L2) + Dynamo v1.5.1 KV router `--shared-cache-type hicache` (0.5). Our eviction acts on A's private tiers and on B's shared L3. | 10-14 | HANDOFF 10.13 |
-| Decode routing | Least-load by **tokens** (`load_tokens`: booked unique prompt blocks, Dynamo-style), in A and B. No decode admission queue: an overflow still fails the run. | 10-14 | `R/results/fi-pd2/README.md` |
+| Configurations | Run **both**. **A:** prefill `consistent_hash` (vllm-router, session sticky) + private CPU tier 128 GiB per prefill instance. **B:** SGLang HiCache + Mooncake shared L3 (one pool, 2 x 128 GiB) + per-instance staging L2 = 2 x device KV pool (SGLang `--hicache-ratio 2`, LRU, L3 ⊇ L2) + Dynamo v1.5.1 KV router `--shared-cache-type hicache` (0.5). Our eviction acts on A's private tiers and on B's shared L3. | 10-14 | HANDOFF 10.13 (the B router: user 2026-10-15 "B 라우터는 dynamo로.", session c7bfd3df, see the next rows) |
+| Routing of A | Prefill `consistent_hash` (session sticky); decode least-load by **tokens**. The same for the DeepSeek runs. Why: the router discussion was already held and is not repeated. | 2026-10-14 | User: "라우터는 prefill은 stikcy, decode는 token에 대해서 least load야. 이것도 이미 했던 논의야 deepseek는 그렇게 해." and "라우터는 A는 이전에 했던 대로." (session c7bfd3df, 2026-10-14T14:49Z and 14:51Z) |
+| Routing of B | Prefill router = Dynamo v1.5.1 KV router `--shared-cache-type hicache`; decode least-load by tokens as above. Why: the user chose Dynamo for B. | 2026-10-15 | User: "B 라우터는 dynamo로." (session c7bfd3df, 2026-10-14T15:15Z) |
+| Decode lower tier | Use `--no-decode-lower-tier` whenever a configuration has no decode CPU tier (A, for example): clocks and CSVs are identical (checked on A, `R/nodec/VERIFY.md`) and long runs get faster. Why: runtime only. | 2026-10-14 | User: "a없애는 게 이미 실행 옵션으로 있지 않아? run이 긴 걸 최적화한다고." (session c7bfd3df, 2026-10-14T14:49Z). The user's approval of the switch for long runs is recorded in `R/results/fi-A/README.md` ("user approved", 2026-10-14 ~18:45); that quote was not found on this machine |
+| Configuration Bd | B plus the decode hosts' CPU memory in the prefill pool: L3 = 8 x 128 GiB = 1 TiB, used by **prefill only**; decode has no CPU tier (so `--no-decode-lower-tier`); everything else as B. Run for the Qwen model. Rejected option: decode instances using the pool; the user's design is prefill using the decode hosts' memory. Reopened only when the user names it. | 2026-10-14 | User: "qwen 모델에 데해서 B를 decode pool을 추가해서 돌려줘" (session c7bfd3df, 2026-10-14T13:54Z), then "decode가 pool을 쓰는게 아니라 prefill이 decode의 pool을 쓰는거야." (2026-10-14T14:17Z); design note `R/design/T20261014-bdec.md` |
+| Decode routing | Least-load by **tokens** (`load_tokens`: booked unique prompt blocks, Dynamo-style), in A and B. No decode admission queue: an overflow still fails the run. | 10-14 | `R/results/fi-A/README.md` "User decisions 2026-10-14" item 2 |
 | Bandwidth | PCIe 50 GB/s per GPU; network 100 Gbps = 12.5 GB/s. B's remote-node reads: min(PCIe, net) + 10 us per remote chunk; same-node reads at PCIe. | 10-14 | — |
 | Arms | LRU, Belady (TTL 0), ideal (infinite tier), AsymCache (plain CostAwarePool), **ours = `rate_sum`** (`RATE_POLICY=rate RATE_HOLE=after RATE_SEG=sum`, `RATE_SESS_STATE=1`). `rate_tail` is an ablation. Quick checks: LRU vs ours only. | 10-13 | `R/results/fi-pd/README.md` |
 | Router overlap | `--router-overlap-past-holes` reports reusable tokens past holes to an unchanged router, identically for every arm; not claimed. | 10-13 | — |
@@ -46,7 +59,8 @@ states its why in one clause. Superseded and ruled-out entries are reopened only
 - Seeds 1-3 with file-order arrivals; decode least-load by request count; the old `fi-pd` sweep (killed 10-14).
 - "Research on Sonnet" → Codex. "Only the main session monitors" → I.5.
 - Haiku (simple) and Sonnet (general) tiers, and the Claude `helper` subagent type (10-14) → Codex Luna / Sol
-  medium task workers; hard work Opus medium (I.3).
+  medium task workers; hard work Opus medium (I.3). They stay superseded as defaults, but Sonnet and Haiku
+  subagents are the fallback when Codex is unusable (2026-10-14, I.3).
 
 ## II.2 Paper claims
 

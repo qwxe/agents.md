@@ -146,6 +146,11 @@ tiers, use the higher one" criteria. Set the model and effort explicitly on ever
   task. Sol returns a concrete hard question with the evidence collected, hypotheses tested and the remaining
   blocker; the caller assigns only that part to Opus. Use existing logs and authorised checks first; extra
   simulator runs still require approval. The three-round review escalation in I.14 remains in force. (2026-10-14)
+- **When Codex is unusable** (the Codex CLI fails on authentication or availability), give Sol-tier work to a
+  Claude Sonnet subagent (`model: sonnet`, effort medium) and Luna-tier work to a Claude Haiku subagent
+  (`model: haiku`), with the same brief, role rules and limits as the Codex worker it replaces. The hard tier
+  stays Opus. Record the fallback and the Codex error in the brief's *Resources*. (user, 2026-10-14: "codex
+  사용이 불가능한 경우 이전처럼 sonnet 이하를 사용하는 걸로") (2026-10-14)
 - **Checks use Sol by default.** Builder checks and reader tests (I.12) use independent Codex Sol medium
   workers, including checks of Opus briefs. If a check exposes a hard question, report it to its owner rather
   than silently solving it or spawning Opus. Review model selection remains I.14. (2026-10-14)

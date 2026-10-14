@@ -29,7 +29,7 @@ entries; a proposal that revives one says so and quotes the entry. (2026-10-14)
 Three things are owned separately and every brief names each: the **files** the agent may write (artifact
 owner), the **decisions** it may take (this table), and the **report** it owes and to whom (its spawner). (2026-10-14)
 
-## I.11 Escalation (2026-10-14)
+## I.11 Escalation (2026-10-15)
 <!-- general -->
 
 Two kinds of open decision (user, 2026-10-14):
@@ -49,7 +49,21 @@ Two kinds of open decision (user, 2026-10-14):
   same packet up. The master asks the user. **No level guesses.** (2026-10-14)
 - The answer goes back down through `SendMessage` to the same agent (its context is kept), quoting who decided
   and their words. A user decision that outlives the task is recorded in the decisions list by the master, so no later agent
-  asks again. (2026-10-14)
+  asks again; the master appends it verbatim right away by the light path for recording a decision (how the rule files are written) and tells the user in
+  its next report. (2026-10-15)
+- **Search before you escalate** (user, 2026-10-15: "아니. 내 말 전부를 md에 적어놓을 필요는 없어 .이전 agent가 실행하면서 남긴 기록 혹은 대화하면서 남긴 기록이 있잖아. 거기에 내 대화 내용이 있어야 해. agent.md에 그걸 포인터로 읽도록 갱신해줘."; approved option (a): any agent may search, subagents included). Before an escalation goes
+  up, the agent searches the decisions list, then the records of the user's words (the repository's `AGENTS.md`
+  says where they are and how to search them). The question then carries either the quote found, with its date
+  and source, or "searched <where> for "<words>": nothing". A decision already recorded is not asked again; if
+  it looks stale, ask only whether it still holds, quoting it. A quote that plainly settles the question
+  answers it, and the agent reports it to the master as a decision to record. A quote that conflicts with the
+  decisions list is escalated with both quotes. (2026-10-15)
+- **Say what an answer will start** (user, 2026-10-15: "그리고 내가 대답한 이후로 직접 구현을 할건지, 아니면 더 명시적으로 물어봐야 할건지도 말해줘. 이것도 규칙에 추가해줘.", session c7bfd3df, 2026-10-14T15:20:41Z). Every question or escalation that
+  reaches the user ends with what happens on each possible answer: which actions start at once without asking
+  again (spawns, runs, code changes, pushes, publishes) and which will still need a separate confirmation. An
+  answer authorises exactly the actions listed for it; anything not listed is asked again. When the user's answer
+  leaves the follow-up unclear, the master states in its next message what it is now doing and what it will still
+  ask before doing it. (2026-10-15)
 - Escalation is not failure. An agent that guessed a non-obvious decision has failed its brief even when the
   code works; the verifier rejects such a change (I.14). (2026-10-14)
 - **Propose before you follow.** When an agent sees a better rule, design or method than the one the user (or
@@ -58,6 +72,10 @@ Two kinds of open decision (user, 2026-10-14):
   rule it thinks is worse without saying so (user, 2026-10-14). Only alternatives with a material difference in
   results, cost or risk; several go in one message. A subagent raises it in an escalation report; the master
   raises it with the user. (2026-10-14)
+- **Options never hand commands to the user.** The options in an escalation are decisions for the user, never
+  commands for the user to run (a login, a commit on another machine, an install). The agents run the
+  commands, or choose an option that needs none. (user, 2026-10-14: "command는 나한테 요청을 맡길 필요 없어.")
+  (2026-10-14)
 - Codex cannot be asked mid-call: it stops at a non-obvious decision, finishes the independent work and returns
   the escalation (this format) in its report; the caller answers with a new call that quotes the answer. (2026-10-14)
 

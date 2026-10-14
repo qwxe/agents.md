@@ -49,8 +49,11 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
   and evidence, read by category; every pitfall is recorded, recurrences are counted, and a pitfall that reaches
   the promotion threshold (I.21) is proposed to you as a rule. Only you approve a promotion; a pitfall an
   existing rule already covers is marked `covered` without asking you (I.21). (2026-10-14)
-- **Your decisions are kept.** Each is recorded with your words and the date in the decisions list; a superseded
-  or ruled-out decision is reopened only when you name it (I.10). (2026-10-14)
+- **Your decisions are kept.** Each is recorded verbatim (your words, the date, the source) in the decisions list
+  as soon as you make it, and your next report says so; a superseded or ruled-out decision is reopened only when
+  you name it (I.10). Agents search the records of your words (the decisions list, the task trails, the
+  handoffs, the session transcripts) before asking you, and a question that reaches you quotes what they found
+  or says where they searched; they do not ask again what you already decided (I.11, AGENTS.md 0.4). (2026-10-15)
 - **State survives sessions.** A progress ledger per line of work, a task trail per task, and a handoff
   subsection per session (I.13, I.17, I.9). (2026-10-14)
 - **Safety.** Never-break rules are enforced by hooks where possible (blocked commands, secret scan before
@@ -59,11 +62,15 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
 ## 2. What the agents need from you
 
 - **Answers to escalations**: pick an option (a number is enough) or say "추천대로". (2026-10-14)
+- **You are asked for decisions, not commands**: options never ask you to run a login, an install or a commit;
+  the agents run those (I.11). (2026-10-14)
+- **You are told what each answer starts**: every question ends with what happens on each answer (what starts at once, what is still asked) and an answer authorises only what is listed for it (I.11). (2026-10-15)
 - **Approval of new runs and experiment plans** (`experiment-plan` skill) before launch. (2026-10-14)
 - **Standing rules said as standing**: "always", "from now on", "앞으로", "규칙에 넣어줘" make a rule; otherwise a
   decision applies to the task at hand. (2026-10-14)
 - **When a session ends or work moves**: say so ("다음 세션에서 할게", "compact할게", "이건 다른 세션에서"); the
   master runs the handover and gives you the input for the new session. (2026-10-14)
+- **Decisions you want to stand**: say them in your own words; the master records them as you said them, without asking for approval, since a record changes no rule (AGENTS.md 0.5). (2026-10-15)
 - **To reopen a closed decision**: name it ("II.1의 X 다시 보자"). (2026-10-14)
 - **Promotion decisions**: approve or reject a knowledge base pitfall the master proposes as a rule. (2026-10-14)
 
@@ -73,7 +80,7 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
 |---|---|---|---|---|
 | Escalation mode | stop and ask on result-changing decisions; *rulings mode* (agents decide reversible questions and log them, for unattended runs) | stop and ask; rulings mode deferred (2026-10-14) | "rulings 모드 켜줘" (reopens the deferred decision) | I.11 (2026-10-14) |
 | Who decides what | the I.10 table; you can move a class of decision up or down | I.10 | "X는 네가 정해" / "X는 나한테 물어봐" | I.10 (2026-10-14) |
-| Model per task | Opus (medium) / Codex Sol / Codex Luna | Sol medium by default; Luna medium for fully specified mechanical work; Opus medium only for I.3 hard criteria (2026-10-14) | "이건 Opus로" | I.3 (2026-10-14) |
+| Model per task | Opus (medium) / Codex Sol / Codex Luna; Sonnet / Haiku when Codex is unusable | Sol medium by default; Luna medium for fully specified mechanical work; Opus medium only for I.3 hard criteria; if Codex fails on authentication or availability, Sol work goes to Sonnet (medium) and Luna work to Haiku (2026-10-14) | "이건 Opus로" | I.3 (2026-10-14) |
 | Parallelism | split every isolated or divisible task into parallel agents; or cap the number | split for speed, within the job-slot budget | "에이전트 N개까지만" | I.15 (2026-10-14) |
 | Review depth | verifier only; plus Codex second opinion; plus full golden run and mutation testing | verifier always; Codex for hard work; full checks at the end of a line | "Codex 리뷰도 붙여" | I.14 (2026-10-14) |
 | Read-back / builder check / reader test | on or off per task | on for hard work; builder checks and reader tests use independent Sol medium workers (2026-10-14) | "바로 구현해" / "먼저 계획 보여줘" | I.12 (2026-10-14) |
