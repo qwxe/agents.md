@@ -1061,7 +1061,7 @@ Source: `.claude/skills/handover/SKILL.md`
 
 Trigger: Hand the session over to the next one. Use when the user says the session ends or moves on ("다음 세션에서 시작할게", "compact할게", "지금까지 내용을 정리해 둬", "새로운 세션에 넣을 input"), when work moves to another session, or when the master's context nears about 256K tokens (AGENTS I.9).
 
-### Handover procedure (2026-10-14)
+### Handover procedure (2026-10-15)
 
 Run this **before** the context is lost. The handoff file, handoff section, manual, decisions list and progress
 ledger are general terms; the repository's `AGENTS.md` says where each one lives. (2026-10-14)
@@ -1109,7 +1109,16 @@ standing rules) changes only when the rules or the reading order change. (2026-1
    진행 중일 수 있는 작업: <agent/grid, run ids, result folder>. git fetch origin <branch> 후 <files>로 상태를 먼저 요약해 줘.
    다음 할 일: <next steps>. 다음 단계는 나한테 확인받고 진행해.
    ```
-8. **Tell the user** what was saved where (commit hashes) and whether anything is still running. (2026-10-14)
+8. **Tell the user** what was saved where (commit hashes) and whether anything is still running, then recommend
+   one of: compact now, continue in this session, or start a new session, with the reason in one line. The user
+   decides. (2026-10-14; 2026-10-15)
+   - Compact now when the context is near the repository's mark or a phase of work has just ended and the next
+     phase needs little of the current detail. Agents still running for this session keep reporting to it after
+     compaction. (2026-10-15)
+   - Continue without compacting when the context is far from the mark, or when the user is in the middle of a
+     discussion whose detail is not yet recorded in the files. (2026-10-15)
+   - Start a new session only when nothing of this session is still running (a new session never receives this
+     session's agent reports) or the user moves the work elsewhere. (2026-10-15)
 
 **At the start of a new session**, the master reads the input and the files it names, checks the in-flight work
 from the result files (not from memory), gives every still-live item a watch and arms the heartbeat (I.23),

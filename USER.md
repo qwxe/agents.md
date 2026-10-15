@@ -95,7 +95,7 @@ This contract is a readable view of the linked rule homes, not an independent po
 | Master heartbeat | interval of the master's wake-up while work is live | ~30 min (2026-10-14) | "heartbeat N분" | I.23 (2026-10-14) |
 | Pitfall promotion threshold | occurrences in N distinct tasks (per type and per logic) before a pitfall is proposed as a rule | as set in I.21 (2026-10-14) | "N번 반복되면 올려줘" | I.21 (2026-10-14) |
 | Retry policy | which failure classes are retried, how often | infra-transient only, once (2026-10-14) | "X도 재시도해" | I.18 (2026-10-14) |
-| Compaction | at ~256K tokens, or at phase boundaries | the master suggests; you decide | "compact할게" | I.2, I.9 (2026-10-14) |
+| Compaction | at ~256K tokens, at phase boundaries, and at every handover (compact / continue / new session, with the reason) | the master recommends; you decide | "compact할게" | I.2, I.9, `handover` step 8 (2026-10-15) |
 | Report language | Korean / English | Korean | "영어로" | I.8 (2026-10-14) |
 | Research depth | quick lookup (Codex Luna) or exhaustive survey | by request | "exhaustive하게" | I.4 (2026-10-14) |
 | Hooks | which commands are blocked | the never-break list | "X는 막아줘 / 풀어줘" | `AGENTS.md` 0.3 (2026-10-14) |
