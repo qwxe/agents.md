@@ -6,7 +6,9 @@ import json
 import os
 import subprocess
 import sys
+from io import StringIO
 from pathlib import Path
+from unittest.mock import Mock
 
 import pytest
 
@@ -14,6 +16,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import guard_bash  # noqa: E402
 import session_start  # noqa: E402
+import notify_stop  # noqa: E402
 
 TOKEN_PATH = "/home/asd/LLMServingSim/" + "gh_token"
 HELPER_PUSH = ("git -c credential.helper= -c 'credential.helper=!f() { echo username=x-access-token; "
@@ -344,6 +347,80 @@ def test_session_start_at_most_10_lines(tmp_path):
     assert any("more in notes/ledger/" in x for x in lines)
     assert any("2 promotion candidate(s)" in x for x in lines)
     assert "AGENTS.md 0.4" in lines[-1]
+
+
+# --- Stop: silent input/failures, detached launch, re-entry, event registration ------------------------------
+
+
+@pytest.fixture
+def notification(monkeypatch):
+    exists = Mock(return_value=True)
+    popen = Mock()
+    monkeypatch.setattr(notify_stop.os.path, "exists", exists)
+    monkeypatch.setattr(notify_stop.subprocess, "Popen", popen)
+
+    def invoke(payload):
+        monkeypatch.setattr(sys, "stdin", StringIO(payload))
+        notify_stop.main()
+
+    return invoke, exists, popen
+
+
+@pytest.mark.parametrize("payload", [
+    "not json", "null", "[]", '"text"', "7", "true",
+    '{"cwd": 7}', '{"cwd": []}', '{"cwd": {}}', '{"cwd": false}',
+    '{"cwd": "bad\\u0000path"}',
+])
+def test_notify_malformed_input_is_silent(notification, capsys, payload):
+    invoke, _, popen = notification
+    invoke(payload)
+    popen.assert_not_called()
+    assert capsys.readouterr() == ("", "")
+
+
+def test_notify_missing_powershell(notification, capsys):
+    invoke, exists, popen = notification
+    exists.return_value = False
+    invoke("{}")
+    exists.assert_called_once_with(notify_stop.PS)
+    popen.assert_not_called()
+    assert capsys.readouterr() == ("", "")
+
+
+def test_notify_popen_failure(notification, capsys):
+    invoke, _, popen = notification
+    popen.side_effect = OSError("unavailable")
+    invoke("{}")
+    popen.assert_called_once()
+    assert capsys.readouterr() == ("", "")
+
+
+def test_notify_detached_without_wait(notification, capsys):
+    invoke, _, popen = notification
+    invoke(json.dumps({"cwd": "/tmp/user's-project"}))
+    popen.assert_called_once_with(
+        [notify_stop.PS, "-NoProfile", "-WindowStyle", "Hidden", "-Command",
+         notify_stop.SCRIPT.format(msg="users-project: answer finished")],
+        stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        start_new_session=True,
+    )
+    assert popen.return_value.mock_calls == []  # No wait, communicate, or context-manager exit.
+    assert capsys.readouterr() == ("", "")
+
+
+def test_notify_reentry_does_not_spawn(notification, capsys):
+    invoke, exists, popen = notification
+    invoke('{"stop_hook_active": true}')
+    exists.assert_not_called()
+    popen.assert_not_called()
+    assert capsys.readouterr() == ("", "")
+
+
+def test_notify_registered_only_for_stop():
+    hooks = json.loads((HERE.parent / "settings.json").read_text())["hooks"]
+    registrations = [event for event, groups in hooks.items() for group in groups
+                     for hook in group["hooks"] if "notify_stop.py" in hook.get("command", "")]
+    assert registrations == ["Stop"]
 
 
 # --- pointer check in agents/gen_general.py -----------------------------------------------------------------

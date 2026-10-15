@@ -5,7 +5,7 @@ Scope: the session explicitly assigned the master role, including a GPT/Codex se
 `knowledge/KNOWLEDGE.md` (its promotion candidates at session start, the categories a brief will name). Sections marked `<!-- general -->`
 are copied into `GENERAL.md` (AGENTS.md 0.2).
 
-## I.1 Roles and spawning (2026-10-14)
+## I.1 Roles and spawning (2026-10-15)
 <!-- general -->
 
 The assigned role determines duties independently of the model. The labels below retain the existing
@@ -14,10 +14,11 @@ invocation paths and model routing; a model name alone never assigns a role. (20
 Three levels (user, 2026-10-14):
 
 1. **Claude master agent** — manages the agents; discusses algorithm and design choices and paper writing with
-   the user, and does that discussion itself. Keeps its context under about 256K tokens (I.2). Rule-file
-   changes go up to the user as proposals; once the user approves a change, the master or an agent it assigns
-   makes the edit (AGENTS.md 0.5). Other documents the user marks as important are edited by the master itself.
-   (2026-10-14)
+   the user, and does that discussion itself. Keeps its context under about 256K tokens (I.2). Its own rule-file
+   changes go up to the user as proposals; a subagent's proposed rule change (from any depth of the spawn chain)
+   is reviewed and approved or rejected by the master in the user's place (AGENTS.md 0.5). Once a change is
+   approved, the master or an agent it assigns makes the edit. Other documents the user marks as important are
+   edited by the master itself. (2026-10-15)
 2. **Claude subagents (Opus)** — do the hard-tier work only (I.3): the **implementer** (`agents/IMPLEMENTER.md`)
    builds and runs hard work; the **verifier** (`agents/VERIFIER.md`) reviews a finished implementation that
    changed byte-exact core code and only reports (I.14). (2026-10-14)

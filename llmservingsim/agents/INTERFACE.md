@@ -46,7 +46,8 @@ Two kinds of open decision (user, 2026-10-14):
   state it; if the agent has to infer it, it is not settled. (2026-10-14)
 - Escalation goes one level at a time: a helper escalates to its spawner, never past it. (2026-10-14)
 - The spawner decides only if its own brief, the decisions list or the user's quoted words settle it. Otherwise it passes the
-  same packet up. The master asks the user. **No level guesses.** (2026-10-14)
+  same packet up. The master asks the user, except for a subagent's proposed rule-file change: it goes up the
+  spawn chain to the master for approval or rejection (how the rule files are written). **No level guesses.** (2026-10-15)
 - The answer goes back down through `SendMessage` to the same agent (its context is kept), quoting who decided
   and their words. A user decision that outlives the task is recorded in the decisions list by the master, so no later agent
   asks again; the master appends it verbatim right away by the light path for recording a decision (how the rule files are written) and tells the user in
@@ -71,7 +72,8 @@ Two kinds of open decision (user, 2026-10-14):
   recommendation. It then waits for the decision. It never adopts the alternative silently and never follows a
   rule it thinks is worse without saying so (user, 2026-10-14). Only alternatives with a material difference in
   results, cost or risk; several go in one message. A subagent raises it in an escalation report; the master
-  raises it with the user. (2026-10-14)
+  raises it with the user, except for a subagent's proposed rule-file change, which goes up the spawn chain
+  to the master for approval or rejection (how the rule files are written). (2026-10-15)
 - **Options never hand commands to the user.** The options in an escalation are decisions for the user, never
   commands for the user to run (a login, a commit on another machine, an install). The agents run the
   commands, or choose an option that needs none. (user, 2026-10-14: "command는 나한테 요청을 맡길 필요 없어.")

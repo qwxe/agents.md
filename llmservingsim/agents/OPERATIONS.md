@@ -160,10 +160,14 @@ User, 2026-10-14: runs that take compute or sit on the critical path of the goal
   anomaly to the spawner at once, not at the end; record it, its class and the action in the task trail, and
   record a new kind of anomaly in the knowledge base (I.21). Healthy checks are not logged. (2026-10-14)
 
-## I.20 Hooks (2026-10-14)
+## I.20 Hooks (2026-10-15)
 
 Mechanical enforcement of the never-break rules (user, 2026-10-14). Change a hook only with its tests
 (`.wt/testenv/bin/python -m pytest .claude/hooks -q`) and update this section in the same commit. (2026-10-14)
+
+`.claude/hooks/notify_stop.py` runs when the master finishes an answer (`Stop`; subagents fire `SubagentStop` and do
+not notify): it raises a Windows balloon notification through `powershell.exe`, detached, and never blocks; any
+failure is silent (user, 2026-10-15: "그리고 답이 끝나면 user한테 알림을 띄우는 걸로."). (2026-10-15)
 
 `.claude/hooks/guard_bash.py` runs before every Bash tool call in this repository (`.claude/settings.json`,
 `PreToolUse`, matcher `Bash`). A refused command exits 2 with one line `BLOCKED by .claude/hooks/guard_bash.py

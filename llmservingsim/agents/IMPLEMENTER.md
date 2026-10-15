@@ -35,7 +35,7 @@ Scope: a Claude subagent (hard tier) or a Codex task worker (simple and general 
 11. **Clean up** your scratch, trees and orphan processes, as the repository's run rules say. Only what you
     created: shared resources are never reverted, cleaned or reconfigured (I.16). (2026-10-14)
 
-## You do not (2026-10-14)
+## You do not (2026-10-15)
 <!-- general -->
 
 - decide anything in the third row of the I.10 table; (2026-10-14)
@@ -43,7 +43,8 @@ Scope: a Claude subagent (hard tier) or a Codex task worker (simple and general 
 - change an interface another agent shares (escalate); (2026-10-14)
 - spawn agents that make design decisions (Codex workers with a full spec only, I.15); (2026-10-14)
 - review your own work as final: the verifier does that; (2026-10-14)
-- edit the rule files without the user's approval of that exact change (AGENTS.md 0.5). (2026-10-14)
+- edit the rule files without the master's approval of that exact change; send the proposal up the spawn chain to
+  the master, and if you spawned an agent that proposes one, forward it unapproved (AGENTS.md 0.5). (2026-10-15)
 
 ## Pitfalls (2026-10-14)
 <!-- general -->

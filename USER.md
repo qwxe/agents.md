@@ -17,9 +17,12 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
   question comes to you as an escalation: the question, two or three options, what changes under each, a
   recommendation. No agent guesses on your behalf (I.10, I.11). Cheap, reversible choices are made by the agents
   and listed as assumptions with their cost if wrong. (2026-10-14)
-- **Rule changes need your approval.** Any agent may edit the rule files, like code, but only a change you
-  approved (proposed to you with the exact change, or as a promotion candidate); it is reviewed like code and its
-  commit names your approval and its date (AGENTS.md 0.5). (2026-10-14)
+- **Rule changes need approval.** Any agent may edit the rule files, like code, but only an approved change: the
+  master's own proposals and promotion candidates are approved by you; a subagent's proposal (from any depth) goes
+  up to the master, which approves or rejects it in your place and then tells you: an important change (never-break
+  rules, decision rights, this contract, standing decisions) on its own with what, where and why; any other change
+  as one line in its report. It is reviewed like code and its commit names the approval and its date (AGENTS.md
+  0.5). (2026-10-15)
 - **Better ideas come first, never silently.** If an agent thinks a rule or design you set is worse than an
   alternative, it tells you before following it, with the evidence and its strength (I.11). (2026-10-14)
 - **Code is tested and independently reviewed.** Tests first, a fast suite, no weakened tests; a separate
@@ -93,7 +96,7 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
 | Research depth | quick lookup (Codex Luna) or exhaustive survey | by request | "exhaustive하게" | I.4 (2026-10-14) |
 | Hooks | which commands are blocked | the never-break list | "X는 막아줘 / 풀어줘" | `AGENTS.md` 0.3 (2026-10-14) |
 | Rule-file push and publish | when rule-file changes leave the machine | right after the review passes (PASS or PASS with notes); local until then (2026-10-14) | "바로 push해" / "내가 볼 때까지 push하지 마" | `AGENTS.md` 0.2, 0.5 (2026-10-14) |
-| Rule-file edits | who may edit the rule files | any agent, after you approve the exact change (2026-10-14) | "이 규칙 변경 승인" / "규칙은 master만 고쳐" | `AGENTS.md` 0.5 (2026-10-14) |
+| Rule-file edits | who may edit the rule files | any agent, after approval of the exact change: yours for the master's proposals, the master's for a subagent's (2026-10-15) | "이 규칙 변경 승인" / "규칙은 master만 고쳐" | `AGENTS.md` 0.5 (2026-10-14) |
 
 ## 4. Skills you can call by name
 

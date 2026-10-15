@@ -20,6 +20,21 @@ promotion candidate (I.21); the user approves; then the agent edits. The change 
 verifier, plus a reader test after a restructuring edit. The commit message records whose approval it was and
 when. (2026-10-14)
 
+**The master approves subagents' rule changes** (user, 2026-10-15: "master agent는 user와 비슷한 권한을 가지고, subagent가 규칙을 쓸 때 심사할 수 있고. 만약 subagent가 subagent에 의해 spawn됐다면, 이건 맨 위로 올라가서 master agent한테 전달돼."). For a rule-file change proposed by
+a subagent, the master holds the user's approval right: it reviews the proposal and approves or rejects it, and
+the approval is recorded as the master's (session id, date). A proposal from a subagent spawned by another
+subagent goes up the spawn chain to the master; an intermediate subagent forwards it and never approves it. The
+master's own rule-change proposals, promotions from the knowledge base (I.21) and the decisions list stay with the
+user. (2026-10-15)
+
+**Telling the user** (user, 2026-10-15: "이 부분은 중요한 규칙은 사용자에게 알리도록 하고, subagent가 공유하는 그렇게
+중요하지 않은 규칙은 보고만 하는 걸로."). After approving a subagent's rule change, the master tells the user in its
+next report. An **important** change (one that touches the rules never to break, decision rights or
+escalation (I.10, I.11), what the user is owed or can choose (`USER.md`), or the standing decisions) is told on its
+own: what changed, where, why, and that the user may reverse it. Any other change (a working rule the subagents
+share, e.g. a procedure step, a pitfall, a tool usage note) is only listed in that report, one line each. Neither
+waits for the user's answer. (2026-10-15)
+
 **Light path for recording a decision** (user, 2026-10-15: "좋아. 추천한대로 해줘. 그리고 B 라우터는 dynamo로." (one turn, session c7bfd3df, 2026-10-14T15:15Z)). A user decision is not a rule
 change: the master appends it to the decisions list verbatim (the user's words, the date, the source) right
 away, without the approval and review above, and tells the user in its next report. It records what was said and
@@ -134,7 +149,8 @@ Two kinds of open decision (user, 2026-10-14):
   state it; if the agent has to infer it, it is not settled. (2026-10-14)
 - Escalation goes one level at a time: a helper escalates to its spawner, never past it. (2026-10-14)
 - The spawner decides only if its own brief, the decisions list or the user's quoted words settle it. Otherwise it passes the
-  same packet up. The master asks the user. **No level guesses.** (2026-10-14)
+  same packet up. The master asks the user, except for a subagent's proposed rule-file change: it goes up the
+  spawn chain to the master for approval or rejection (how the rule files are written). **No level guesses.** (2026-10-15)
 - The answer goes back down through `SendMessage` to the same agent (its context is kept), quoting who decided
   and their words. A user decision that outlives the task is recorded in the decisions list by the master, so no later agent
   asks again; the master appends it verbatim right away by the light path for recording a decision (how the rule files are written) and tells the user in
@@ -159,7 +175,8 @@ Two kinds of open decision (user, 2026-10-14):
   recommendation. It then waits for the decision. It never adopts the alternative silently and never follows a
   rule it thinks is worse without saying so (user, 2026-10-14). Only alternatives with a material difference in
   results, cost or risk; several go in one message. A subagent raises it in an escalation report; the master
-  raises it with the user. (2026-10-14)
+  raises it with the user, except for a subagent's proposed rule-file change, which goes up the spawn chain
+  to the master for approval or rejection (how the rule files are written). (2026-10-15)
 - **Options never hand commands to the user.** The options in an escalation are decisions for the user, never
   commands for the user to run (a login, a commit on another machine, an install). The agents run the
   commands, or choose an option that needs none. (user, 2026-10-14: "command는 나한테 요청을 맡길 필요 없어.")
@@ -459,7 +476,7 @@ These are promoted pitfalls; a new pitfall is recorded first in the knowledge ba
 - A brief premise without a source tag, read by the agent as settled (I.12: it counts as `[master inferred]`). (2026-10-14)
 - Accepting `DONE` without checking that the claimed commits and files exist (I.13). (2026-10-14)
 
-## I.1 Roles and spawning (2026-10-14)
+## I.1 Roles and spawning (2026-10-15)
 
 Source: `agents/MASTER.md` I.1
 
@@ -469,10 +486,11 @@ invocation paths and model routing; a model name alone never assigns a role. (20
 Three levels (user, 2026-10-14):
 
 1. **Claude master agent** — manages the agents; discusses algorithm and design choices and paper writing with
-   the user, and does that discussion itself. Keeps its context under about 256K tokens (I.2). Rule-file
-   changes go up to the user as proposals; once the user approves a change, the master or an agent it assigns
-   makes the edit (AGENTS.md 0.5). Other documents the user marks as important are edited by the master itself.
-   (2026-10-14)
+   the user, and does that discussion itself. Keeps its context under about 256K tokens (I.2). Its own rule-file
+   changes go up to the user as proposals; a subagent's proposed rule change (from any depth of the spawn chain)
+   is reviewed and approved or rejected by the master in the user's place (AGENTS.md 0.5). Once a change is
+   approved, the master or an agent it assigns makes the edit. Other documents the user marks as important are
+   edited by the master itself. (2026-10-15)
 2. **Claude subagents (Opus)** — do the hard-tier work only (I.3): the **implementer** (`agents/IMPLEMENTER.md`)
    builds and runs hard work; the **verifier** (`agents/VERIFIER.md`) reviews a finished implementation that
    changed byte-exact core code and only reports (I.14). (2026-10-14)
@@ -671,7 +689,7 @@ Source: `agents/IMPLEMENTER.md` "Duties"
 11. **Clean up** your scratch, trees and orphan processes, as the repository's run rules say. Only what you
     created: shared resources are never reverted, cleaned or reconfigured (I.16). (2026-10-14)
 
-## Implementer: You do not (2026-10-14)
+## Implementer: You do not (2026-10-15)
 
 Source: `agents/IMPLEMENTER.md` "You do not"
 
@@ -680,7 +698,8 @@ Source: `agents/IMPLEMENTER.md` "You do not"
 - change an interface another agent shares (escalate); (2026-10-14)
 - spawn agents that make design decisions (Codex workers with a full spec only, I.15); (2026-10-14)
 - review your own work as final: the verifier does that; (2026-10-14)
-- edit the rule files without the user's approval of that exact change (AGENTS.md 0.5). (2026-10-14)
+- edit the rule files without the master's approval of that exact change; send the proposal up the spawn chain to
+  the master, and if you spawned an agent that proposes one, forward it unapproved (AGENTS.md 0.5). (2026-10-15)
 
 ## Implementer: Pitfalls (2026-10-14)
 
