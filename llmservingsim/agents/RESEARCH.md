@@ -62,6 +62,7 @@ session transcripts (`~/.claude/projects/-home-asd-LLMServingSim/<id>.jsonl`). T
 | Workloads | II.6. | 10-12/13 | — |
 | Scope | FCFS prefill only; inclusive lower tier only (an exclusive tier would need DRAM-bandwidth modelling). | 10-07 | `EX/SETUP.md` |
 | Rule evolution | The rule files evolve by: a size budget per role checked mechanically (set large for now); agents cite the rules they applied in their reports, each with a short review score from -5 to 5, and unused rules become retirement candidates; a bar for new rules; GENERAL.md as a versioned hub with a return path; periodic consolidation. Rejected: scenario regression tests of rules (option 3), because they are an A/B test; reopened only when the user names it. Why: rules grew without an outflow or a measure. | 2026-10-15 | User: "좋아. 1.2,4,5,6번을 하는데 예산은 일단 크게 줘. 인용이랑 같이 짧은 review도 (-5 to 5) 줘. 3 번은 A/B 테스트니까 하지 말도록 하고." (session 639434b8, 2026-10-15T06:24Z); options 1-6 in that session |
+| Rule evolution: pending rules | The budget is fixed; a new rule waits in a pending list and is reviewed (the -5 to 5 rule-use reviews) before it enters the budgeted rules. Adds to "Rule evolution". Why: keep the budget fixed while new rules still get in on evidence. | 2026-10-15 | User: "좋아. 그래서 예산은 고정돼있지만, 대기 규칙을 만들어서 리뷰를 받도록 해줘." (session 639434b8, 2026-10-15); design `notes/design/T20261015-rules-evolve.md` |
 
 **Superseded** (do not reintroduce):
 - "4P + 4D with decode tp2" (4 prefill tp1 + 2 decode tp2; user 2026-10-15 "좋아. TP2로 일단 해보자.") → 2P + 3D(tp2) above (2026-10-15).
