@@ -2,6 +2,7 @@
 
 Fake secrets are assembled at run time so this file never contains a string the secret scan would block.
 """
+import base64
 import json
 import os
 import subprocess
@@ -63,6 +64,19 @@ BLOCK = [
     "git stash pop --index",
     "git stash drop",
     "git stash drop -q",
+    # F5 (roles v2, 2026-10-15): every pkill and every stash drop, whatever its ref or options
+    "pkill python3",
+    "pkill -x python3",
+    "/usr/bin/pkill python3",
+    "pkill -- python3",
+    "pkill --help",
+    "pkill",  # no arguments (review 2, R2 note 4)
+    "docker exec servingsim_docker pkill python3",
+    "env X=1 pkill python3",
+    "bash -lc 'pkill python3'",
+    "git stash drop stash@{0}",
+    "git stash drop -q stash@{1}",
+    "git -C /tmp/r stash drop stash@{0}",
     # timeout around slotrun
     "timeout 600 .wt/bin/slotrun sim python -m serving",
     "timeout -k 5 600 /home/asd/LLMServingSim/.wt/bin/slotrun sim x",
@@ -119,7 +133,6 @@ ALLOW = [
     "echo '--dangerously-bypass-approvals-and-sandbox is banned'",
     "ls # pkill -f x",
     # fine variants
-    "pkill python3",
     "kill 1234",
     "docker exec servingsim_docker kill 4321",
     "git push origin explore/rate-wl-phase3:explore/rate-wl-phase3",
@@ -132,7 +145,6 @@ ALLOW = [
     "git stash show -p stash@{0}",
     "git stash pop stash@{1}",
     "git stash apply stash@{2}",
-    "git stash drop stash@{0}",
     ".wt/bin/slotrun sim timeout 600 python -m serving",
     "timeout 600 \"$CODEX\" exec --ephemeral -s read-only -m x 'q' </dev/null",
     "timeout 5 ls",
@@ -161,6 +173,11 @@ ALLOW = [
     "rg --glob '*.md' -n hf_token agents/",
     "git stash --help",
     "git stash -h",
+    "git stash drop --help",
+    "echo 'pkill python3'",
+    "rg -n 'git stash drop' agents/OPERATIONS.md",
+    'git commit -m "Block pkill and git stash drop in the hook"',
+    "cat <<'EOF' > notes.md\npkill python3\ngit stash drop stash@{0}\nEOF",
     "git add -- -A",
     "git push origin feat/c++",
     "git push origin main:main",
@@ -236,6 +253,19 @@ def test_cleanup_boundary_does_not_follow_operand_symlink(tmp_path, monkeypatch)
     guard_bash.check_text("unlink .wt/link")
     guard_bash.check_text("unlink " + str(wt / "link"))
     assert outside.exists() and (wt / "link").is_symlink()
+
+
+@pytest.mark.parametrize("cmd,rule,safe", [
+    ("pkill python3", "0.3 rule 5", "kill 1234"),
+    ("git stash drop stash@{0}", "I.16", "git stash list"),
+])
+def test_hook_protocol_f5(tmp_path, cmd, rule, safe):
+    # Only send command text to the hook; never execute kill or stash commands.
+    r = run_hook("guard_bash.py", {"tool_name": "Bash", "tool_input": {"command": cmd}, "cwd": str(tmp_path)})
+    assert r.returncode == 2 and len(r.stderr.strip().splitlines()) == 1
+    assert r.stderr.startswith("BLOCKED by .claude/hooks/guard_bash.py (" + rule + ":")
+    r = run_hook("guard_bash.py", {"tool_name": "Bash", "tool_input": {"command": safe}, "cwd": str(tmp_path)})
+    assert r.returncode == 0 and r.stderr == ""
 
 
 def test_hook_protocol_block_and_allow(tmp_path):
@@ -451,17 +481,63 @@ def test_notify_popen_failure(notification, capsys):
     assert capsys.readouterr() == ("", "")
 
 
+def _decoded_script(popen):
+    """The PowerShell script passed with -EncodedCommand (base64 of UTF-16LE)."""
+    args = popen.call_args.args[0]
+    assert args[:5] == [notify_stop.PS, "-NoProfile", "-WindowStyle", "Hidden", "-EncodedCommand"], args
+    return base64.b64decode(args[5]).decode("utf-16-le")
+
+
 def test_notify_detached_without_wait(notification, capsys):
     invoke, _, popen = notification
-    invoke(json.dumps({"cwd": "/tmp/user's-project"}))
-    popen.assert_called_once_with(
-        [notify_stop.PS, "-NoProfile", "-WindowStyle", "Hidden", "-Command",
-         notify_stop.SCRIPT.format(msg="users-project: answer finished")],
-        stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
+    invoke(json.dumps({"cwd": "/tmp/user's-project", "session_id": "0123456789abcdef"}))
+    popen.assert_called_once()
+    assert popen.call_args.kwargs == dict(stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                                          stderr=subprocess.DEVNULL, start_new_session=True)
+    script = _decoded_script(popen)
+    assert "'Claude Code: 01234567'" in script
+    assert "'user''s-project: answer finished'" in script  # a quote is doubled, not dropped
     assert popen.return_value.mock_calls == []  # No wait, communicate, or context-manager exit.
     assert capsys.readouterr() == ("", "")
+
+
+def _transcript(tmp_path, records):
+    path = tmp_path / "t.jsonl"
+    path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in records) + "not json\n",
+                    encoding="utf-8")
+    return str(path)
+
+
+def test_notify_names_session_by_last_ai_title(notification, tmp_path):
+    invoke, _, popen = notification
+    t = _transcript(tmp_path, [{"type": "ai-title", "aiTitle": "first"}, {"type": "user", "message": "x"},
+                               {"type": "ai-title", "aiTitle": "H200 프로파일링 실험 환경"}])
+    invoke(json.dumps({"cwd": "/p/LLMServingSim", "session_id": "abcdef0123", "transcript_path": t}))
+    script = _decoded_script(popen)
+    assert "'Claude Code: H200 프로파일링 실험 환경'" in script  # Korean survives the encoding
+    assert "'LLMServingSim: answer finished'" in script
+
+
+def test_notify_custom_title_wins(notification, tmp_path):
+    invoke, _, popen = notification
+    t = _transcript(tmp_path, [{"type": "custom-title", "customTitle": "my run"},
+                               {"type": "ai-title", "aiTitle": "auto"}])
+    invoke(json.dumps({"cwd": "/p/x", "session_id": "abcdef0123", "transcript_path": t}))
+    assert "'Claude Code: my run'" in _decoded_script(popen)
+
+
+@pytest.mark.parametrize("path", [None, 7, "/nonexistent/t.jsonl"])
+def test_notify_falls_back_to_session_id(notification, path):
+    invoke, _, popen = notification
+    invoke(json.dumps({"cwd": "/p/x", "session_id": "abcdef0123", "transcript_path": path}))
+    assert "'Claude Code: abcdef01'" in _decoded_script(popen)
+
+
+def test_notify_title_quotes_doubled(notification, tmp_path):
+    invoke, _, popen = notification
+    t = _transcript(tmp_path, [{"type": "ai-title", "aiTitle": "it's done"}])
+    invoke(json.dumps({"cwd": "/p/x", "session_id": "s", "transcript_path": t}))
+    assert "'Claude Code: it''s done'" in _decoded_script(popen)
 
 
 def test_notify_reentry_does_not_spawn(notification, capsys):
@@ -520,3 +596,25 @@ def test_pointer_check(gen):
     lines = sorted(int(m.split(":")[1]) for m in missing)
     assert lines == [2, 4, 5], missing
     assert any("on feat/x" in m for m in missing)
+
+
+def test_deny_repository_paths_in_marked_bodies(gen, monkeypatch):
+    # Roles v2 O14: `agents/` and `.claude/` paths in a general-marked body are repository-specific; the
+    # generator's own `Source:` labels (which name such paths) and words such as "subagents/" stay legal.
+    g, root = gen
+    monkeypatch.setattr(g, "FILES", [("AGENTS.md", "Entry"), ("agents/X.md", "X")])
+    (root / "AGENTS.md").write_text("# A\n\n## 0.1 Entry\n<!-- general -->\n\nRead the role selector.\n")
+    (root / "agents" / "X.md").write_text(
+        "# X\n\n## I.1 One\n<!-- general -->\n\n"
+        "Read `agents/INTERFACE.md` before X.\n"          # line 6: hit
+        "Types live in `.claude/agents/<role>.md`.\n"     # line 7: hit
+        "Settings live in `.claude/settings.json`.\n"     # line 8: hit (`.claude/` only, no `agents/`)
+        "Spawn subagents/workers; read I.1.\n"            # line 9: legal
+        "\n## Unmarked\n\nRead `agents/Y.md` here.\n")    # unmarked: legal
+    skill = root / ".claude" / "skills" / "s"
+    skill.mkdir(parents=True)
+    (skill / "SKILL.md").write_text("---\nname: s\ndescription: d\n---\n<!-- general -->\n# S\n\n1. Do it.\n")
+    text, hits = g.build()
+    deny = sorted((h.split(":")[0], int(h.split(":")[1])) for h in hits if "repository-specific" in h)
+    assert deny == [("agents/X.md", 6), ("agents/X.md", 7), ("agents/X.md", 8)], hits
+    assert "Source: `agents/X.md` I.1" in text and "Source: `.claude/skills/s/SKILL.md`" in text

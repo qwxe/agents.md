@@ -31,8 +31,12 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 **Within an approved experiment, keep the slots full.** Submit every run whose inputs exist at once, each its own
 `slotrun sim` job; submit a dependent run (one needing another's T_res or params) the moment its dependency
 finishes; a pending question does not justify draining the queue. Any run outside the approved experiment: ask
-first (AGENTS.md 0.3 rule 8). A subagent asks through an escalation; the runs its brief lists count as
-approved. (2026-10-14)
+first. A subagent asks through an escalation; the runs its brief lists count as approved. (2026-10-14; 2026-10-15)
+
+**Run approval** (this section owns the approval definition; AGENTS.md 0.3 item 8 points here). No simulator run
+outside user-approved scope: a run is approved only when the user approved it, as a run block of an approved
+experiment plan with its checked cards (`experiment-plan`) or by an explicit order. A subagent escalates a new run
+request; only the runs its brief explicitly lists count as approved. (2026-10-15)
 
 **Validation commands.** Read I.14 before baseline/routine/end-of-line checks. Default suite: `tests/run.sh` (on `feat/tests`), host venv `.wt/testenv`, one `slotrun sim` slot. Quick golden: `SIM_TREE=<tree> KV_DIV=1 .wt/bin/validate-par --quick`, fixed list `serving/validate-quick.txt` (on `feat/tests`). Full `validate-par` has 59 + 8 cases; research reference checks are II.4. For stock exact clocks/md5 and validation after each serving commit, read `agents/SIM-REFERENCE.md` Testing & Validation before committing serving changes. Never pip install into the container; test tools live in `.wt/testenv`. (2026-10-14; 2026-10-15) (2026-10-15)
 
@@ -59,7 +63,7 @@ of the map in AGENTS.md 0.4. The order is the one of the `experiment-plan` skill
 
 Read `experiment-plan` Wording before result wording; `claim-audit` independently checks compliance. (2026-10-14; 2026-10-15)
 
-**Monitoring.** I.18 owns the run-owner/caller monitoring duty; consult it before monitoring or acting on your own runs. Only the master
+**Monitoring.** I.18 owns the launcher's exclusive monitoring duty; consult it before monitoring or acting on your own runs. Only the master
 kills or reruns another agent's runs, and only on the user's order; it then tells that agent. (2026-10-14) (2026-10-15)
 
 The checks, commands and healthy values for runs, processes, memory and `validate-par` are in the knowledge
@@ -96,6 +100,10 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
   own work is on another branch. A Codex worker sandboxed to another worktree cannot write there: it proposes
   the entries in its report and its caller commits them. (2026-10-14)
 - Read `AGENTS.md` 0.2 before pushing or publishing a rule-file change (use the I.6 helper). (2026-10-14)
+- **Rule-file changes** are edited and committed only on their own `rules/<task-id>` branch in the worktree
+  `.wt/rules-<task-id>`, and merged into `main` only after their review passes (or, where the upper tier skipped its review (I.14 *Verification on demand*), after the upper tier accepts it; AGENTS.md 0.5 *Editing*, 0.2);
+  never switch the shared main tree. Light-path decision rows, notes, ledgers, handoffs and results keep their
+  push timing on `main` or their research branch. (2026-10-15)
 - Branch and worktree layout for research code: II.3 and II.4. (2026-10-14)
 
 ## I.7 Processes and cleanup (2026-10-15)
@@ -110,22 +118,42 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 - Removing your own worktree or symlink under `.wt/`: `git worktree remove .wt/<path>`, `git worktree prune` and
   `unlink .wt/<path>` run without a prompt (`.claude/settings.json` `permissions.allow`; user, 2026-10-15:
   "진행해줘." then "permission을 바꿨어,"). `rm -rf` of a directory is not covered and still asks. Apply the I.16 ownership boundary before removal. (2026-10-15)
+- **Scratch review trees.** The caller that prepares a verifier's scratch review tree or output sandbox owns it and
+  removes it after the verdict; the verifier writes only its named outputs there. (2026-10-15)
 - `validate.sh`/`validate-par` rewrite `bench/examples/*/outputs/sim.log` with only run-id and wall-time changes:
   revert them with `git checkout`. (2026-10-14)
 
 ## I.18 Monitoring running work (2026-10-15)
 <!-- general -->
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; launcher-exclusive monitoring and progress checks: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list).
 
 User, 2026-10-14: runs that take compute or sit on the critical path of the goal are monitored periodically. (2026-10-14)
 
 - **What.** Every job that holds compute (a job slot, a build, a long test, anything at high CPU or memory) and
   every job on the critical path of the current goal, from launch to exit. (2026-10-14)
-- **Who.** The agent that launched it. A Codex worker returns before a long job ends, so its caller runs the
-  health loop below in the background and acts on what it reports (calling a Codex Luna worker for checks it
-  needs). The loop prints only on an anomaly or at exit. The master does not run job health checks itself; it
-  keeps a watch on every watch mechanism and the progress ledger current (I.23). (2026-10-14)
+- **Who** (user, 2026-10-15: "2. 띄운 작업은 그 agent가 전담해서 모니터링하는걸로."; the decisions list).
+  The agent that launches a job or worker owns its monitoring exclusively from launch through exit and receipt.
+  It records the item, completion watch and periodic health mechanism in its own tracking record. It remains
+  responsible until its children and jobs finish, including across completion-triggered wakes; a turn ending
+  does not transfer ownership, and any unsupported lifetime is reported before launch. A caller watches its
+  own child agent, not that child's jobs; it receives anomalies and decisions through that child. A background
+  health script is a mechanism of the launching agent, not a transfer of ownership. (2026-10-15)
+  A worker checks its own subprocesses, a manager the workers it launched, and the master its managers and any
+  job it launched itself; the master's ~30-minute heartbeat reconciles only its direct watches and the ledger
+  and never replaces job health checks (I.23). The loop prints only on an anomaly or at exit. (2026-10-14; 2026-10-15)
+- **Launcher loss.** The unexpected death of a launcher is an anomaly: its caller records the loss of owner and
+  escalates at once; it does not quietly take over. Ownership changes only on an explicit master or user recovery
+  instruction naming the successor, the remaining jobs, PIDs and results, the allowed actions and the new watch;
+  another agent's job is still killed only on the user's order. A handoff lists orphaned or unknown ownership
+  explicitly; live jobs are never handed over automatically. (2026-10-15)
+- **Codex launchers.** A Codex task worker that launches a job keeps its own invocation alive and monitors the
+  job: it may detach the OS job, but it returns only after terminal status, diagnostics, completion of its
+  helpers and the cleanup its brief permits; it never hands a live job back to its caller. The caller sizes the
+  CLI timeout for the whole authorised launch-and-monitor lifetime; a default timeout must not truncate a known
+  longer assignment. If that lifetime cannot be supported, the caller assigns launch **and** monitoring to an
+  available Claude worker or manager before launch; Codex may prepare the commands and configuration but does not
+  start the job. This is a transport feasibility rule, not a model-selection criterion. (2026-10-15)
 - **Mechanism.** A completion notification alone does not catch a hang. Run both: the job (or its wait) in the
   background so its exit wakes the agent, and a health loop that checks every ~180 s and prints only on an
   anomaly or at the end. The health loop itself runs as a background command whose exit (on an anomaly or at
@@ -135,6 +163,23 @@ User, 2026-10-14: runs that take compute or sit on the critical path of the goal
 - **What a check looks at.** Progress (heartbeat, simulated clock or output still advancing), CPU state (running,
   or stuck near 0%), memory (process growth, machine free memory, swap), errors in the log, and the expected
   finish. The run rules give this repository's commands and healthy values. (2026-10-14)
+- **Progress, not only health** (user, 2026-10-15, the decisions list).
+
+  The direct caller sets the expected next artifact/checkpoint in the brief before launch, using the
+  already approved scope and acceptance criteria. For a job launched by the master itself, the master
+  records that checkpoint from the approved plan before launch. For a job launched by a non-master worker,
+  that worker sets the job checkpoint before launch from its caller-approved brief/plan and acceptance
+  criteria; an unsettled checkpoint is escalated before launch, never invented as new scope.
+  The launcher records health observations,
+  artifact progress with evidence/time, the checkpoint and pending decision/recipient using F-helper;
+  the master uses F-ledger's linked progress record for its own jobs. Keep these records with the existing
+  task trail; no second ledger or transfer of monitoring ownership is created. (2026-10-15)
+
+  At each health check compare the expected next artifact/checkpoint with observed artifact progress.
+  A live process or recent health observation alone is not task progress. If work repeats or misses the
+  checkpoint without advancing the artifact, diagnose a semantic stall, record its evidence and report
+  it to the caller. Replan only within settled scope, existing permissions and existing rules; ambiguity
+  still escalates immediately. This grants no new retry, run or intervention authority. (2026-10-15)
 - **Failure classes.** Classify every failure before acting; the class decides the action (user, 2026-10-14):
 
   | class | what it is | action |
@@ -159,7 +204,12 @@ Mechanical enforcement of the never-break rules (user, 2026-10-14). Change a hoo
 
 `.claude/hooks/notify_stop.py` runs when the master finishes an answer (`Stop`; subagents fire `SubagentStop` and do
 not notify): it raises a Windows balloon notification through `powershell.exe`, detached, and never blocks; any
-failure is silent (user, 2026-10-15: "그리고 답이 끝나면 user한테 알림을 띄우는 걸로."). (2026-10-15)
+failure is silent (user, 2026-10-15: "그리고 답이 끝나면 user한테 알림을 띄우는 걸로."). (2026-10-15) The balloon title names
+the session, "Claude Code: <name>": the last user-set title in the transcript (`custom-title` record), else the
+last automatic title (`ai-title`), else the first 8 characters of the session id; the text is "<project>: answer
+finished". The script is passed with `-EncodedCommand` (base64 of UTF-16LE) so Korean titles and quotes survive
+(user, 2026-10-15: "그리고 알림을 할 때 세션의 이름도 같이 붙여주도록 해줘.", decisions list "Notification shows the
+session name"). (2026-10-15)
 
 `.claude/hooks/guard_bash.py` runs before every Bash tool call in this repository (`.claude/settings.json`,
 `PreToolUse`, matcher `Bash`). A refused command exits 2 with one line `BLOCKED by .claude/hooks/guard_bash.py
@@ -174,10 +224,10 @@ and comments. It is a safety net against mistakes, not against deliberate evasio
 
 | rule | blocks | allows on purpose | do this instead |
 |---|---|---|---|
-| 0.3 rule 5 | `pkill -f`, `pkill -<flags with f>`, `pkill --full`, `killall` | `pkill <name>`, `kill <pid>`, `pgrep -f` | kill by PID; in the container `docker exec servingsim_docker kill <pid>` (2026-10-14) |
+| 0.3 rule 5 | every `pkill` invocation, whatever its flags or operands (`pkill <name>`, `pkill -f`, `pkill --help` included), `killall` | `kill <pid>`, `pgrep -f`, text that only mentions pkill (echo, grep patterns, commit messages, heredocs) | kill by PID; in the container `docker exec servingsim_docker kill <pid>` (2026-10-14; 2026-10-15) |
 | 0.3 rule 7 (force-push) | `git push` with `--force`, `-f` (or a cluster with f), `--force-with-lease[=..]`, `--force-if-includes`, a refspec starting with `+` or containing `:+` | normal pushes, `-u`, `--follow-tags` | push a new branch, or ask the user (2026-10-14) |
 | I.16 (staging) | `git add -A`, `--all`, a cluster with `A`, `.`, `./` (also after `--`) | `git add <paths>`, `-f <path>`, `-u <path>`, `git add -- -A` (a file named -A), `--help` | name your files (2026-10-14) |
-| I.16 (stash) | bare `git stash` (also with options only), `git stash push`, `save`, `clear`, `pop`/`drop` without a ref | `git stash list`, `show`, `apply`, `pop`/`drop stash@{n}`, `--help`/`-h` | a WIP commit on your branch (2026-10-14) |
+| I.16 (stash) | bare `git stash` (also with options only), `git stash push`, `save`, `clear`, `pop` without a ref, every `git stash drop` whatever its ref or options | `git stash list`, `show`, `apply`, `pop stash@{n}`, `--help`/`-h` (also `git stash drop --help`) | a WIP commit on your branch (2026-10-14; 2026-10-15) |
 | 0.3 rule 4 | `timeout ... slotrun ...` | `slotrun sim timeout N cmd`, `timeout N <other cmd>` | let slotrun manage the job; kill by PID if it hangs (2026-10-14) |
 | I.7 (cleanup boundary) | `unlink` or `git worktree remove [opts]` operands starting with `.wt/` or `/home/asd/LLMServingSim/.wt/` that contain a `..` component or, after `os.path.normpath` against the repository root, are not strictly inside `.wt/` | normal paths inside `.wt/`; symlink operands are not followed; other operand prefixes stay subject to normal permissions | name a path strictly inside `.wt/` with no `..`; remove only what your brief or ledger row owns (2026-10-15) |
 | 0.3 rule 7 (token) | a printer (`cat tac nl less more head tail xxd od hexdump strings base64 sort cut grep rg sed awk ...`) with `gh_token`/`hf_token` as a file operand or as `< file` | the credential helper `$(tr -d "\r\n" < gh_token)`; `ls`, `test -f`, `wc -c <`, `chmod` on the file; searching for the word: `grep [-A N] [-m N] gh_token <files>`, `rg -g '*.md' gh_token` | use the credential helper (I.6); if the hook misreads a search, give the pattern with `-e gh_token` (2026-10-14) |
@@ -225,6 +275,7 @@ not listed that another agent or session could also use counts as shared. (2026-
 | progress ledgers `notes/ledger/*.md`, handoff files, task trails of other tasks | the master of each line; the task's agents | append to your own task trail | edit another line's ledger or another task's trail (2026-10-14) |
 | the knowledge base `knowledge/` | every role (I.21) | add an entry; append an occurrence; update or refute an entry with evidence | delete an entry; rewrite another's evidence; edit the generated catalog `knowledge/KNOWLEDGE.md` by hand (2026-10-14) |
 | generated files `GENERAL.md`, `knowledge/KNOWLEDGE.md` | their generators | regenerate and commit with the source change | AGENTS.md 0.2 for GENERAL; I.21 for the knowledge catalog, before generation or edits (2026-10-14) (2026-10-15) |
+| concurrent agents | every session | run up to 20 Claude subagents at once (the harness cap set in `.claude/settings.json`, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`) and nest them up to depth three (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`); Codex CLI children are not counted by that cap but count toward depth and resources (I.15). Run about 20 Codex workers at once for now; whether to go higher is decided after that run (II.1 Codex concurrency). (2026-10-15) | treat either figure as proof of capacity or as leave to exceed job slots, memory or ownership limits (2026-10-15) |
 | Claude settings and hooks `.claude/settings.json`, `.claude/hooks/`, the master's memory directory | every Claude session | read | change them without the user's order (hooks: with their tests, I.20) (2026-10-14) |
 | token files `gh_token`, `hf_token` | every agent | use through the credential helper (I.6) | print, copy or move them (2026-10-14) |
 | the Codex binary in `~/.vscode-server/extensions/` | every agent | run it (I.4) | update or move it (2026-10-14) |
@@ -243,7 +294,9 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 - The stash is shared by all worktrees and sessions: never bare `git stash`/`pop`; prefer a WIP commit. (2026-10-14) Never `git stash drop` or `git stash clear`, even for your own explicitly named entry. (2026-10-14; 2026-10-15)
 - Code branches stay local unless the user asks; notes and results the user wants visible elsewhere are pushed
   as soon as they are written. (2026-10-14)
-- Never `pkill -f` or `killall`; kill by PID. Clean up your own scratch, trees and orphan processes when done. (2026-10-14)
+- Rule-file edits follow the separate-branch and reviewed-merge procedure; they must not enter the shared
+  main branch before review passes, or, where the upper tier skipped its review (I.14 *Verification on demand*), after the upper tier accepts it. (2026-10-15)
+- Never `pkill` or `killall`; kill by PID. (2026-10-14; 2026-10-15) Clean up your own scratch, trees and orphan processes when done. (2026-10-14)
 - **Shared resources** (user, 2026-10-14). Never revert, clean, kill, reset or reconfigure anything you did not
   create: other agents' files and processes, shared trees, the shared stash, containers, job slots, tool
   installations, settings. Teardown removes only what you created and recorded. When a shared resource is in

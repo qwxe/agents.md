@@ -4,7 +4,13 @@
 Stop fires for the main session only (subagents fire SubagentStop), so only the master's answers notify.
 WSL2: the notification is a Windows balloon tip raised through powershell.exe, started detached so the
 hook returns at once. Any failure is silent: a missing notification must never block the session.
+
+The balloon title names the session, so the user can tell which of several sessions finished: the last
+user-set title in the transcript ("custom-title" record), else the last automatic title ("ai-title"),
+else the first 8 characters of the session id. The script goes to PowerShell as -EncodedCommand (base64
+of UTF-16LE), so Korean titles and quotes survive.
 """
+import base64
 import json
 import os
 import subprocess
@@ -16,9 +22,54 @@ SCRIPT = (
     "$n = New-Object System.Windows.Forms.NotifyIcon;"
     "$n.Icon = [System.Drawing.SystemIcons]::Information;"
     "$n.Visible = $true;"
-    "$n.ShowBalloonTip(8000, 'Claude Code', '{msg}', 'Info');"
+    "$n.ShowBalloonTip(8000, '{title}', '{msg}', 'Info');"
     "Start-Sleep -Seconds 9; $n.Dispose()"
 )
+MAX_TITLE = 60
+
+
+def ps_quote(text):
+    """Text for a PowerShell single-quoted string: quotes doubled, control characters dropped."""
+    text = "".join(ch for ch in text if ch >= " ")
+    return text.replace("'", "''")
+
+
+def transcript_title(path):
+    """The last custom title, else the last automatic title, in the transcript; None if neither."""
+    if not isinstance(path, str) or not path or "\0" in path:
+        return None
+    custom = auto = None
+    with open(path, "rb") as fh:
+        for raw in fh:
+            # Cheap filter before parsing: transcripts can be tens of MB.
+            if b'-title"' not in raw:
+                continue
+            try:
+                rec = json.loads(raw)
+            except ValueError:
+                continue
+            if not isinstance(rec, dict):
+                continue
+            if rec.get("type") == "custom-title":
+                value = rec.get("customTitle") or rec.get("title")
+                if isinstance(value, str) and value.strip():
+                    custom = value.strip()
+            elif rec.get("type") == "ai-title":
+                value = rec.get("aiTitle")
+                if isinstance(value, str) and value.strip():
+                    auto = value.strip()
+    return custom or auto
+
+
+def session_name(data):
+    try:
+        name = transcript_title(data.get("transcript_path"))
+    except Exception:
+        name = None
+    if not name:
+        sid = data.get("session_id")
+        name = sid[:8] if isinstance(sid, str) and sid else "session"
+    return name[:MAX_TITLE]
 
 
 def main():
@@ -32,10 +83,13 @@ def main():
         project = os.path.basename(cwd or os.environ.get("CLAUDE_PROJECT_DIR", "")) or "session"
         if "\0" in project:
             return
-        msg = f"{project}: answer finished".replace("'", "")
         if not os.path.exists(PS):
             return
-        subprocess.Popen([PS, "-NoProfile", "-WindowStyle", "Hidden", "-Command", SCRIPT.format(msg=msg)],
+        title = ps_quote(f"Claude Code: {session_name(data)}")
+        msg = ps_quote(f"{project}: answer finished")
+        script = SCRIPT.format(title=title, msg=msg)
+        encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+        subprocess.Popen([PS, "-NoProfile", "-WindowStyle", "Hidden", "-EncodedCommand", encoded],
                          stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                          start_new_session=True)
     except Exception:

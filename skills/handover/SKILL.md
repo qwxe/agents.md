@@ -6,6 +6,8 @@ description: Hand the session over to the next one. Use when the user says "인�
 
 # Handover procedure (2026-10-15)
 
+Approval of the format pointers and already-approved actions: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list).
+
 Run this **before** the context is lost. The handoff file, handoff section, manual, decisions list and progress
 ledger are general terms; the repository's `AGENTS.md` says where each one lives. (2026-10-14)
 
@@ -22,13 +24,16 @@ standing rules) changes only when the rules or the reading order change. (2026-1
    publishes (fixed result folder, run ids), and whether its report will reach the old session only. Background
    subagents report to the session that spawned them: after `/compact` that is the same session, but a brand-new
    session never receives them and must read the result files instead. (2026-10-14)
-3. **Write the subsection** with these headings, keeping each item short and pointing to files rather than
-   copying them (2026-10-14):
+3. **Write the subsection** in the F-handover format (I.24), keeping each item short and pointing to files rather
+   than copying them; a manager supplies scoped inputs for its unit and the master appends the subsection
+   (2026-10-14; 2026-10-15):
    - *Decisions this session* — each with the user's words (quoted, Korean as said) and the date. (2026-10-14)
    - *Results* — the finished work from step 1 and the numbers that matter, each with its file path and run ids. (2026-10-14)
-   - *In flight* — from step 2: agents, drivers, run ids, result folders, expected finish. (2026-10-14)
+   - *In flight* — from step 2: agents and their launchers, drivers, run ids, PIDs, result folders, watches, report
+     destination, expected finish, and any orphaned or unknown ownership. (2026-10-14; 2026-10-15)
    - *Open questions for the user* — what is waiting for an answer. (2026-10-14)
-   - *Next steps* — proposed, marked "confirm with the user first" unless the user already approved them. (2026-10-14)
+   - *Next steps* — already-approved actions with their approval source and exact remaining bounds, then proposed
+     actions marked "confirm with the user first". (2026-10-14; 2026-10-15)
    - *Pitfalls found* — anything the next session would otherwise trip over, each recorded as a knowledge base
      entry or occurrence (I.21); the subsection lists the entry ids. Promotion candidates waiting for the user
      go under *Open questions*. (2026-10-14)
@@ -43,15 +48,9 @@ standing rules) changes only when the rules or the reading order change. (2026-1
    rewritten as a pointer or deleted. (2026-10-14)
 6. **Commit and push** the handoff, any notes and results of this session, so another machine can resume. (2026-10-14)
 7. **Give the user the next-session input**, a short self-contained text in Korean that the user pastes into the
-   new session. Template (2026-10-14):
-   ```
-   AGENTS.md와 그 안에서 master가 읽으라는 파일, <manual>을 읽고, <handoff file>의 <handoff section>을
-   <newest> → <older> 순서로 먼저 읽어. 새 하위 절과 앞 절이 다르면 새 하위 절이, <decisions list>와 다르면
-   <decisions list>가 우선이야. 보고는 한국어로.
-   역할: 너는 Claude master agent야.
-   진행 중일 수 있는 작업: <agent/grid, run ids, result folder>. git fetch origin <branch> 후 <files>로 상태를 먼저 요약해 줘.
-   다음 할 일: <next steps>. 다음 단계는 나한테 확인받고 진행해.
-   ```
+   new session, in the F-resume format (I.24): reading order, precedence of the newest subsection and the decisions
+   list, the live items to check first, the already-approved actions with their source and bounds, and the
+   proposed actions that need confirmation. (2026-10-14; 2026-10-15)
 8. **Tell the user** what was saved where (commit hashes) and whether anything is still running, then recommend
    one of: compact now, continue in this session, or start a new session, with the reason in one line. The user
    decides. (2026-10-14; 2026-10-15)
@@ -65,4 +64,5 @@ standing rules) changes only when the rules or the reading order change. (2026-1
 
 **At the start of a new session**, the master reads the input and the files it names, checks the in-flight work
 from the result files (not from memory), gives every still-live item a watch and arms the heartbeat (I.23),
-reports the state to the user, and waits for confirmation before launching anything new. (2026-10-14)
+reports the state to the user, continues only the already-approved actions within their recorded bounds, and
+waits for confirmation before launching anything new. (2026-10-14; 2026-10-15)

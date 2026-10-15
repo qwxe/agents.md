@@ -8,8 +8,9 @@ Usage:
   python3 agents/gen_knowledge.py --category <c>           print one category's table (for briefs)
   --root <dir>                                             repository root (default: this file's parent's parent)
 
-Entry format: notes/design/T20261014-knowledge-runcard.md section 3 (interface 1); the writer rules are
-agents/INTERFACE.md I.21. Each entry is `knowledge/<category>/<slug>.md` with a front matter in a small YAML
+Entry format: the human schema is F-knowledge in agents/FORMATS.md I.24 (the parser below validates it; original
+design: notes/design/T20261014-knowledge-runcard.md section 3, interface 1); the writer rules are
+agents/INTERFACE.md I.21 and storage/lifecycle routing agents/RECORDS.md I.8. Each entry is `knowledge/<category>/<slug>.md` with a front matter in a small YAML
 subset, parsed here by hand (stdlib only): `key: value`, quoted strings, `[a, b]` inline lists, block lists of
 `  - item` lines, and whole-line `#` comments.
 

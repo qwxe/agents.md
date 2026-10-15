@@ -29,14 +29,21 @@ FILES = [
     ("AGENTS.md", "Entry"),
     ("agents/INTERFACE.md", "Interface"),
     ("agents/MASTER.md", "Master"),
+    ("agents/MANAGER.md", "Manager"),
+    ("agents/FORMATS.md", "Formats"),
+    ("agents/RECORDS.md", "Records"),
     ("agents/IMPLEMENTER.md", "Implementer"),
+    ("agents/LEAF.md", "Leaf"),
     ("agents/VERIFIER.md", "Verifier"),
     ("agents/CODEX.md", "Codex"),
     ("agents/OPERATIONS.md", "Operations"),
 ]
 
 DENY = [r"/home/asd", r"servingsim", r"slotrun", r"\bR/", r"\bEX/", r"\bAN/", r"\bII\.", r"rate_wl", r"explore/",
-        r"\.wt/", r"HANDOFF", r"gh_token", r"vllm", r"ASTRA", r"Dynamo", r"\.vscode"]
+        r"\.wt/", r"HANDOFF", r"gh_token", r"vllm", r"ASTRA", r"Dynamo", r"\.vscode",
+        # Repository paths of the rule files and Claude settings (roles v2, O14). Only section bodies are checked, so
+        # the generated `Source:` labels that name these paths stay legal; "subagents/" does not match.
+        r"\bagents/", r"\.claude/"]
 
 
 def read_sections():
@@ -122,9 +129,9 @@ def build():
         parts.append("\n".join(["#" * level + " " + head, "", src] + [t for _, t in body]))
     for rel, label, level, head, body in secs:
         for ln, t in body:
-            for pat in DENY:
-                if re.search(pat, t):
-                    hits.append(f"{rel}:{ln}: repository-specific token {pat!r}: {t.strip()[:100]}")
+            pats = [pat for pat in DENY if re.search(pat, t)]
+            if pats:  # one hit per line, naming every pattern it matches
+                hits.append(f"{rel}:{ln}: repository-specific token {', '.join(map(repr, pats))}: {t.strip()[:100]}")
             for m in re.finditer(r"\b((?:I|II)\.\d+|0\.\d+)\b", t):
                 if m.group(1) not in ids:
                     hits.append(f"{rel}:{ln}: cites section {m.group(1)} not in GENERAL.md: {t.strip()[:100]}")
@@ -138,7 +145,7 @@ def build():
         "task trail, ...) are defined in section 0.6; each repository's `AGENTS.md` maps them to its own files. "
         "A repository's own `AGENTS.md` wins on anything repository-specific. Each section's `Source:` line names "
         "the file it comes from.\n\n"
-        f"Sections: {', '.join(ids)}, plus the role sections (Implementer, Verifier, Master pitfalls) and the skills ({', '.join(h[7:] for _, _, _, h, _ in secs if h.startswith('Skill: '))}).\n\n---\n\n"
+        f"Sections: {', '.join(ids)}, plus the role sections (Manager duties, Implementer, Leaf duties, Verifier, Master pitfalls) and the skills ({', '.join(h[7:] for _, _, _, h, _ in secs if h.startswith('Skill: '))}).\n\n---\n\n"
     )
     return header + "\n\n".join(parts) + "\n", hits
 

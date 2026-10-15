@@ -13,6 +13,8 @@ tool named in the run rules. The card is enforced by the tool, not by asking: a 
 
 ## What the plan contains
 
+The plan uses the F-experiment-plan fields (I.24); what each field means (2026-10-15):
+
 1. **Claim and anti-claim**: what the experiment should show, and what result would refute it. Each block's card
    carries its `claim` (a pointer to the plan or the paper claim) and its `intent` (why this block is needed now). (2026-10-14)
 2. **Retrodiction first.** Before planning runs, look at the results that already exist and ask whether they

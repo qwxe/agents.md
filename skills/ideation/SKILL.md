@@ -4,16 +4,19 @@ description: Generate and select design or research ideas for a discussion with 
 ---
 <!-- general -->
 
-# Ideation (2026-10-14)
+# Ideation (2026-10-15)
+
+Approval of the Opus ranking and judging: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list).
 
 1. **Diverge in isolation.** Two or three independent generators (fresh agents or Codex calls that do not see each
-   other) each propose candidates from a different lens (e.g. theory-first, systems-first, failure-first). (2026-10-14)
+   other; Sol, Luna or Opus by the task's tier criterion) each propose candidates from a different lens (e.g. theory-first, systems-first, failure-first). (2026-10-14)
 2. **Annotate, do not cull.** The generators drop a candidate only for an objective reason (violates a decision in
    force, infeasible within the stated budget, rests on a fact the knowledge base records as refuted); everything
    else is kept with notes. (2026-10-14)
-3. **Rank by another model.** Codex (Sol) ranks the pool against stated criteria (novelty against the
-   literature, feasibility, expected effect, cost); agreement among same-model generators is not evidence. (2026-10-14)
+3. **Rank independently.** The caller assigns an independent Opus verifier, which generated none of the
+   candidates, to rank the pool against stated criteria (novelty against the literature, feasibility, expected
+   effect, cost); agreement among same-model generators is not evidence. (2026-10-14; 2026-10-15)
 4. **Kill argument.** For the top candidates, one reviewer writes the strongest single argument against each;
-   a fresh reviewer judges whether each survives. (2026-10-14)
+   a fresh independent Opus verifier judges whether each survives. (2026-10-14; 2026-10-15)
 5. **Present** the 2-3 survivors plus one contrarian option, each with its kill argument and what would show it
    wrong; record the rejected ones with why (dead ends). The user decides. (2026-10-14)

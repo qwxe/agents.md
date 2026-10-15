@@ -6,10 +6,11 @@ one-line reason on stderr to block; exits 0 otherwise. Precision over recall: te
 command (grep patterns, heredoc bodies, commit messages, echo) is allowed, and any parse failure allows.
 
 Blocked:
-  - `pkill -f` / `pkill --full`, `killall`                                    (0.3 rule 5)
+  - every `pkill` invocation (any flags, `--help` included), `killall`        (0.3 rule 5)
   - `git push` with --force / -f / --force-with-lease / a `+refspec`          (0.3 rule 7)
   - `git add -A` / `--all` / `.`                                             (I.16)
-  - bare `git stash` (= `push`/`save`), `git stash pop|drop` with no ref, `git stash clear` (I.16)
+  - bare `git stash` (= `push`/`save`), `git stash pop` with no ref, every `git stash drop` (any ref or
+    options), `git stash clear`                                               (I.16)
   - `timeout ... slotrun`                                                    (0.3 rule 4)
   - printing a token file (`cat gh_token`, `head hf_token`, ...)             (0.3 rule 7)
   - `--dangerously-bypass-approvals-and-sandbox`                             (I.4)
@@ -306,9 +307,7 @@ def check_argv(argv, ctx, depth):
     if cmd == "killall":
         raise Block("0.3 rule 5: never killall; kill by PID")
     if cmd == "pkill":
-        for a in args:
-            if a == "--full" or (re.match(r"^-[A-Za-z0-9]+$", a) and "f" in a[1:]):
-                raise Block("0.3 rule 5: never pkill -f; kill by PID")
+        raise Block("0.3 rule 5: never pkill; kill by PID")
 
     if BYPASS in args and cmd not in TEXT_CMDS:
         raise Block("I.4: never run Codex with " + BYPASS)
@@ -377,7 +376,9 @@ def check_git(args):
             raise Block("I.16: the stash is shared; never bare git stash (prefer a WIP commit)")
         if rest[0] == "clear":
             raise Block("I.16: the stash is shared; never git stash clear")
-        if rest[0] in ("pop", "drop"):
+        if rest[0] == "drop":
+            raise Block("I.16: the stash is shared; never git stash drop")
+        if rest[0] == "pop":
             refs = [a for a in rest[1:] if not a.startswith("-")]
             if not refs:
                 raise Block(f"I.16: the stash is shared; never git stash {rest[0]} without an explicit ref")

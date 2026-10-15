@@ -1,21 +1,31 @@
 # agents/INTERFACE.md — how agents work together
 
-Scope: master, Claude implementer/verifier and Codex task worker/verifier, by the action triggers in `AGENTS.md` 0.1. Research workers retain their limited scope. Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15)
+Scope: master, manager, Claude implementer/verifier and Codex task worker, by the action triggers in `AGENTS.md` 0.1. Research workers retain their limited scope. The field templates these sections name (F-*) are in I.24 (`agents/FORMATS.md`); records are I.8 (`agents/RECORDS.md`). Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15)
 
-## I.10 Decision rights (2026-10-14)
+## I.10 Decision rights (2026-10-15)
 <!-- general -->
+
+Approval of the decision table (role restructuring): user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list).
 
 A decision belongs to the lowest level that can settle it from what it was given. A decision is **non-obvious**
 when the brief, the decisions in force (the decisions list) and the existing code do not settle it, and the reasonable choices
 differ in behaviour, results, interfaces, scope or byte-exactness. (2026-10-14)
 
-| decision | who decides |
+| Decision | Owner |
 |---|---|
-| Choices inside the brief that change no behaviour, result or interface: names, local structure, helpers, logging, test layout | the working agent; it lists them under *Assumptions* (I.13) (2026-10-14) |
-| Task-level design that the brief, the decisions list, the user's quoted words or the existing code settle | the spawner (2026-10-14) |
-| Algorithm or model semantics, paper claims, experiment design, new runs, scope changes, defaults that change results, interfaces shared between agents or branches, anything that conflicts with the decisions list | the user, through the master (2026-10-14) |
-| Whether a finished change is acceptable | the verifier gives the verdict (I.14); a disputed reject goes to the user (2026-10-14) |
-| A bug found outside the task | nobody fixes it in passing: report it (2026-10-14) |
+| Local names, helpers, logging, structure and test layout inside the brief, changing no result/interface | Working agent; report rationale and cost if wrong in F-assumptions (2026-10-15) |
+| Task decomposition, scheduling and task-level design explicitly settled by brief/current standing decisions/code (historical quotes are reference-only under I.11) | Direct caller, including manager, within its delegated scope (2026-10-15) |
+| Cross-line scheduling and shared ownership assignment inside already approved interfaces/budgets | Master; manager forwards conflicts across its unit (2026-10-15) |
+| Algorithms/model semantics, paper claims, experiments/new runs, scope, result-changing defaults, shared interface changes, or conflicts with decisions | User through master; no manager authority is added (2026-10-15) |
+| Whether another agent's completed result satisfies its brief | Independent verifier under I.14 (Opus unless it is simple verification); disputed rejects go to user (2026-10-15) |
+| Exact subagent-origin rule proposal | Master under 0.5; every intermediate manager only forwards (2026-10-15) |
+| Master-origin rule proposal, knowledge promotion, or standing user decision | User; recording a verbatim decision uses 0.5 light path (2026-10-15) |
+| Outside-task bug | Report only; no incidental repair (2026-10-15) |
+
+The manager's model never grants user or master rights. The master keeps rule approvals at every descendant
+depth, the required important and minor notices, standing-decision recording and the user discussion of design
+and papers; a manager prepares briefs, source packets, receipt checks, review assignments, fix loops and handoff
+inputs and never substitutes for a master approval. (2026-10-15)
 
 **Closed questions stay closed.** A superseded decision, or an approach recorded as ruled out, is reopened only
 when the user names it explicitly. Before proposing a design, check the decisions list's Superseded and ruled-out
@@ -27,32 +37,45 @@ owner), the **decisions** it may take (this table), and the **report** it owes a
 ## I.11 Escalation (2026-10-15)
 <!-- general -->
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; reference-only past records and immediate escalation: user, 2026-10-15, "o3. escalate는 과거 기록을 참조만 하도록. 애매한 부분은 바로 escalate하도록 강하게 명시해줘." and "1,2 추천대로." (the decisions list); escalation transport: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list).
 
 Two kinds of open decision (user, 2026-10-14):
 
 - **Stop and escalate**: the choice changes behaviour, results, semantics, scope or an interface, or is hard to
-  undo. The agent **does not choose**. It finishes the work that does not depend on it, then
-  stops and returns an escalation report to its spawner with: (1) the question, quoting the ambiguous text or
-  code; (2) two or three interpretations; (3) what changes under each; (4) its recommendation and why; (5) what
-  is done and what is still independent. Related questions go in one report. (2026-10-14)
+  undo. The agent **does not choose**. It sends the escalation at once to its spawner as an F-escalation packet
+  (I.24): (1) the question, quoting the ambiguous text or code; (2) two or three interpretations; (3) what changes
+  under each; (4) its recommendation and why; (5) what is done and what is still independent. Related questions go
+  in one packet. It then stops the work that depends on the answer and continues only independent work while the
+  answer is pending. A normal final return still waits for its owned children and jobs; a mid-run escalation is
+  not that final return. With no live owned work and no usable mid-run channel, it returns an early final
+  escalation at once, listing the independent work not yet done, so the caller can resume it. It never finishes
+  independent work first merely to delay delivery; the references already at hand suffice for the first packet and
+  later lookup only supplements it. (2026-10-14; 2026-10-15)
 - **Record and continue**: the choice is cheap to undo and changes no result. The agent takes the most
   conservative option, records it under *Assumptions* (I.13) with why, and goes on. The verifier checks that the
   classification was right (I.14). (2026-10-14)
-- A decision counts as *settled* only when the brief, the decisions list, the user's quoted words or the code
-  state it; if the agent has to infer it, it is not settled. (2026-10-14)
-- Escalation goes one level at a time: a helper escalates to its spawner, never past it. (2026-10-14)
-- The spawner decides only if its own brief, the decisions list or the user's quoted words settle it. Otherwise it passes the
+- A decision counts as *settled* only when the brief (including a current authorized answer delivered through the
+  caller chain), the decisions list or the code state it; if the agent has to infer it, it is not settled. (2026-10-14; 2026-10-15)
+- Escalation goes one level at a time: a helper escalates to its spawner, never past it; a manager or other
+  intermediate level forwards what it cannot settle. (2026-10-14; 2026-10-15)
+- The spawner decides only if its own brief or the decisions list settle it. Otherwise it passes the
   same packet up. The master asks the user, with the rule-file approval exception defined in how the rule files are written (0.5). **No level guesses.** (2026-10-15)
-- The answer goes back down through `SendMessage` to the same agent (its context is kept), quoting who decided
-  and their words. For a user decision that outlives the task, the master follows the light path for recording a decision (how the rule files are written, 0.5) before further work. (2026-10-15)
-- **Search before you escalate** (user, 2026-10-15: "아니. 내 말 전부를 md에 적어놓을 필요는 없어 .이전 agent가 실행하면서 남긴 기록 혹은 대화하면서 남긴 기록이 있잖아. 거기에 내 대화 내용이 있어야 해. agent.md에 그걸 포인터로 읽도록 갱신해줘."; approved option (a): any agent may search, subagents included). Before an escalation goes
-  up, the agent searches the decisions list, then the records of the user's words (the repository's `AGENTS.md`
-  says where they are and how to search them). The question then carries either the quote found, with its date
-  and source, or "searched <where> for "<words>": nothing". A decision already recorded is not asked again; if
-  it looks stale, ask only whether it still holds, quoting it. A quote that plainly settles the question
-  answers it, and the agent reports it to the master as a decision to record. A quote that conflicts with the
-  decisions list is escalated with both quotes. (2026-10-15)
+- The answer goes back down the same chain, quoting who decided, their words, the date, the source and the
+  actions it authorises: a Claude agent is resumed by `SendMessage` (its context is kept), a Codex worker gets a
+  new call that quotes the answer. For a user decision that outlives the task, the master follows the light path
+  for recording a decision (how the rule files are written, 0.5) before further work. (2026-10-15)
+- **Past records are references only** (user, 2026-10-15: "아니. 내 말 전부를 md에 적어놓을 필요는 없어 .이전 agent가 실행하면서 남긴 기록 혹은 대화하면서 남긴 기록이 있잖아. 거기에 내 대화 내용이 있어야 해. agent.md에 그걸 포인터로 읽도록 갱신해줘."; approved option (a): any agent may search, subagents included; reference-only: the O3 decision above).
+  A row of the decisions list that plainly covers a question binds as a standing decision; the other
+  records of the user's words (trails, handoffs, transcripts) are only referenced in an escalation; anything
+  ambiguous is escalated at once. Do not re-ask that same settled decision. If its coverage, meaning, freshness or conflict is ambiguous,
+  the agent must escalate immediately through its caller (the master to the user), stop dependent work,
+  and must never answer the question from past records. Superseded and ruled-out entries of the decisions list, task
+  trails, handoffs and transcripts are references only, even if a quote appears to answer this question.
+  Attach what was found as a verbatim quote with date and source, or “searched <where> for <words>: nothing”.
+  Use the repository's ordered, bounded lookup to supply context; do not delay escalation or make more
+  searches a condition for sending an ambiguous question. Any remaining search can supplement the packet.
+  Never treat a historical quote as a new answer, approval or standing decision; every receiving level
+  must forward unresolved ambiguity rather than settle it from that quote. (2026-10-15)
 - **Say what an answer will start** (user, 2026-10-15: "그리고 내가 대답한 이후로 직접 구현을 할건지, 아니면 더 명시적으로 물어봐야 할건지도 말해줘. 이것도 규칙에 추가해줘.", session c7bfd3df, 2026-10-14T15:20:41Z). Every question or escalation that
   reaches the user ends with what happens on each possible answer: which actions start at once without asking
   again (spawns, runs, code changes, pushes, publishes) and which will still need a separate confirmation. An
@@ -71,36 +94,56 @@ Two kinds of open decision (user, 2026-10-14):
   commands for the user to run (a login, a commit on another machine, an install). The agents run the
   commands, or choose an option that needs none. (user, 2026-10-14: "command는 나한테 요청을 맡길 필요 없어.")
   (2026-10-14)
-- Codex cannot be asked mid-call: it stops at a non-obvious decision, finishes the independent work and returns
-  the escalation (this format) in its report; the caller answers with a new call that quotes the answer. (2026-10-14)
+- Codex cannot be asked mid-call: it sends the escalation at once, returning it immediately when it has no live
+  owned job, or appending it to the launcher channel file while it keeps monitoring its owned jobs (I.4); the
+  caller answers with a new call that quotes the answer. (2026-10-14; 2026-10-15)
+
+**Escalation transport (Claude agents).**
+
+Managers and Claude job/worker launchers must be spawned as background subagents. A running Claude
+manager sends F-escalation with SendMessage to main immediately, then continues only
+independent work and its own job monitoring while awaiting the answer. A worker sends it to its named
+manager only after subagent-to-subagent SendMessage has passed activation checks; before that capability
+is verified, it sends to main naming its manager, task and pending question only if that separate nested
+worker-to-main relay has passed its own separate activation check. Main relays to that manager,
+which remains the decision/report owner and forwards user-owned questions; the worker never gains a
+shortcut to approval. If worker-to-main delivery itself fails and there is no live owned job, return the
+packet and remaining independent work so the caller resumes the same agent with SendMessage. A launcher
+with live owned work keeps monitoring and signals through
+the launcher channel file (I.8), which its direct caller polls through its child watch about
+every 180 seconds and reads on every wake. The launcher appends dated F-escalation/anomaly/result packets;
+the caller relays them through the named manager without assuming job monitoring. The brief must authorize
+that exact output path and establish the caller's watch before launch, including for a read-only role;
+it never returns merely to transfer monitoring. If no immediate escalation channel is available before
+launch, launching is blocked. Ending a turn with owned background waits preserves ownership; completion
+wake is a continuation, not a final handoff. Record pending packets and later answers in its own trail.
+(2026-10-15)
 
 ## I.12 The brief (interface down) (2026-10-15)
 <!-- general -->
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; rule-source commit, never-break copy, role table and hard-work staging: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); leaf role at depth three: user, 2026-10-15: "preflight를 넣을 필요 없어. leaf worker 등 agent를 스폰할 수 없는 역할의 markdown 파일을 새로 만들어." then chose "type + 역할 파일 (Recommended)" (the decisions list).
 
-Every spawn gets a brief with these headings, in this order. A heading with nothing to say says "none". The brief
-is written to the task trail and the spawn message gives its path plus anything short; it never pastes earlier
-conversation. (2026-10-14)
+Every spawn gets a brief in the F-brief format (I.24): its ten headings in order, each field filled; a heading
+with nothing to say says "none". The brief is written to the task trail and the spawn message gives its path plus
+anything short; it never pastes earlier conversation. (2026-10-14; 2026-10-15)
 
-1. **Role line and task id.** "Role: Claude subagent (<implementer|verifier>), not the master" or "Role:
-   Codex <research worker|task worker|verifier>"; name the role's rule files (Read first below); the task id `T<YYYYMMDD>-<slug>`; the language of the report. (2026-10-14) (2026-10-15)
-2. **Read first.** The role's rule files (the repository's `AGENTS.md` lists them per role), the knowledge base
-   categories or entries the task needs (I.21), and the task's own documents, each with when to read it. The
-   subagent type's prompt repeats the rule files; the brief names them anyway, because a prompt is an
-   instruction, not a guaranteed load. (2026-10-14)
-3. **Goal and intent.** What, and why: the purpose the result serves, so the agent can judge cases the brief did
-   not foresee. The user's words quoted and dated. (2026-10-14)
-4. **Decided.** Decisions that bind the task, by pointer (rows of the decisions list, handoff subsections, design notes). Do not
-   revisit them. (2026-10-14)
-5. **Not yours to decide.** The non-obvious decisions the master already sees coming; escalate these (I.11). (2026-10-14)
-6. **Scope.** Branch, worktree, files the agent owns, files others own, what is out of scope. (2026-10-14)
-7. **Interfaces.** Signatures, file formats, flags or run ids the work must keep or produce. (2026-10-14)
-8. **Resources.** Model and selection criterion (I.3), slot budget, time expectations. An Opus brief names the
-   hard question or explicit byte-exact core preservation requirement. The model here and the assigned role
-   in the role line are independent; a model name never assigns duties. (2026-10-14)
-9. **Done when.** Acceptance: the tests that must pass, the checks to run, the files to publish. (2026-10-14)
-10. **Report.** "Use I.13." (2026-10-14)
+- **Role line.** The role is named explicitly and never inferred from the model or provider; the model in
+  *Resources* and the assigned role are independent, and a model name never assigns duties. (2026-10-14; 2026-10-15)
+- **Read first.** The role's startup set (the role selector lists it per role), the knowledge base categories or
+  entries the task needs (I.21), and the task's own documents, each with when to read it. The custom agent type's
+  prompt repeats the rule files; the brief names them anyway, because a prompt is an instruction, not a guaranteed
+  load. Every brief names the full commit of the main branch whose rule files it was written against; every Codex
+  brief also quotes the never-break section verbatim from that commit, because guard hooks do not watch Codex
+  commands. The caller checks that copy against the committed section before launch and refreshes it when the
+  never-break section changed. (2026-10-14; 2026-10-15)
+- **Goal and intent** carry the purpose the result serves, so the agent can judge cases the brief did not
+  foresee, with the user's words quoted and dated. **Decided** points to the binding decisions (rows of the
+  decisions list, handoff subsections, design notes); they are not revisited. **Not yours to decide** lists the
+  non-obvious decisions the caller already sees coming; the agent escalates these (I.11). (2026-10-14)
+- **Resources.** Tier, model and selection criterion (I.3), effort, slot budget and lifetime, fallback, and
+  whether a read-back is required. An Opus brief names the hard question or the explicit byte-exact core
+  preservation requirement. (2026-10-14; 2026-10-15)
 
 **Premise provenance** (user, 2026-10-14). Every premise in a brief (a fact or decision the task rests on, under
 any heading, *Resources* included) carries exactly one source tag (2026-10-14):
@@ -112,97 +155,106 @@ any heading, *Resources* included) carries exactly one source tag (2026-10-14):
 | `[rule <id>]` | a section of the rule files (2026-10-14) |
 | `[knowledge <id> <status>]` | a knowledge base entry and its status at the time of writing (I.21) (2026-10-14) |
 | `[code <path>]` | the code or a file states it (a path, and a function or section name where useful) (2026-10-14) |
-| `[master inferred]` | the spawner inferred it; nobody has checked it (2026-10-14) |
+| `[master inferred]` | the spawner inferred it, at any depth; nobody has checked it (2026-10-14; 2026-10-15) |
 
 Example: "The baseline arm is LRU [decisions Arms]; the job-slot budget is 4 [master inferred]". A premise with
 no tag counts as `[master inferred]`. (2026-10-14)
 
 **Read-back for hard work.** For hard-tier (Opus) work the agent's first return is a read-back (status word
-`READ_BACK`), before it writes code. It holds, in this order (2026-10-14):
-1. its understanding of the goal, and its plan; (2026-10-14)
-2. a **premise check**: for every `[master inferred]` or untagged premise, one line with exactly one of
+`READ_BACK`, in the F-read-back format of I.24), before it writes code. It holds its understanding of the goal and
+its plan, its open questions and what is not verified, and (2026-10-14; 2026-10-15)
+- a **premise check**: for every `[master inferred]` or untagged premise, one line with exactly one of
    - `confirmed: <evidence>` (a command and its output, a file and the passage read),
    - `refuted: <evidence>` followed by `alternative: <proposal; trade-off>` (I.11 propose before you follow),
    - `unchecked: <why it cannot be checked before the work starts>`.
    The check and the counter-proposal are one step: an agent that refutes a premise proposes the alternative in
    the same read-back. A `refuted` or `unchecked` premise that changes behaviour, results, scope or an interface
-   is also an escalation (I.11), and the agent waits for the answer before building on it; (2026-10-14)
-3. its open questions.
+   is also an escalation (I.11), and the agent waits for the answer before building on it. (2026-10-14)
 The spawner answers through `SendMessage`; the agent writes the answer into its own task trail. (2026-10-14)
 
 A Codex task worker gives no read-back (it cannot be asked mid-call). It runs the same premise check before it
 starts and lists it in its report under *Assumptions*; a `refuted` or `unchecked` premise that changes results
-stops the work as an escalation (I.11). (2026-10-14) Simple and general work starts directly unless the brief asks for a read-back; hard-tier read-back follows the procedure above. (2026-10-14) (2026-10-15)
+stops the work as an escalation (I.11). (2026-10-14) Simple and general work starts directly unless the brief asks for a read-back; hard-tier read-back follows the procedure above. Verifiers give no read-back. (2026-10-14) (2026-10-15)
 
-**Spawning by role.** Claude subagents are spawned with a custom subagent type per role (Claude Code:
-`.claude/agents/<role>.md`). The type sets the default model and the tool permissions mechanically, and its
-prompt tells the agent which rule files to read; the repository's `AGENTS.md` lists them. (2026-10-14)
+**Hard implementation and hard investigation.** Hard implementation starts only from a settled design, builder
+check, reader test and read-back. Hard investigation may begin with a bounded question-and-evidence brief and a
+read-back, with no implementation authority; implementation that depends on its answers waits for the decisions.
+*Resources* names the tier and whether a read-back is required. (2026-10-15)
 
-| role | subagent type | tools |
+**Spawning by role.** Claude subagents are spawned with a custom agent type per role, which sets the default
+model and the tool permissions mechanically; its prompt tells the agent to read its startup set from disk. The
+role selector lists the rule files. Every type that has SendMessage also has ToolSearch, to load SendMessage where
+the harness defers it. (2026-10-14; 2026-10-15)
+
+| role | custom type | tools |
 |---|---|---|
-| implementer (hard tier) | `implementer` | all (may call Codex workers, I.15) (2026-10-14) |
-| verifier (byte-exact core changes) | `verifier` | no Edit/Write/Agent: read-only by permission; calls Codex through its CLI (2026-10-14) |
-| Codex task worker (simple, general) | — (CLI, I.4) | sandbox by I.4; the brief names Codex's own rules and the rule files (2026-10-14) |
-| Codex verifier (other changes) | — (CLI, I.4) | sandbox by I.4; the brief names the verifier checklist (2026-10-14) |
-| Codex research worker | — (CLI, I.4) | read-only sandbox; the brief names Codex's own rules (2026-10-14) |
+| manager | `manager` (Opus) | Agent, Read, Grep, Glob, Bash, Edit, Write, SendMessage; spawns workers within three edges, never another manager (I.15) (2026-10-15) |
+| implementer (hard tier, depth two) | `implementer` (Opus) | Agent, Read, Grep, Glob, Bash, Edit, Write, SendMessage, plus web search and fetch for assigned source work; at depth two it may spawn an Opus leaf child or call Codex helpers (I.15) (2026-10-15) |
+| leaf (every depth-three Opus agent; any agent that must not spawn) | `leaf` (Opus by default) | the implementer's tools without Agent: Read, Grep, Glob, Bash, Edit, Write, SendMessage, plus web search and fetch for assigned source work; spawns nothing by permission and never through Bash/CLI (I.15; the leaf role card) (2026-10-15) |
+| verifier (every check of another agent's result) | `verifier` (Opus; Sonnet or Haiku for simple verification, I.14) | Read, Grep, Glob, Bash, SendMessage, plus web search and fetch for source audits; no Edit, Write or Agent; writes only its designated verdict artifact (I.14) (2026-10-15) |
+| research fallback / task fallback (Codex unusable) | `research-fallback` / `task-fallback` (Sonnet or Haiku) | the replaced Codex role's rights; SendMessage; no Agent; no verification (I.3) (2026-10-15) |
+| Codex task worker (simple, general) | — (CLI, I.4) | sandbox by I.4; the brief names Codex's own rules, the rule files and the never-break section verbatim (2026-10-14; 2026-10-15) |
+| Codex research worker | — (CLI, I.4) | read-only sandbox; the brief names Codex's own rules and quotes the never-break section verbatim (2026-10-14; 2026-10-15) |
 
 The model and the effort are still set on every spawn (I.3). (2026-10-14)
 
-- **Tier.** The tier of a task is the one the brief's *Resources* names, not the subagent type's default model. (2026-10-14)
-- **Order for hard work**: design note -> builder check -> brief -> reader test -> spawn -> read-back. One fresh
-  agent may do the builder check and the reader test in one pass (note and brief together); the check model
-  defaults to Codex Sol medium (I.3). (2026-10-14)
-- Read `.claude/skills/design-note/SKILL.md` "Design note and builder check" before starting hard-tier work. (2026-10-14)
+- **Tier.** The tier of a task is the one the brief's *Resources* names, not the custom type's default model. (2026-10-14)
+- **Order for hard work**: design note -> builder check -> brief -> reader test -> spawn -> read-back. The builder
+  check is verification by an independent Opus verifier; the reader test is a comprehension probe that may use a
+  Codex Sol medium worker (I.3). One fresh Opus verifier may do the builder check and the reader test in one pass
+  (note and brief together). (2026-10-14; 2026-10-15)
+- Read the `design-note` skill "Design note and builder check" before starting hard-tier work. (2026-10-14)
 - **Batching.** Only tasks too small to be worth an agent (each a few tool calls) are batched into one brief;
   anything that would make the batch slower than running in parallel is split instead (I.15). (2026-10-14)
 - **Reader test.** A brief for hard-tier work, a next-session input and a restructured rule file are read once by a
   fresh agent with no context, which says what it would do and what is unclear; fix what it misreads. (2026-10-14)
-- **Activity skills.** Use the skill for the activity: `lit-search`, `claim-audit`, `paper-write`, `ideation`,
-  `design-note`, `experiment-plan`, `debug`, plus `spawn-agent`, `review`, `handover`. (2026-10-14)
+- **Activity skills.** Use the skill for the activity: `lit-search`, `claim-audit`, `document-audit`,
+  `paper-write`, `ideation`, `design-note`, `experiment-plan`, `debug`, plus `spawn-agent`, `review`,
+  `handover`. (2026-10-14; 2026-10-15)
 
 ## I.13 The report (interface up) (2026-10-15)
 <!-- general -->
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats moved to I.24 and the caller chain: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list).
 
 **Status word first.** The first line of every report is one of `DONE`, `DONE_WITH_CONCERNS`, `ESCALATION`,
 `BLOCKED`, `NEEDS_CONTEXT`, `READ_BACK`; a verifier's first line is its verdict instead (`PASS`, `PASS WITH NOTES`,
-`REJECT`), or `ESCALATION` / `BLOCKED`. `DONE` means "ready for review", never "accepted". The spawner acts on it: DONE -> review; DONE_WITH_CONCERNS -> read the concerns, then
-review; ESCALATION -> I.11; BLOCKED -> remove the blocker or escalate; NEEDS_CONTEXT -> answer and resume. (2026-10-14)
+`REJECT`), or `ESCALATION` / `BLOCKED`. `DONE` means "ready for review", never "accepted". The caller acts on it: DONE -> review, or acceptance with a recorded skip (I.14 *Verification on demand*);
+DONE_WITH_CONCERNS -> read the concerns, then the same; ESCALATION -> I.11; BLOCKED -> remove the blocker or escalate; NEEDS_CONTEXT -> answer and resume. (2026-10-14; 2026-10-15)
 
 **Receiving a report** (user, 2026-10-14). On `DONE` or `DONE_WITH_CONCERNS`, before anything else, the receiver
-checks mechanically that what the report claims exists: every named file or result folder exists and is
-non-empty; every named commit exists on the named branch (`git show --stat <hash>` or `git log`) and touches the
-files said; every named run id has its output. When an item is missing, the receiver resumes the agent with the
-list of missing items (no status word is assigned; the review waits). A report that cuts the scope or stops
-"for time" when the brief's *Resources* set no limit is rejected and the agent is resumed to finish. (2026-10-14)
+(the master or a manager) checks mechanically that what the report claims exists: every named file or result
+folder exists and is non-empty; every named commit exists on the named branch (`git show --stat <hash>` or `git
+log`) and touches the files said; every named run id has its output. When an item is missing, the receiver resumes
+the agent with the list of missing items (no status word is assigned; the review waits). A report that cuts the
+scope or stops "for time" when the brief's *Resources* set no limit is rejected and the agent is resumed to finish.
+Receiving a report or a verdict grants no verification authority: acceptance is the independent verifier's (I.14). (2026-10-14; 2026-10-15)
 
-**Full report to the trail, summary inline.** The full report goes to the task trail. The message back to the
-spawner holds the status word, commits, a one-line verification and the trail path, plus any escalation in full.
-This keeps the master's context for the user. (2026-10-14)
+**Full report to the trail, summary inline.** The full report goes to the task trail in the F-report format (a
+verifier's in F-verdict, a research worker's in F-research; I.24). The message back to the caller holds the status
+word, commits, a one-line verification and the trail path, plus any escalation in full. This keeps the caller's
+context, and the master's for the user. (2026-10-14; 2026-10-15)
 
-The full report uses these headings (2026-10-14):
+What the report must say, whatever its layout (2026-10-14; 2026-10-15):
 
-- **Done** — what was built or found, with files and commits. (2026-10-14)
-- **Not done** — what the brief asked for and is missing, and why. (2026-10-14)
-- **Read** — the rule files and sections, and the task documents, the agent actually read. (2026-10-14)
-- **Assumptions** — every choice the agent made itself (I.10 first row, and I.11 record-and-continue), each with
-  why and the cost if it is wrong. A departure from the brief or the plan is listed as a deviation: what, why,
-  cost if wrong. (2026-10-14)
-- **Escalations** — open non-obvious decisions (I.11 format). (2026-10-14)
-- **Verified** — each claim with the exact command, its exit status and the relevant output (test counts, wall
+- *Read* lists the rule files, sections and task documents actually read, not keyword hits. (2026-10-14)
+- *Assumptions* lists every choice the agent made itself (I.10 first row, and I.11 record-and-continue), each with
+  why and the cost if it is wrong; a departure from the brief or the plan is listed as a deviation: what, why, cost
+  if wrong. (2026-10-14)
+- *Verified* gives each claim with the exact command, its exit status and the relevant output (test counts, wall
   time, clocks, md5s), and its scope (what the check covers). A claim such as "all files reviewed" lists the
   files. Every claim in the report is labelled *verified* (checked here), *inferred* (reasoned, not checked) or
   *unverified*. (2026-10-14)
-- **Test changes** — tests added, changed or removed, reported apart from the test results. (2026-10-14)
-- **Not verified** — what was not checked, said plainly. (2026-10-14)
-- **Commits / files** — hashes, branch, result folders. (2026-10-14)
+- *Test changes* are reported apart from the test results; *Not verified* says plainly what was not checked;
+  *Commits / files* gives hashes, branch and result folders. (2026-10-14)
 
-**Task trail.** Each task id has one notes file (the task trail) that its agents append to: the brief, every
-*Assumptions* entry, every escalation with its answer and who gave it, the verifier's verdict. A later failure is
-traced through it to the agent, the step and the choice. **Each writing agent other than a verifier commits its own trail entries itself**
-(stage the trail by path; a small commit `Trail: <task-id> <what>`); the caller commits the brief and verifier verdicts. A verifier only writes its verdict and never commits it; the reviewed tree remains unchanged as I.14 requires. A worker that cannot write the trail (a sandbox, a read-only role) returns its entries in its report
-and its caller commits them (user, 2026-10-14). (2026-10-15)
+**Task trail commits.** The task trail's contents and lifecycle are I.8. **Each writing agent other than a
+verifier commits its own trail entries itself** (stage the trail by path; a small commit `Trail: <task-id>
+<what>`); the caller commits the brief and links the verifier verdicts. A verifier only writes its designated
+verdict artifact and never commits it; the caller commits it by path and the reviewed tree remains unchanged as
+I.14 requires. A Codex worker commits only when its brief orders it; no commit privilege is implied. A worker that
+cannot write the trail (a sandbox, a read-only role) returns its entries in its report and its caller commits them
+(user, 2026-10-14). (2026-10-15)
 
 The master relays to the user what matters, in Korean, and keeps what it observed itself apart from what an agent
 reported. (2026-10-14)
@@ -210,12 +262,14 @@ reported. (2026-10-14)
 ## I.14 Tests and review (2026-10-15)
 <!-- general -->
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; all verification by Opus: user, 2026-10-15, "1. verify는 뭐든지 opus가 하도록 바꿔줘." and "2. 다른 에이전트의 결과를 verify하는건 모두 opus. verifier의 정의를 그렇게 적어줘." (the decisions list), narrowed by simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); review procedure: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (the decisions list).
 
-**Scope of review.** Every code change gets a verifier review. Results of runs and analyses that feed a decision,
+**Scope of review.** Whether a result is verified is decided as *Verification on demand* below says; when it
+is verified, a code change gets a verifier review. Results of runs and analyses that feed a decision,
 a handoff or the paper go through the `claim-audit` skill instead, which also checks each block's run card (its
-scored predictions, controls and wording; the run rules name the run-card tool). Simple-tier work (search, collection,
-monitoring) is not reviewed. (2026-10-14)
+scored predictions, controls and wording; the run rules name the run-card tool). Decision-feeding document or
+source analysis and designs that need acceptance go through the `document-audit` skill; mixed experimental claims
+take both. Simple-tier work (search, collection, monitoring) is not reviewed. (2026-10-14; 2026-10-15)
 
 **Tests.**
 - Code changes come with tests, written first: the test commit (failing, or `xfail(strict=True)` for a known bug)
@@ -236,16 +290,47 @@ monitoring) is not reviewed. (2026-10-14)
 - **Red for the right reason.** A new test is seen failing at the test commit, for the reason it targets; a
   regression test for a fix fails when the fix is reverted. (2026-10-14)
 
+**Verification on demand** (user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)"; the decisions list, "Verification on demand:
+limits"). The upper tier that ordered the work (the master, a manager or the calling agent) judges whether its
+result needs verification; when it does not, no verification is run. Three cases are always verified: changes to
+code under an explicit byte-exact preservation requirement; structural changes to the rule files (new roles,
+changed rights or approval paths; small additions and fixes are not structural); claim audits of numbers that
+enter a paper or a handoff. A skipped verification is recorded with a one-line reason in the task trail and in the
+report. Where the review of a rule-file change is skipped, its merge, push and publication follow the upper tier's
+acceptance instead of a review verdict. A verification that runs keeps every rule of this section: tests are never
+weakened, and the simple and Opus verifiers are split as below. (2026-10-15)
+
 **Review.**
-- Every implementation is reviewed by a separate verifier that the master starts after the implementer reports:
-  a Codex verifier (Sol, medium) through the CLI, or a Claude verifier subagent (Opus, medium) when byte-exact
-  core code changed (I.3). The verifier did not write the code. (2026-10-14)
-- The verifier gets the brief (including Done when), branch/commit range, the diff, the repository, and only the *Verified*, *Assumptions* and *Test
-  changes* sections of the implementer's report, not its narrative, so it is not anchored on the implementer's
-  reasoning. It is read-only: a Claude verifier by permission (I.12); a Codex verifier writes nothing but its
-  verdict, checked below. (2026-10-14) (2026-10-15)
-- For hard-tier work a second, independent opinion comes from a Codex review (I.4) of the same diff. Model review
-  is evidence, not an oracle; exact checks win. (2026-10-14)
+- **The verifier.** A verifier is an agent assigned to establish whether another agent's result is correct or
+  acceptable. The caller (the master or a manager) starts it after the agent reports, and it authored none of the
+  assessed result. Every verification that is not simple verification (next bullet) is done by an independent
+  Claude Opus verifier (custom type `verifier`, medium); there is no Codex, Sonnet or Haiku fallback for it.
+  Comprehension-only reader probes and deterministic extraction are not verification (I.3). No report is accepted
+  solely on a non-Opus second opinion, except a simple verification. (2026-10-15)
+- **Simple verification** (user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list; Codex path: the decisions list)). Simple verification is a check whose pass criterion is stated in the
+  brief and needs little judgement: receipt checks of a report, verbatim-installation checks, rerunning tests or
+  checks, existence of files or commits, format checks of documents. It goes below Opus: purely mechanical checks
+  to the Luna tier, the other simple checks to the Sol tier (I.3), which are Claude Haiku and Claude Sonnet where
+  Codex is not used. Opus verifies the correctness of code or rules, the acceptance of hard-tier results, claim
+  audits whose numbers enter a paper, and every ambiguous case: when unsure whether a check is simple, it is not.
+  The agent that assigns the verification (the master or a manager) judges whether it is simple; a check of a
+  change to rule text is correctness of rules (Opus), even when the rule text is a document.
+  A simple verifier keeps the verifier's independence and limits: a Claude one runs as the `verifier` custom type
+  with its model set on the spawn; a Codex one is a task worker in a read-only sandbox that returns its verdict in
+  its report. (2026-10-15)
+- The verifier gets the review input artifact the caller prepared (I.8): the brief (including Done when), the
+  branch/commit range, the diff or the assessed artifact with its digest, the repository, and only the *Verified*,
+  *Assumptions* and *Test changes* sections of the agent's report, not its narrative, so it is not anchored on the
+  agent's reasoning; a document's own prose is permitted evidence. It is read-only by permission (I.12) and writes
+  nothing but its designated verdict artifact, checked below. (2026-10-14; 2026-10-15)
+- **Second review for hard work.** For hard-tier work the caller starts a second independent Opus verifier as a
+  sibling, with the same permitted evidence and without either verdict or the author's reasoning; neither reviewer
+  launches the other. Model review is evidence, not an oracle; exact checks win. (2026-10-14; 2026-10-15)
+- **Independence is procedural.** No authorship of the assessed result, restricted evidence packets and
+  independent first verdicts before reviews are shared. The verdict records the reviewer's model and version, its
+  evidence access and its prior exposure (F-verdict, I.24); missing metadata or compromised separation is disclosed
+  to the caller before acceptance. Separate Opus instances can share errors: this is not statistical independence
+  or a measured reliability. (2026-10-15)
 - Before reviewing, read and execute the verifier role file's complete ordered checklist. Review policy, severity and unchanged-tree checks remain here. (2026-10-15)
 - **Findings.** A finding is reported only after the verifier tried to refute it and it survived, with a concrete
   trigger (input, command, line). Each has a severity: *blocking* (wrong result, broken interface, weakened test,
@@ -254,33 +339,50 @@ monitoring) is not reviewed. (2026-10-14)
   normal result; findings are never padded. (2026-10-14)
 - Verdict: **REJECT** if any finding is blocking, **PASS with notes** if all are non-blocking, **PASS** if none.
   The verifier does not fix code. (2026-10-14)
-- **Read-only, checked.** After the review `git status --porcelain` and HEAD of the reviewed tree are unchanged,
-  apart from the task trail file (kept outside the reviewed tree where possible); the verifier reports both. (2026-10-14) Verdict commit ownership is I.13; the verifier does not commit. (2026-10-15)
-- **Several reviewers** form their first verdicts independently, without seeing each other's. The Codex review of
-  hard-tier work is run by the verifier through the Codex CLI and reported separately. (2026-10-14)
-- **Fix loop with a cap.** On REJECT the master resumes the implementer with the findings; the re-review covers
-  only the fix range and marks each finding ADDRESSED / NOT ADDRESSED. After three rounds, one new agent a tier
-  higher (Codex work goes to Opus; if already Opus: a fresh Opus at higher effort, with a Codex Sol second opinion) gets one attempt; after that the master takes it to the user. Never loop until the verifier is quiet.
-  A disputed finding goes to the user. (2026-10-14)
+- **Read-only, checked.** After the review `git status --porcelain` and HEAD of the reviewed tree are unchanged; the
+  verifier reports both. (2026-10-14) Historical-red, reverted-fix and mutation checks run in a scratch review tree
+  the caller prepared, never by checkout or revert in the shared reviewed tree; scratch test output goes only to
+  the sandbox the brief names, and the caller owns its setup and teardown. Bash access is not a filesystem
+  read-only guarantee. Verdict commit ownership is I.13; the verifier does not commit. (2026-10-15)
+- **Several reviewers** form their first verdicts independently, without seeing each other's; the caller collects
+  the first verdicts before sharing them, and a manager forwards both and any disagreement. A blocking finding
+  blocks acceptance; a disagreement goes through the master to the user, never to a majority vote. (2026-10-14; 2026-10-15)
+- **Fix loop with a cap.** On REJECT the caller resumes the implementer with the findings; the re-review covers
+  only the fix range and marks each finding ADDRESSED / NOT ADDRESSED. After three rounds, one fresh Opus
+  implementation attempt at higher effort, followed by an independent Opus review; after that the master takes it
+  to the user. No fresh-verifier tactic resets the cap. Never loop until the verifier is quiet. A disputed finding
+  goes to the user. (2026-10-14; 2026-10-15)
 
-## I.15 Parallel work and spawn depth (2026-10-14)
+## I.15 Parallel work and spawn depth (2026-10-15)
 <!-- general -->
+
+Approval: depth three and the manager tier: user, 2026-10-15, the decisions list; leaf role at depth three: user, 2026-10-15: "preflight를 넣을 필요 없어. leaf worker 등 agent를 스폰할 수 없는 역할의 markdown 파일을 새로 만들어." then chose "type + 역할 파일 (Recommended)" (the decisions list).
 
 - **Split for speed** (user, 2026-10-14). Spawn one agent per isolated task, and split any task that divides
   into independent parts (by file, module, scenario, corpus slice, activity, question) into one agent per part,
   all launched at once in the background. The goal is the shortest wall time to the result. The limits are the
   shared resources (job slots, memory), one writer per file, and spawn depth; when a limit binds, queue the
-  parts rather than merging them. A part that depends on another starts the moment its input exists. Each brief
-  says what the other parts own, and the spawner merges the results (and has the merge verified, below). (2026-10-14)
-- **Shared interfaces first.** Before parallel agents start, the master fixes in their briefs every interface they
-  share (signatures, file formats, flags, run ids). An agent that needs to change a shared interface escalates. (2026-10-14)
+  parts rather than merging them. Research workers share these limits; there is no separate count for them. A
+  part that depends on another starts the moment its input exists. Each brief says what the other parts own, and
+  the spawner merges the results (and has the merge verified, below). (2026-10-14; 2026-10-15)
+- **Shared interfaces first.** Before parallel agents start, the caller (the master or a manager) fixes in their
+  briefs every interface they share (signatures, file formats, flags, run ids). An agent that needs to change a
+  shared interface escalates. (2026-10-14; 2026-10-15)
 - **One writer per file.** Each file has one owner at a time; writes to the same file are serialised. Each brief
   says what the others own. (2026-10-14)
 - **Merging parallel work.** When branches built in parallel are combined, a verifier checks the combination for
   conflicting implicit decisions (the same thing done two ways), not only for textual conflicts. (2026-10-14)
-- **Depth two.** Master -> Claude subagent -> Codex worker. A Claude subagent may call Codex workers (research,
-  search, collection, a fully specified launch or task), never one that makes design decisions; that goes
-  through the master. Codex spawns no agents. A worker's report reaches its caller only. (2026-10-14)
+- **Depth three.** Master (depth 0) -> manager (depth 1) -> worker (depth 2) -> depth-three agent: at most three
+  edges below the master; depth is a maximum, not a level every task fills. A manager spawns workers, never another
+  manager. A depth-two Claude agent may call fully specified Codex helpers (research, search, collection, a fully
+  specified launch or task; never one that makes design decisions, which go up the caller chain) or spawn an Opus
+  subagent of the leaf custom type (a leaf: no agent-spawning tool) for a working activity its brief names, within
+  its brief, role permissions and depth, resource and write limits; an implementer keeps the Agent tool for this. Nothing at depth
+  three spawns another agent, through Agent, Bash/CLI or any other route; there is never a fourth edge.
+  Role-specific no-spawn limits still apply (leaf, verifier, research and task fallback types). Codex spawns no agents. A worker's report
+  reaches its caller only. Every brief records the actual and the maximum depth (F-brief). Codex children count
+  toward logical depth and the shared resources although the Claude harness does not count them; the run rules
+  give this machine's concurrency figures. (2026-10-15)
 
 ## I.19 Untrusted input (2026-10-14)
 <!-- general -->
@@ -307,7 +409,8 @@ the experiments, the state of results), **pitfalls** and **anomalies**, one fact
 (`verified`, `assumed`, `refuted`, `superseded`), its evidence, the date and who wrote it. The rule files hold
 **rules** and decisions; when a fact is also a rule, the rule stays in the rule file and the entry points to it.
 Its generated catalog lists the entries by category with a one-line "read when"; the repository's `AGENTS.md`
-says where both live. (2026-10-14)
+says where both live. Each entry uses the F-knowledge fields (I.24), which the knowledge catalog
+generator validates; storage, lifecycle and lookup of entries and the catalog are I.8. (2026-10-14; 2026-10-15)
 
 - **Reading.** Read the catalog's sections for the categories your brief names (I.12 *Read first*), then only
   the entries whose "read when" matches your task. Treat an `assumed` entry as unchecked (but see *Moved facts* below) and a
@@ -353,28 +456,12 @@ says where both live. (2026-10-14)
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
-Read `agents/INTERFACE.md` I.21 before recording a fact, pitfall or anomaly, or editing a promoted-pitfall list. (2026-10-14)
+Read I.21 before recording a fact, pitfall or anomaly, or editing a promoted-pitfall list. (2026-10-14)
 
-- Read `agents/INTERFACE.md` I.13 before acting on a report status. (2026-10-14)
-- Read `agents/INTERFACE.md` I.14 before preparing or reading review inputs. (2026-10-14)
-- Read `agents/INTERFACE.md` I.11 before routing or answering an escalation. (2026-10-14)
-- Read `agents/INTERFACE.md` I.12 before preparing a brief's required reading list. (2026-10-14)
+- Read I.13 before acting on a report status. (2026-10-14)
+- Read I.14 before preparing or reading review inputs. (2026-10-14)
+- Read I.11 before routing or answering an escalation. (2026-10-14)
+- Read I.12 before preparing a brief's required reading list. (2026-10-14)
 - Writing the task trail inside the tree under review, then failing the unchanged-tree check (I.14). (2026-10-14)
-- Read `agents/INTERFACE.md` I.12 before tagging or checking brief premises. (2026-10-14)
-- Read `agents/INTERFACE.md` I.13 before accepting a report or stopping for a time limit. (2026-10-14)
-
-## I.8 Records (2026-10-15)
-
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
-
-- Read `AGENTS.md` 0.3 before writing a report, committed prose, comments, docstrings or logs. (2026-10-14)
-- **Handoff:** state paths are in `AGENTS.md` 0.4; before handoff follow I.9 and its existing skill. Push immediately after editing. (2026-10-15)
-- **Results:** every grid publishes to a fixed folder `R/results/<grid>/` and pushes after each finished run, so
-  other machines can read it. (2026-10-14)
-- **Task trails** (I.13): the brief names the path. `R/tasks/<task-id>.md` on `explore/rate-wl-phase3`, pushed with results; outside research, `notes/tasks/<task-id>.md` on `main`. Before committing trail entries follow I.13, including the verifier exception and the `Trail: <task-id> <what>` title. (user, 2026-10-14: "직접 커밋하게 해줘"; 2026-10-15) (2026-10-15)
-- **Knowledge base** (I.21): entries `knowledge/<category>/<slug>.md` on `main` (format and categories: design
-  note `notes/design/T20261014-knowledge-runcard.md` section 3), catalog `knowledge/KNOWLEDGE.md` generated by
-  `python3 agents/gen_knowledge.py` (`--category <c>` prints one category; `--check` validates). Agents working
-  on another branch commit entries through the main working tree `/home/asd/LLMServingSim`, staging the entry by
-  path (I.6 exception, I.22). Promotion threshold and lifecycle: I.21. (2026-10-14)
-- A claim needs a difference above 2 sd of the paired noise, consistent across the cases run. (2026-10-14)
+- Read I.12 before tagging or checking brief premises. (2026-10-14)
+- Read I.13 before accepting a report or stopping for a time limit. (2026-10-14)
