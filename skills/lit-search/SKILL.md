@@ -4,7 +4,9 @@ description: Literature, documentation or source-code research through Codex. Us
 ---
 <!-- general -->
 
-# Literature search (2026-10-14)
+# Literature search (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 1. **Brief Codex** (Luna for finding, Sol for judging) with: the question; 2-4 rephrasings to search in parallel;
    where to search (paper indexes, official docs, the actual source code); the period; the answer language. (2026-10-14)
@@ -13,8 +15,6 @@ description: Literature, documentation or source-code research through Codex. Us
    *unverified*; contradictions kept, not resolved silently; a coverage status (what was searched, what was not,
    what could not be reached); the queries used. (2026-10-14)
 3. **No URL, no claim.** A source that was not read is not described; a number comes with the passage it is from. (2026-10-14)
-4. **Check before relying**: the caller opens the sources behind any claim it will act on or cite. (2026-10-14)
+4. **Check before relying**: the caller opens the sources behind any claim it will act on or cite. (2026-10-14) Codex output is a second opinion, not a verified source. (2026-10-14) (2026-10-15)
 5. **Citations for a paper** go through `claim-audit` step 3 before they are used. (2026-10-14)
-6. **Keep what was verified.** Facts the caller verified and will rely on again (how a deployed system behaves,
-   a tool's flag) go into the knowledge base (I.21), status `verified` with the source as evidence; unread
-   claims stay `assumed`. The research worker proposes them; the caller records them. (2026-10-14)
+6. **Keep what was verified.** Before recording reusable deployed-system behaviour or tool flags, follow I.21's evidence/status/write policy. The caller opens relied-on sources (step 4) and records verified facts; unread claims remain unchecked/assumed under I.21. The research worker proposes entries in its report. (2026-10-14; 2026-10-15)

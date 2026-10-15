@@ -139,7 +139,9 @@ Evidence tables (claim 1 ablations, M2, queueing models, CP profile limits): `AN
   chunks; the NPU block is 16 tokens.
 - Research branches pin astra-sim at `99a368d`; `main` pins `d346994`.
 
-## II.4 Research environment (2026-10-14)
+## II.4 Research environment (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 Facts (machine, container, `.wt/` layout, builds, reference values) are knowledge entries; read the ones named here
 before the step they cover. (2026-10-14) Rules:
@@ -147,7 +149,7 @@ before the step they cover. (2026-10-14) Rules:
 - Only the simulator runs on this machine, never the profiler or bench (no GPU: `knowledge/environment/machine.md`). (2026-10-14)
 - The simulator container sees only the repository directory, and stops on every host or Claude Code restart:
   `knowledge/environment/sim-container.md`. Layout of `.wt/`: `knowledge/environment/wt-layout.md`. (2026-10-14)
-- Research trees use the research ASTRA-Sim build, not `astra-sim/build`: `knowledge/environment/research-astra-build.md`. (2026-10-14)
+- Research trees use the research ASTRA-Sim build, not `astra-sim/build`: `knowledge/environment/research-astra-build.md`. (2026-10-14) Research trees link `.wt/astra-build/build`; read `knowledge/pitfalls/research-wrong-astra-build.md` before linking a build. (2026-10-14) (2026-10-15)
 - **Code vs runs:** write code in a worktree `.wt/p3/<id>` on your own branch; never build or run inside a
   worktree, and never nest worktrees. Run from a measurement tree `.wt/p2v/<id>`, built as
   `knowledge/environment/measurement-tree.md`; one tree per variant; delete it when done. (2026-10-14)
@@ -167,7 +169,9 @@ before the step they cover. (2026-10-14) Rules:
 - Analyses: `R/fi/LOADTIME.md` (phases, no steady state, stop rules), `R/fi/DECODE-NEED.md` (decode sizing),
   `R/prof/PROFILE.md` (profiling).
 
-## II.6 Workloads
+## II.6 Workloads (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 Rules (user, 2026-10-12/13):
 - **Use the whole source.** Never `--num-sessions`, never cut a session with `--max-context`, never drop single
@@ -180,7 +184,7 @@ Rules (user, 2026-10-12/13):
   to equal token sequences, output pinned with `max_tokens = output_toks` and `ignore_eos`. (2026-10-12/13)
 - **Compact files** (`blk_codec: b16k100000`, `input_blk`): the run tree's router must have `feat/wl-codec`'s
   `serving/core/wl_codec.py` (on `feat/wl-codec`) and decoder, or prefix caching silently sees no reuse. (2026-10-12/13)
-- **Arrivals:** Poisson session starts at a controlled rate, random session order, recorded within-session gaps. (2026-10-12/13)
+- Read `agents/RESEARCH.md` II.1 before selecting arrival process, session order or gaps. (2026-10-12/13)
 - After regenerating a file, delete `R/meta/<wl>.json` and `<wl>_H.json`, or the harness keeps the old session list. (2026-10-12/13)
 - Never commit workload data (`workloads/tracelab/`, `workloads/raw/`, the jsonl files). (2026-10-12/13)
 
@@ -196,13 +200,15 @@ Retired: TraceLab-era env-gated hacks (user, 2026-10-14); facts kept in `knowled
 - The variables the current run line still sets (`KV_DIV`, the `RATE_*` of the arms in II.1) are described in the
   same entry; read it before setting one (2026-10-14).
 
-## II.8 Research pitfalls (2026-10-14)
+## II.8 Research pitfalls (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 Each item is a rule; the facts behind it are in the pitfall entry named.
 
 - Export `KV_DIV=1` for reference checks: it defaults to 10 on research branches and `validate-par` does not set
   it (the harnesses do) (`knowledge/pitfalls/research-kv-div-default.md`). (2026-10-14)
-- Research trees link `.wt/astra-build/build`, not `astra-sim/build` (`knowledge/pitfalls/research-wrong-astra-build.md`). (2026-10-14)
+- Read `agents/RESEARCH.md` II.4 before linking a research ASTRA-Sim build. (2026-10-14)
 - Use only the documented `RATE_POLICY` values (`knowledge/pitfalls/research-rate-policy-silent.md`). (2026-10-14)
 - Don't treat the `rate` protection as absolute: it is finite (`knowledge/pitfalls/research-rate-protection-finite.md`). (2026-10-14)
 - Don't use `bwrap_sess.py` under `LT_CHUNK_TOKENS=128`; the lower tier evicts 256-token chunks and the NPU block is

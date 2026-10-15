@@ -6,11 +6,13 @@ I.16 the general git/process rules that I.6, I.7 and I.22 specialise.
 
 Scope: every Claude agent and Codex task worker that runs, builds, commits or kills anything in this repository. Repository-specific (machine, container, slots); I.16 and I.18 are copied into `GENERAL.md` (AGENTS.md 0.2).
 
-## I.5 Runs, slots and monitoring (2026-10-14)
+## I.5 Runs, slots and monitoring (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 **Slots.** Several agents share one machine (28 vCPUs, about 8 fast cores, about 11-12 GB RAM, no GPU). (2026-10-14)
 - Every simulator run goes through `/home/asd/LLMServingSim/.wt/bin/slotrun <kind> <command...>` (same path inside
-  the container), one run per slot job; never loop several runs inside one job. (2026-10-14)
+  the container), one run per slot job; never loop several runs inside one job. Never wrap `slotrun` in `timeout`. (2026-10-14) (2026-10-15)
 
   | kind | slots | use for |
   |---|---|---|
@@ -24,8 +26,7 @@ Scope: every Claude agent and Codex task worker that runs, builds, commits or ki
   slots usually means low memory. Long FI runs above about 1.2 GB: keep about 4 in flight. (2026-10-14)
 - `validate-par` and the K=8 throughput script queue their own `slotrun` jobs: call them directly. Never run two
   `validate-par` at once, and never with `--update`. (2026-10-14)
-- Wait for long jobs with Bash `run_in_background` (or an until-loop with long sleeps), never tight polling;
-  check their health every ~3 minutes as I.18 says, with the table under *Monitoring* below. (2026-10-14)
+- Wait for long jobs with Bash `run_in_background` (or an until-loop with long sleeps), never tight polling; follow I.18 for owner/caller health checks and cadence, using the Monitoring diagnostics below. (2026-10-15)
 
 **Within an approved experiment, keep the slots full.** Submit every run whose inputs exist at once, each its own
 `slotrun sim` job; submit a dependent run (one needing another's T_res or params) the moment its dependency
@@ -33,12 +34,7 @@ finishes; a pending question does not justify draining the queue. Any run outsid
 first (AGENTS.md 0.3 rule 8). A subagent asks through an escalation; the runs its brief lists count as
 approved. (2026-10-14)
 
-**Validation timing.** Routine checks while working: the default test suite (`tests/run.sh` (on `feat/tests`), under 10 s, host
-venv `.wt/testenv`, through one `slotrun sim` slot) and the quick golden subset
-(`SIM_TREE=<tree> KV_DIV=1 .wt/bin/validate-par --quick`, list in `serving/validate-quick.txt` (on `feat/tests`)). The full
-`validate-par` (59 + 8) and the reference checks (II.4) run once at the end of a line of work, by the verifier
-(I.14). On main-line work, run `./serving/validate.sh` after every commit that touches `serving/`
-(`agents/SIM-REFERENCE.md`, Testing). Never pip install into the container; test tools live in `.wt/testenv`. (2026-10-14)
+**Validation commands.** Read I.14 before baseline/routine/end-of-line checks. Default suite: `tests/run.sh` (on `feat/tests`), host venv `.wt/testenv`, one `slotrun sim` slot. Quick golden: `SIM_TREE=<tree> KV_DIV=1 .wt/bin/validate-par --quick`, fixed list `serving/validate-quick.txt` (on `feat/tests`). Full `validate-par` has 59 + 8 cases; research reference checks are II.4. For stock exact clocks/md5 and validation after each serving commit, read `agents/SIM-REFERENCE.md` Testing & Validation before committing serving changes. Never pip install into the container; test tools live in `.wt/testenv`. (2026-10-14; 2026-10-15) (2026-10-15)
 
 **Run cards** (design note `notes/design/T20261014-knowledge-runcard.md`, user 2026-10-14). Every run block (the
 runs launched for one purpose) has one card, made with the run-card tool `python3 agents/runcard.py` (stdlib;
@@ -46,90 +42,81 @@ exit 0 pass, 1 check failed, 2 usage or file error; usage in its docstring). Whe
 of the map in AGENTS.md 0.4. The order is the one of the `experiment-plan` skill; in this repository (2026-10-14):
 
 1. `runcard.py new <card> --block-id <id> --by "<role> <task id>"`. (2026-10-14)
-2. Fill claim, intent, label, retrodiction, predictions, `arm_active_check.how` and `positive_control.how` from
-   the plan. (2026-10-14)
+2. Fill the card using `experiment-plan`'s plan fields and order before fingerprinting. (2026-10-15)
 3. `runcard.py fingerprint <card> --tree <tree> --inputs <workload, config and profile files> --env KV_DIV
    RATE_POLICY RATE_HOLE RATE_SEG RATE_SESS_STATE ... --build <id> --config <path> --tool <name>=<version>
-   --flags <the run's argv tokens>` (`--flags` last). Name every env variable that selects the arm or the
-   configuration; an unset one is recorded as unset. A measurement tree under `.wt/` that is not its own git
+   --flags <the run's argv tokens>` (`--flags` last). For environment completeness/unset handling read `experiment-plan` The order before fingerprinting. A measurement tree under `.wt/` that is not its own git
    root also needs `--source-commit <commit it was built from>` (it is identified by a content hash; skip build
    output with `--hash-exclude <glob>`). Per arm: `runcard.py fingerprint <card> --arm <name> --env ... --inputs
    ... --flags ...`. (2026-10-14)
-4. `runcard.py check <card>` passes (a confirmatory card refuses a dirty tree; a card whose retrodiction says
-   existing results already answer the question is refused). (2026-10-14)
-5. **Approval**: the user approves the plan together with its checked cards (AGENTS.md 0.3 rule 8). (2026-10-14)
-6. Run the block through `slotrun` (above). (2026-10-14)
-7. `runcard.py set <card> --runs <id>... --seeds <s>...` as the runs launch, and
-   `runcard.py set <card> --control positive|arm-active <result>` once the control results are read. Nobody edits
-   a card by hand. (2026-10-14)
-8. `runcard.py score <card> --hit <idx>[=<observed>]... --miss <idx>[=<observed>]... --verdict "<...>"`; after a
-   miss, read the raw results and rescore with `--raw-read`. (2026-10-14)
-9. `runcard.py check --post --claim null|arm-lost|difference <card>` (default `null`) passes before any result is
-   reported: the arm-active result is always required, the positive-control result for `null` and `arm-lost`. (2026-10-14)
-10. `runcard.py compare <cardA> <cardB> --arm-vars <VAR>... --arm-flags <prefix>...` (`--arm-flags` last) exits 0
-    before two blocks' numbers are put side by side; a refused comparison is not made: rerun instead. (2026-10-14)
+4. `runcard.py check <card>` is the pre-launch command for the `experiment-plan` check step. A confirmatory card refuses a dirty tree; a card whose retrodiction says existing results already answer the question is refused. (2026-10-14) (2026-10-15)
+5. Follow the approval step in `experiment-plan`, subject to I.5's run-approval gate above. (2026-10-15)
+6. Read `agents/OPERATIONS.md` I.5 before launching a simulator run. (2026-10-14)
+7. `runcard.py set <card> --runs <id>... --seeds <s>...` and `runcard.py set <card> --control positive|arm-active <result>` are the commands for the `experiment-plan` set step; follow its timing and no-hand-edit rule. (2026-10-14; 2026-10-15)
+8. `runcard.py score <card> --hit <idx>[=<observed>]... --miss <idx>[=<observed>]... --verdict "<...>"` is the scoring command; use `--raw-read` for the `experiment-plan` raw-result/rescore step. (2026-10-14; 2026-10-15)
+9. `runcard.py check --post --claim null|arm-lost|difference <card>` (default `null`) is the command for the `experiment-plan` post-check step; apply its control requirements before reporting. (2026-10-14) (2026-10-15)
+10. `runcard.py compare <cardA> <cardB> --arm-vars <VAR>... --arm-flags <prefix>...` (`--arm-flags` last) is the command for the `experiment-plan` comparison step; follow its refusal/rerun gate before comparing numbers. (2026-10-14) (2026-10-15)
 
-Wording (same-seed rerun is a reproduction, not a replication; "confirmed" only with stated evidence;
-confirmatory vs exploratory) is in the `experiment-plan` skill; `claim-audit` checks it. (2026-10-14)
+Read `experiment-plan` Wording before result wording; `claim-audit` independently checks compliance. (2026-10-14; 2026-10-15)
 
-**Monitoring.** The agent that launched a run watches it and may kill and rerun its own runs. Only the master
-kills or reruns another agent's runs, and only on the user's order; it then tells that agent. (2026-10-14)
+**Monitoring.** I.18 owns the run-owner/caller monitoring duty; consult it before monitoring or acting on your own runs. Only the master
+kills or reruns another agent's runs, and only on the user's order; it then tells that agent. (2026-10-14) (2026-10-15)
 
 The checks, commands and healthy values for runs, processes, memory and `validate-par` are in the knowledge
 entry `knowledge/anomalies/run-health.md` (I.21; read it before monitoring a run). The actions on what a check flags
 stay here; each names its failure class (I.18) (2026-10-14):
 
-- **Startup hang** (infra-transient): frontend at 0% CPU for more than 30 s after "Starting simulation":
-  `.wt/bin/hangdump <rid> [log]`, kill by PID, retry once and record the retry in the task trail. A second hang
-  is infra-permanent: stop and tell the spawner. Venv-guard suspects with `fe_state=R` are usually slow starts. (2026-10-14)
+- **Startup hang** (infra-transient): frontend at 0% CPU for more than 30 s after "Starting simulation": capture `.wt/bin/hangdump <rid> [log]`, then apply I.18's infra-transient action before recovery. A second hang is infra-permanent under I.18. Venv-guard suspects with `fe_state=R` are usually slow starts. (2026-10-14; 2026-10-15)
 - **Runaway memory** (unclassified until diagnosed; RSS climbing more than about 1 GB/min above siblings): hangdump first, then kill by PID. (2026-10-14)
 - **MemAvailable below about 1 GB or swap growing:** stop launching and tell the user. The harness watchdog kills
   a run below 1 GB. (2026-10-14)
-- **Content failures are not retried:** the simulator is deterministic, so a crash, a wrong number or an overflow
-  repeats on rerun with the same inputs. Diagnose it (`debug` skill). (2026-10-14)
+- The simulator is deterministic for the same inputs; read `agents/OPERATIONS.md` I.18 before acting on a crash, wrong number or overflow. (2026-10-14)
 
-## I.6 Git (2026-10-14)
+## I.6 Git (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 - The fork is `origin` = `https://github.com/qwxe/LLMServingSim.git`. No git identity is set: commit with
   `git -c user.name=qwxe -c user.email=psh010103@gmail.com commit ...`, and end messages with the
   `Co-Authored-By` line the session gives. (2026-10-14)
-- Commit only on your own branch, one method or item per commit. Never bump gitlinks. (2026-10-14)
-- Code branches stay local unless the user asks. Experiment results and handoff notes on
+- Follow I.16's commit ownership/item-size policy before committing. Never bump gitlinks. (2026-10-15)
+- For generic push policy read I.16 before pushing. Experiment results and handoff notes on
   `explore/rate-wl-phase3` are pushed as soon as they are written (user, 2026-10-12/13), with the credential
   helper (never print the token):
   ```
   git -c credential.helper= -c 'credential.helper=!f() { echo username=x-access-token; echo password=$(tr -d "\r\n" < /home/asd/LLMServingSim/gh_token); }; f' push origin <branch>:<branch>
   ```
   The same helper works for `fetch`. The submodule fetch fails (astra-sim pin not on the remote); the main repo
-  fetch still succeeds. (2026-10-14)
-- Stage only your own files; others' uncommitted files share the worktrees. Notes under `outputs/` are
-  gitignored: add them with `git add -f`. (2026-10-14)
-- The stash is shared by all worktrees and sessions: never bare `git stash`/`pop`; prefer a WIP commit. (2026-10-14)
+  fetch still succeeds. (2026-10-14) (2026-10-15)
+- Follow I.16 before staging. Notes under `outputs/` are
+  gitignored: add them with `git add -f`. (2026-10-14) (2026-10-15)
+- Read `agents/OPERATIONS.md` I.16 before using the shared stash. (2026-10-14)
 - **Knowledge base exception** (I.21). Knowledge entries and the regenerated catalog are committed on `main`
   from any line of work, through the main working tree `/home/asd/LLMServingSim`, staged by path, even when your
   own work is on another branch. A Codex worker sandboxed to another worktree cannot write there: it proposes
   the entries in its report and its caller commits them. (2026-10-14)
-- **Rule files** (AGENTS.md 0.2, 0.5): a commit on `main` that changes the rule files stays local until its
-  review passes (PASS or PASS with notes); then push `main` with the credential helper above and run
-  `python3 agents/publish_agentsmd.py` at once (user, 2026-10-14). (2026-10-14)
+- Read `AGENTS.md` 0.2 before pushing or publishing a rule-file change (use the I.6 helper). (2026-10-14)
 - Branch and worktree layout for research code: II.3 and II.4. (2026-10-14)
 
 ## I.7 Processes and cleanup (2026-10-15)
 
-- Kill by PID only (AGENTS.md 0.3 rule 5). (2026-10-14)
-- A process reparented to PID 1 runs outside every slot: kill it by PID. (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
+- For PID policy read I.16 before killing; container spelling: `docker exec servingsim_docker kill <pid>`. (2026-10-14)
+- For a PID-1 process you own (I.16 boundary), the process runs outside every slot: kill it by PID. (2026-10-15)
 - Before you finish, remove your measurement tree (unless the brief keeps it), fork server, `/tmp` scratch and
   orphan processes. (2026-10-14)
 - Files written by the container are root-owned: delete them with `docker exec servingsim_docker rm -rf ...`. (2026-10-14)
 - Removing your own worktree or symlink under `.wt/`: `git worktree remove .wt/<path>`, `git worktree prune` and
   `unlink .wt/<path>` run without a prompt (`.claude/settings.json` `permissions.allow`; user, 2026-10-15:
-  "진행해줘." then "permission을 바꿨어,"). `rm -rf` of a directory is not covered and still asks. Remove only what
-  your brief or ledger row owns. (2026-10-15)
+  "진행해줘." then "permission을 바꿨어,"). `rm -rf` of a directory is not covered and still asks. Apply the I.16 ownership boundary before removal. (2026-10-15)
 - `validate.sh`/`validate-par` rewrite `bench/examples/*/outputs/sim.log` with only run-id and wall-time changes:
   revert them with `git checkout`. (2026-10-14)
 
-## I.18 Monitoring running work (2026-10-14)
+## I.18 Monitoring running work (2026-10-15)
 <!-- general -->
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 User, 2026-10-14: runs that take compute or sit on the critical path of the goal are monitored periodically. (2026-10-14)
 
@@ -154,11 +141,12 @@ User, 2026-10-14: runs that take compute or sit on the critical path of the goal
   |---|---|---|
   | infra-transient | the environment failed once (a hang at start, a lost connection, a killed worker) and the inputs are fine | capture diagnostics, kill by PID, retry **once**; the retry is recorded in the task trail (2026-10-14) |
   | infra-permanent | the environment fails again or cannot work (out of memory, disk full, missing tool, a second transient failure) | stop launching; kill the offender if it is your own job and endangers others (another agent's job: only the master kills it, on the user's order); tell the spawner (2026-10-14) |
-  | content | the job itself is wrong (a crash, an assertion, a wrong or impossible number); a deterministic job repeats it | no retry; diagnose (the `debug` skill) or tell the spawner (2026-10-14) |
+  | content | the job itself is wrong (a crash, an assertion, a wrong or impossible number, an overflow); a deterministic job repeats it | no retry; diagnose (the `debug` skill) or tell the spawner (2026-10-14) | (2026-10-15)
   | spec mismatch | the job ran but not what was asked (wrong arm, configuration, inputs or version) | stop the block; fix the specification; the results do not count (2026-10-14) |
   | integrity | the record cannot be trusted (missing or truncated output, a fingerprint that does not match, results from mixed trees) | quarantine the results; never use them in a comparison; tell the spawner (2026-10-14) |
 
   A value that was not measured is recorded as null (missing), never as 0. (2026-10-14)
+- **Simulator content failures.** Content failures are not retried: the simulator is deterministic, so a crash, a wrong number or an overflow repeats on rerun with the same inputs. Diagnose it (`debug` skill); telling the spawner does not replace diagnosis for simulator content failures. (2026-10-14; 2026-10-15)
 - **Acting** (on your own jobs only; another agent's job is reported to the master). Act by the class above.
   Runaway memory or a machine short of memory: stop launching, kill the offender, tell the spawner. Report an
   anomaly to the spawner at once, not at the end; record it, its class and the action in the task trail, and
@@ -215,7 +203,9 @@ its count of rows not `done`; when `knowledge/KNOWLEDGE.md` exists, the number o
 candidates" table (pitfalls the master proposes to the user, I.21); and a pointer to AGENTS.md 0.4. It prints no
 row contents. Tests: `.wt/testenv/bin/python -m pytest .claude/hooks -q`. (2026-10-14)
 
-## I.22 Shared resources (2026-10-14)
+## I.22 Shared resources (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 User, 2026-10-14: "공유 자원에 대해서는 명시해줘". The general rule is in I.16: never revert, clean, kill, reset or
 reconfigure what you did not create; teardown removes only your own. This is the list for this machine. Anything
@@ -223,32 +213,34 @@ not listed that another agent or session could also use counts as shared. (2026-
 
 | resource | shared by | you may | you may not |
 |---|---|---|---|
-| the main working tree `/home/asd/LLMServingSim` (branch `main`) | every session; the user's uncommitted files (e.g. `.gitignore`, `workloads/`, corpora) | edit and stage the files your brief gives you, by path | `git add -A`, `git checkout -- <others' files>`, `git clean`, `git reset --hard`, switching its branch (2026-10-14) |
-| worktrees under `.wt/` (`.wt/p3/pe`, measurement trees, `.wt/corpus`) | the sessions that created them | use a tree your brief names; create and remove your own | remove, reset or switch the branch of a tree you did not create (2026-10-14) |
-| the git stash and the local branches | all worktrees and sessions | `git stash list/show/apply` | bare `git stash`/`pop`, `drop`/`clear`; deleting or force-moving another's branch (2026-10-14) |
-| `origin` (https://github.com/qwxe/LLMServingSim) and https://github.com/qwxe/agents.md | every session | push your own branch as I.6 says | force-push; push branches the user keeps local (2026-10-14) |
-| the container `servingsim_docker` | every run of every agent | `docker exec` your runs; kill your own PIDs | restart or stop it; `pip install` into it; kill PIDs you did not launch (2026-10-14) |
+| the main working tree `/home/asd/LLMServingSim` (branch `main`) | every session; the user's uncommitted files (e.g. `.gitignore`, `workloads/`, corpora) | edit and stage the files your brief gives you, by path | I.16 ownership/staging boundary; no switching its branch (2026-10-14) (2026-10-15) |
+| worktrees under `.wt/` (`.wt/p3/pe`, measurement trees, `.wt/corpus`) | the sessions that created them | use a tree your brief names; create and remove your own | I.16 ownership boundary before removal, reset or branch switching (2026-10-14) (2026-10-15) |
+| the git stash and the local branches | all worktrees and sessions | `git stash list/show/apply` | I.16 stash/ownership policy before mutations; no deleting or force-moving another's branch (2026-10-14) (2026-10-15) |
+| `origin` (https://github.com/qwxe/LLMServingSim) and https://github.com/qwxe/agents.md | every session | push your own branch as I.6 says | I.16 push policy before pushing (2026-10-14) (2026-10-15) |
+| the container `servingsim_docker` | every run of every agent | `docker exec` your runs; kill your own PIDs | I.16 ownership boundary; no restart/stop; test-tool environment is I.5 (2026-10-14) (2026-10-15) |
 | job slots (`.wt/bin/slotrun`, `.wt/perf-tools/slots/`) and machine memory | every agent | take the slots your brief gives you, through `slotrun` | edit `sim.n` or the slot files; run outside a slot (I.5) (2026-10-14) |
 | tools in `.wt/bin/` (`slotrun`, `validate-par`, `hangdump`) and the host venv `.wt/testenv` | every agent | run them | edit or reinstall them without a brief that orders it (2026-10-14) |
 | the session scratchpad (`/tmp/claude-1000/<project>/<session>/scratchpad`) and other temporary directories | the master and every subagent of the session | create files or a subdirectory of your own; delete them by explicit path | glob-delete (`rm -f <dir>/*`) a directory you did not create (`pitfalls/ops-shared-scratchpad-wipe`) (2026-10-14) |
 | `validate-par` scratch `/tmp/vpar_*` and `bench/examples/*/outputs/` | one `validate-par` at a time (I.5) | read; revert the `sim.log` rewrites of your own run (I.7) | delete another run's scratch; start a second `validate-par` (2026-10-14) |
 | progress ledgers `notes/ledger/*.md`, handoff files, task trails of other tasks | the master of each line; the task's agents | append to your own task trail | edit another line's ledger or another task's trail (2026-10-14) |
 | the knowledge base `knowledge/` | every role (I.21) | add an entry; append an occurrence; update or refute an entry with evidence | delete an entry; rewrite another's evidence; edit the generated catalog `knowledge/KNOWLEDGE.md` by hand (2026-10-14) |
-| generated files `GENERAL.md`, `knowledge/KNOWLEDGE.md` | their generators | regenerate and commit with the source change | hand edits (2026-10-14) |
+| generated files `GENERAL.md`, `knowledge/KNOWLEDGE.md` | their generators | regenerate and commit with the source change | AGENTS.md 0.2 for GENERAL; I.21 for the knowledge catalog, before generation or edits (2026-10-14) (2026-10-15) |
 | Claude settings and hooks `.claude/settings.json`, `.claude/hooks/`, the master's memory directory | every Claude session | read | change them without the user's order (hooks: with their tests, I.20) (2026-10-14) |
 | token files `gh_token`, `hf_token` | every agent | use through the credential helper (I.6) | print, copy or move them (2026-10-14) |
 | the Codex binary in `~/.vscode-server/extensions/` | every agent | run it (I.4) | update or move it (2026-10-14) |
 
-## I.16 Git, processes and safety: the general rules (2026-10-14)
+## I.16 Git, processes and safety: the general rules (2026-10-15)
 <!-- general -->
 
-- Never print a token file and never put a token in a remote URL; push through a credential helper that reads
-  the file. Never force-push. (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
+- Never print a token or credential file and never put a token in a remote URL; push through a credential helper that reads
+  the file. Never force-push. (2026-10-14) (2026-10-15)
 - Commit only on your own branch, one item per commit; stage only your own files (others' uncommitted files share
   the worktrees). Never `git add -A` in a shared tree. Exception: knowledge base entries are committed where the
   knowledge base lives, from any line of work (the run rules say how); a worker that cannot write there
-  proposes its entries in its report. (2026-10-14)
-- The stash is shared by all worktrees and sessions: never bare `git stash`/`pop`; prefer a WIP commit. (2026-10-14)
+  proposes its entries in its report. (2026-10-14) Stock focused-commit rule provenance: 2026-04-26. (2026-10-15)
+- The stash is shared by all worktrees and sessions: never bare `git stash`/`pop`; prefer a WIP commit. (2026-10-14) Never `git stash drop` or `git stash clear`, even for your own explicitly named entry. (2026-10-14; 2026-10-15)
 - Code branches stay local unless the user asks; notes and results the user wants visible elsewhere are pushed
   as soon as they are written. (2026-10-14)
 - Never `pkill -f` or `killall`; kill by PID. Clean up your own scratch, trees and orphan processes when done. (2026-10-14)
@@ -259,16 +251,17 @@ not listed that another agent or session could also use counts as shared. (2026-
 - To wait for a process, wait on its PID (`while kill -0 <pid>`) or on its output file, never on `pgrep -f
   <pattern>`: the waiting shell's own command line contains the pattern, so the loop matches itself and never ends
   (verifier, 2026-10-14).
-- Ask the user before starting expensive jobs they did not request. Within an approved experiment, keep the
-  available slots full. (2026-10-14)
+- Ask the user before starting expensive jobs they did not request. For the approved queue's launch order, read the run rules before scheduling. (2026-10-14) (2026-10-15)
 - If a permission check blocks an action, do not work around it; report it to the user. (2026-10-14)
 
-## Operations pitfalls (2026-10-14)
+## Operations pitfalls (2026-10-15)
 
-These are promoted pitfalls; a new pitfall is recorded first in the knowledge base (I.21, AGENTS.md 0.5 item 3). (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
+Read `agents/INTERFACE.md` I.21 before recording a fact, pitfall or anomaly, or editing a promoted-pitfall list. (2026-10-14)
 
 - Following an old rule number ("0.2 rule 6"): the never-break rules are AGENTS.md 0.3. (2026-10-14)
-- Reading the 14-slot slotrun cap as the budget: the shared budget is 8 `sim` slots. (2026-10-14)
-- Relying on the completion notification to notice a hang (I.18). (2026-10-14)
-- Starting `validate-par` while another agent's is running. (2026-10-14)
-- Retrying a deterministic failure "once more": only infra-transient failures are retried (I.18). (2026-10-14)
+- Read `agents/OPERATIONS.md` I.5 before allocating shared sim slots. (2026-10-14)
+- Read `agents/OPERATIONS.md` I.18 before starting or monitoring a job. (2026-10-14)
+- Read `agents/OPERATIONS.md` I.5 before launching validation. (2026-10-14)
+- Read `agents/OPERATIONS.md` I.18 before acting on a content failure. (2026-10-14)

@@ -4,7 +4,11 @@ For the user. What the agents promise you (the contract), what they need from yo
 choose. Rules are cited by id; the rule files hold the detail (`AGENTS.md` lists them, and `GENERAL.md` has the
 repository-independent ones). If this file and a rule file disagree, the rule file wins and this file is fixed (2026-10-14).
 
-## 1. The contract: what you can expect (2026-10-14)
+## 1. The contract: what you can expect (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
+This contract is a readable view of the linked rule homes, not an independent policy copy. Agents start with their role card and AGENTS.md 0.1 routing instructions, then read full references before each matching action. Every full requirement remains binding; task-specific reading is additional. The counted startup set and separately counted references triggered during startup are defined in AGENTS.md 0.1. (2026-10-15)
 
 - **One conversation partner.** You talk to the session explicitly assigned the master role, including a GPT/Codex session
   (AGENTS.md 0.1); the model name alone does not assign its duties. It delegates hard work to Claude Opus subagents
@@ -27,7 +31,7 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
   alternative, it tells you before following it, with the evidence and its strength (I.11). (2026-10-14)
 - **Code is tested and independently reviewed.** Tests first, a fast suite, no weakened tests; a separate
   read-only verifier (Codex Sol; Claude Opus for byte-exact core changes) gives PASS / PASS WITH NOTES / REJECT; a REJECT loop is capped and comes to you if it does
-  not converge (I.14). (2026-10-14)
+  not converge (I.14). The caller commits the verifier's verdict under I.13; the verifier leaves reviewed HEAD unchanged. (2026-10-15) (2026-10-14)
 - **Claims are audited.** Numbers that go into a handoff or the paper are checked against raw results by a
   reviewer that sees only the results (`claim-audit` skill). (2026-10-14)
 - **Briefs say where each premise comes from.** Every premise in a brief is tagged as your words (quoted, dated),

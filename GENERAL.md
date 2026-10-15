@@ -10,6 +10,8 @@ Sections: 0.5, 0.6, I.10, I.11, I.12, I.13, I.14, I.15, I.19, I.21, I.1, I.2, I.
 
 Source: `AGENTS.md` 0.5
 
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
 How to write the rule files and `GENERAL.md` (user, 2026-10-14). They are what every agent is handed, so they are
 written like a book, not a log. (2026-10-14)
 
@@ -53,12 +55,7 @@ check"). (2026-10-15)
    Decisions in force sit in one table with date and source; replaced decisions move once to a "Superseded"
    list, never left beside the new ones. History belongs in the handoff file, long evidence and detail in notes
    files with a pointer, not in these files. (2026-10-14)
-3. **Pitfalls and anomalies go to the knowledge base first** (user, 2026-10-14). When an agent trips over
-   something (a wrong path, a stale number, a rule misread) or sees an anomaly, it records it as a knowledge
-   base entry (I.21), rare or not; a recurrence is appended to the existing entry as an occurrence. A pitfall
-   that reaches the promotion threshold (I.21) becomes a promotion candidate; the master proposes the rule
-   change and the user approves it. Each rule file keeps a pitfalls list of the promoted pitfalls only; facts
-   (paths, values, tool behaviour) live in the knowledge base and the rule files point to them. (2026-10-14)
+3. **Pitfalls and anomalies:** apply I.21 before recording or promoting them; that section owns evidence, occurrences and promotion lifecycle. Promoted rules still take the approval/review path of this section. (user, 2026-10-14; 2026-10-15) (2026-10-15)
 4. **Style.** Every pointer to another file says when to read it ("read before X"), and the target must exist; a
    file that exists only on another branch is written as `path` (on `branch`), and the check looks there.
    English; short imperative bullets; absolute dates; every rule section heading carries the date it
@@ -138,6 +135,8 @@ owner), the **decisions** it may take (this table), and the **report** it owes a
 
 Source: `agents/INTERFACE.md` I.11
 
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
 Two kinds of open decision (user, 2026-10-14):
 
 - **Stop and escalate**: the choice changes behaviour, results, semantics, scope or an interface, or is hard to
@@ -152,12 +151,9 @@ Two kinds of open decision (user, 2026-10-14):
   state it; if the agent has to infer it, it is not settled. (2026-10-14)
 - Escalation goes one level at a time: a helper escalates to its spawner, never past it. (2026-10-14)
 - The spawner decides only if its own brief, the decisions list or the user's quoted words settle it. Otherwise it passes the
-  same packet up. The master asks the user, except for a subagent's proposed rule-file change: it goes up the
-  spawn chain to the master for approval or rejection (how the rule files are written). **No level guesses.** (2026-10-15)
+  same packet up. The master asks the user, with the rule-file approval exception defined in how the rule files are written (0.5). **No level guesses.** (2026-10-15)
 - The answer goes back down through `SendMessage` to the same agent (its context is kept), quoting who decided
-  and their words. A user decision that outlives the task is recorded in the decisions list by the master, so no later agent
-  asks again; the master appends it verbatim right away by the light path for recording a decision (how the rule files are written) and tells the user in
-  its next report. (2026-10-15)
+  and their words. For a user decision that outlives the task, the master follows the light path for recording a decision (how the rule files are written, 0.5) before further work. (2026-10-15)
 - **Search before you escalate** (user, 2026-10-15: "아니. 내 말 전부를 md에 적어놓을 필요는 없어 .이전 agent가 실행하면서 남긴 기록 혹은 대화하면서 남긴 기록이 있잖아. 거기에 내 대화 내용이 있어야 해. agent.md에 그걸 포인터로 읽도록 갱신해줘."; approved option (a): any agent may search, subagents included). Before an escalation goes
   up, the agent searches the decisions list, then the records of the user's words (the repository's `AGENTS.md`
   says where they are and how to search them). The question then carries either the quote found, with its date
@@ -178,8 +174,7 @@ Two kinds of open decision (user, 2026-10-14):
   recommendation. It then waits for the decision. It never adopts the alternative silently and never follows a
   rule it thinks is worse without saying so (user, 2026-10-14). Only alternatives with a material difference in
   results, cost or risk; several go in one message. A subagent raises it in an escalation report; the master
-  raises it with the user, except for a subagent's proposed rule-file change, which goes up the spawn chain
-  to the master for approval or rejection (how the rule files are written). (2026-10-15)
+  raises it with the user, subject to the rule-file approval exception in how the rule files are written (0.5). (2026-10-15)
 - **Options never hand commands to the user.** The options in an escalation are decisions for the user, never
   commands for the user to run (a login, a commit on another machine, an install). The agents run the
   commands, or choose an option that needs none. (user, 2026-10-14: "command는 나한테 요청을 맡길 필요 없어.")
@@ -187,16 +182,18 @@ Two kinds of open decision (user, 2026-10-14):
 - Codex cannot be asked mid-call: it stops at a non-obvious decision, finishes the independent work and returns
   the escalation (this format) in its report; the caller answers with a new call that quotes the answer. (2026-10-14)
 
-## I.12 The brief (interface down) (2026-10-14)
+## I.12 The brief (interface down) (2026-10-15)
 
 Source: `agents/INTERFACE.md` I.12
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 Every spawn gets a brief with these headings, in this order. A heading with nothing to say says "none". The brief
 is written to the task trail and the spawn message gives its path plus anything short; it never pastes earlier
 conversation. (2026-10-14)
 
 1. **Role line and task id.** "Role: Claude subagent (<implementer|verifier>), not the master" or "Role:
-   Codex <research worker|task worker|verifier>"; the task id `T<YYYYMMDD>-<slug>`; the language of the report. (2026-10-14)
+   Codex <research worker|task worker|verifier>"; name the role's rule files (Read first below); the task id `T<YYYYMMDD>-<slug>`; the language of the report. (2026-10-14) (2026-10-15)
 2. **Read first.** The role's rule files (the repository's `AGENTS.md` lists them per role), the knowledge base
    categories or entries the task needs (I.21), and the task's own documents, each with when to read it. The
    subagent type's prompt repeats the rule files; the brief names them anyway, because a prompt is an
@@ -244,7 +241,7 @@ The spawner answers through `SendMessage`; the agent writes the answer into its 
 
 A Codex task worker gives no read-back (it cannot be asked mid-call). It runs the same premise check before it
 starts and lists it in its report under *Assumptions*; a `refuted` or `unchecked` premise that changes results
-stops the work as an escalation (I.11). (2026-10-14)
+stops the work as an escalation (I.11). (2026-10-14) Simple and general work starts directly unless the brief asks for a read-back; hard-tier read-back follows the procedure above. (2026-10-14) (2026-10-15)
 
 **Spawning by role.** Claude subagents are spawned with a custom subagent type per role (Claude Code:
 `.claude/agents/<role>.md`). The type sets the default model and the tool permissions mechanically, and its
@@ -264,9 +261,7 @@ The model and the effort are still set on every spawn (I.3). (2026-10-14)
 - **Order for hard work**: design note -> builder check -> brief -> reader test -> spawn -> read-back. One fresh
   agent may do the builder check and the reader test in one pass (note and brief together); the check model
   defaults to Codex Sol medium (I.3). (2026-10-14)
-- **Decision-complete design before hard work.** Hard-tier work starts from a design note that leaves the
-  implementer nothing to decide (the `design-note` skill). Before spawning, a builder check reads the note as the
-  implementer would and sorts every question into answered / trivial / the user's; the user's go to the user. (2026-10-14)
+- Read `.claude/skills/design-note/SKILL.md` "Design note and builder check" before starting hard-tier work. (2026-10-14)
 - **Batching.** Only tasks too small to be worth an agent (each a few tool calls) are batched into one brief;
   anything that would make the batch slower than running in parallel is split instead (I.15). (2026-10-14)
 - **Reader test.** A brief for hard-tier work, a next-session input and a restructured rule file are read once by a
@@ -274,9 +269,11 @@ The model and the effort are still set on every spawn (I.3). (2026-10-14)
 - **Activity skills.** Use the skill for the activity: `lit-search`, `claim-audit`, `paper-write`, `ideation`,
   `design-note`, `experiment-plan`, `debug`, plus `spawn-agent`, `review`, `handover`. (2026-10-14)
 
-## I.13 The report (interface up) (2026-10-14)
+## I.13 The report (interface up) (2026-10-15)
 
 Source: `agents/INTERFACE.md` I.13
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 **Status word first.** The first line of every report is one of `DONE`, `DONE_WITH_CONCERNS`, `ESCALATION`,
 `BLOCKED`, `NEEDS_CONTEXT`, `READ_BACK`; a verifier's first line is its verdict instead (`PASS`, `PASS WITH NOTES`,
@@ -313,17 +310,18 @@ The full report uses these headings (2026-10-14):
 
 **Task trail.** Each task id has one notes file (the task trail) that its agents append to: the brief, every
 *Assumptions* entry, every escalation with its answer and who gave it, the verifier's verdict. A later failure is
-traced through it to the agent, the step and the choice. **Each agent commits its own trail entries itself**
-(stage the trail by path; a small commit naming the task id); the spawner commits only the brief and the verdicts
-it appends. A worker that cannot write the trail (a sandbox, a read-only role) returns its entries in its report
-and its caller commits them (user, 2026-10-14).
+traced through it to the agent, the step and the choice. **Each writing agent other than a verifier commits its own trail entries itself**
+(stage the trail by path; a small commit `Trail: <task-id> <what>`); the caller commits the brief and verifier verdicts. A verifier only writes its verdict and never commits it; the reviewed tree remains unchanged as I.14 requires. A worker that cannot write the trail (a sandbox, a read-only role) returns its entries in its report
+and its caller commits them (user, 2026-10-14). (2026-10-15)
 
 The master relays to the user what matters, in Korean, and keeps what it observed itself apart from what an agent
 reported. (2026-10-14)
 
-## I.14 Tests and review (2026-10-14)
+## I.14 Tests and review (2026-10-15)
 
 Source: `agents/INTERFACE.md` I.14
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 **Scope of review.** Every code change gets a verifier review. Results of runs and analyses that feed a decision,
 a handoff or the paper go through the `claim-audit` skill instead, which also checks each block's run card (its
@@ -353,16 +351,13 @@ monitoring) is not reviewed. (2026-10-14)
 - Every implementation is reviewed by a separate verifier that the master starts after the implementer reports:
   a Codex verifier (Sol, medium) through the CLI, or a Claude verifier subagent (Opus, medium) when byte-exact
   core code changed (I.3). The verifier did not write the code. (2026-10-14)
-- The verifier gets the brief, the diff, the repository, and only the *Verified*, *Assumptions* and *Test
+- The verifier gets the brief (including Done when), branch/commit range, the diff, the repository, and only the *Verified*, *Assumptions* and *Test
   changes* sections of the implementer's report, not its narrative, so it is not anchored on the implementer's
   reasoning. It is read-only: a Claude verifier by permission (I.12); a Codex verifier writes nothing but its
-  verdict, checked below. (2026-10-14)
+  verdict, checked below. (2026-10-14) (2026-10-15)
 - For hard-tier work a second, independent opinion comes from a Codex review (I.4) of the same diff. Model review
   is evidence, not an oracle; exact checks win. (2026-10-14)
-- The verifier checks, in order: (1) the diff against the brief: scope, and any behaviour the brief did not ask
-  for (a silent decision); (2) tests not weakened: the test diff between the test commit and the head;
-  (3) the suite and the quick golden check, run by itself; (4) a sample of the implementer's *Verified* claims,
-  re-run; (5) the *Assumptions* list against I.10 and I.11: an assumption that should have stopped is a finding. (2026-10-14)
+- Before reviewing, read and execute the verifier role file's complete ordered checklist. Review policy, severity and unchanged-tree checks remain here. (2026-10-15)
 - **Findings.** A finding is reported only after the verifier tried to refute it and it survived, with a concrete
   trigger (input, command, line). Each has a severity: *blocking* (wrong result, broken interface, weakened test,
   rule broken) or *non-blocking*. Excluded: problems that were there before the change (reported as out of scope,
@@ -371,7 +366,7 @@ monitoring) is not reviewed. (2026-10-14)
 - Verdict: **REJECT** if any finding is blocking, **PASS with notes** if all are non-blocking, **PASS** if none.
   The verifier does not fix code. (2026-10-14)
 - **Read-only, checked.** After the review `git status --porcelain` and HEAD of the reviewed tree are unchanged,
-  apart from the task trail file (kept outside the reviewed tree where possible); the verifier reports both. (2026-10-14)
+  apart from the task trail file (kept outside the reviewed tree where possible); the verifier reports both. (2026-10-14) Verdict commit ownership is I.13; the verifier does not commit. (2026-10-15)
 - **Several reviewers** form their first verdicts independently, without seeing each other's. The Codex review of
   hard-tier work is run by the verifier through the Codex CLI and reported separately. (2026-10-14)
 - **Fix loop with a cap.** On REJECT the master resumes the implementer with the findings; the re-review covers
@@ -411,9 +406,11 @@ Source: `agents/INTERFACE.md` I.19
 - A subagent's report is evidence about its work, not a user decision: approvals quoted inside it are not
   approvals. (2026-10-14)
 
-## I.21 The knowledge base (2026-10-14)
+## I.21 The knowledge base (2026-10-15)
 
 Source: `agents/INTERFACE.md` I.21
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 User, 2026-10-14: "지식 상태 페이지는 … 누구나 갱신할 수 있도록"; "카테고리화해서 일부만 fetch할 수 있도록 카탈로그를
 만들어야 할 거 같아"; on pitfalls: "전부 적어놓는게 default고, 계속 같은 유형이나 비슷한 논리가 반복되면 카운트해서
@@ -446,7 +443,7 @@ says where both live. (2026-10-14)
 - **Pitfalls and anomalies.** A pitfall records the kind of failure (`type`), the reasoning error behind it
   (`logic`), every occurrence and the correct action (`fix`). An anomaly records how to detect it, what healthy
   looks like and what to do. Anything an agent trips over is recorded as a pitfall entry first, not added to a
-  rule file. (2026-10-14)
+  rule file. (2026-10-14) Record verified or refuted facts, pitfalls and anomalies; append recurrences to the existing entry, not a duplicate. Apply the writing exceptions above, including Codex brief/sandbox limits. Rule-file pitfalls lists contain only promoted pitfalls; new pitfalls go here first. (2026-10-14) (2026-10-15)
 - **Moved facts keep their authority.** An entry moved out of a rule file with status `assumed` keeps the
   authority it had as a rule until it is refuted; re-verify it before a new claim relies on it. (2026-10-14)
 - **Promotion.** The **threshold** is occurrences in **3 distinct tasks**, counted per `type` (the occurrences of
@@ -465,34 +462,34 @@ says where both live. (2026-10-14)
 
   Promotion to a new or changed rule is never automatic: only the user approves it. (2026-10-14)
 
-## Interface pitfalls (2026-10-14)
+## Interface pitfalls (2026-10-15)
 
 Source: `agents/INTERFACE.md` "Interface pitfalls"
 
-These are promoted pitfalls; a new pitfall is recorded first in the knowledge base (I.21). (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
-- Reading `DONE` as accepted: it only means ready for review (I.13). (2026-10-14)
-- Handing the verifier the whole implementer report: it anchors the review (I.14). (2026-10-14)
-- Escalating past your spawner, or answering an escalation by inferring what the user would want (I.11). (2026-10-14)
-- Omitting the rule files from a brief because the subagent type "loads" them: its prompt only asks (I.12). (2026-10-14)
+Read `agents/INTERFACE.md` I.21 before recording a fact, pitfall or anomaly, or editing a promoted-pitfall list. (2026-10-14)
+
+- Read `agents/INTERFACE.md` I.13 before acting on a report status. (2026-10-14)
+- Read `agents/INTERFACE.md` I.14 before preparing or reading review inputs. (2026-10-14)
+- Read `agents/INTERFACE.md` I.11 before routing or answering an escalation. (2026-10-14)
+- Read `agents/INTERFACE.md` I.12 before preparing a brief's required reading list. (2026-10-14)
 - Writing the task trail inside the tree under review, then failing the unchanged-tree check (I.14). (2026-10-14)
-- A brief premise without a source tag, read by the agent as settled (I.12: it counts as `[master inferred]`). (2026-10-14)
-- Accepting `DONE` without checking that the claimed commits and files exist (I.13). (2026-10-14)
+- Read `agents/INTERFACE.md` I.12 before tagging or checking brief premises. (2026-10-14)
+- Read `agents/INTERFACE.md` I.13 before accepting a report or stopping for a time limit. (2026-10-14)
 
 ## I.1 Roles and spawning (2026-10-15)
 
 Source: `agents/MASTER.md` I.1
 
-The assigned role determines duties independently of the model. The labels below retain the existing
-invocation paths and model routing; a model name alone never assigns a role. (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
+Use the assigned-role selector in the repository entry before choosing duties; model routing remains I.3. (2026-10-14)
 
 Three levels (user, 2026-10-14):
 
 1. **Claude master agent** — manages the agents; discusses algorithm and design choices and paper writing with
-   the user, and does that discussion itself. Keeps its context under about 256K tokens (I.2). Its own rule-file
-   changes go up to the user as proposals; a subagent's proposed rule change (from any depth of the spawn chain)
-   is reviewed and approved or rejected by the master in the user's place (AGENTS.md 0.5). Once a change is
-   approved, the master or an agent it assigns makes the edit. Other documents the user marks as important are
+   the user, and does that discussion itself. Keeps its context under about 256K tokens (I.2). For rule-change proposal, approval, assignment and notification, follow how the rule files are written (0.5) before acting. Other documents the user marks as important are
    edited by the master itself. (2026-10-15)
 2. **Claude subagents (Opus)** — do the hard-tier work only (I.3): the **implementer** (`agents/IMPLEMENTER.md`)
    builds and runs hard work; the **verifier** (`agents/VERIFIER.md`) reviews a finished implementation that
@@ -503,13 +500,13 @@ Three levels (user, 2026-10-14):
    A and B and how a deployed framework implements B, then builds on the answer; it hands the fully specified
    launches and value collection that follow to Codex workers (I.15). (2026-10-14)
 
-Every spawn starts its brief with the spawned session's role and names the rule files for that role (I.12). When a request holds several
-independent pieces of work, spawn one agent per piece, in parallel, each on its own branch, tree, notes folder and
-job-slot budget (the budgets sum to at most the machine's slots), and tell each what the others own. (2026-10-14)
+Before spawning, follow I.12 for role/files/brief and I.15 for split/ownership; each parallel piece has its own branch, tree, notes folder and job-slot budget, with budgets summing to at most the machine's slots. (2026-10-14) (2026-10-15)
 
-## I.2 Delegation and the context budget (2026-10-14)
+## I.2 Delegation and the context budget (2026-10-15)
 
 Source: `agents/MASTER.md` I.2
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 Long-context benchmarks (RULER/MRCR-style summaries) show models stay strong up to about 32K tokens and lose
 15-60 points of multi-fact retrieval beyond it, so the master's context is kept small (2026-10-14):
@@ -528,9 +525,7 @@ Long-context benchmarks (RULER/MRCR-style summaries) show models stay strong up 
   the next session. (2026-10-14)
 - **Compaction at phase boundaries.** Besides the 256K mark, the master suggests compacting when a phase of work
   ends (a design settled, a grid finished), after running the `handover` skill, rather than in the middle of one. (2026-10-14)
-- **The master receives reports, it does not review code.** On each report it first runs the receipt checks of
-  I.13 (claimed commits and files exist; no unrequested time limit); review is the verifier's (I.14); the master
-  relays the verdict. (2026-10-14)
+- **The master receives reports, it does not review code.** Before acceptance/review assignment, use I.13's receipt checks and I.14's independent review policy; relay the verdict. (2026-10-15)
 - **Memory holds pointers.** The master's memory (`~/.claude/projects/.../memory/`) names where a decision or
   rule lives (a row of the decisions list, a rule section) with a one-line gist for recall; the rule files win. When a decision
   changes, the master edits the rule file first and the pointer in the same step. (2026-10-14)
@@ -645,94 +640,85 @@ context is lost. The user's request to move on is the trigger; the steps below a
 goes, the steps, the next-session input template, and what a new session does first. Load it whenever the
 trigger above fires; when only part of the work moves to another session, run it for that part. (2026-10-14)
 
-## Master pitfalls (2026-10-14)
+## Master pitfalls (2026-10-15)
 
 Source: `agents/MASTER.md` "Master pitfalls"
 
-These are promoted pitfalls; a new pitfall is recorded first in the knowledge base (I.21). (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
-- Answering a subagent's escalation by guessing instead of asking the user (I.11: no level guesses). (2026-10-14)
-- Spawning without naming the rule files, so the subagent works from the auto-loaded `AGENTS.md` alone (I.12). (2026-10-14)
-- Copying a decision into memory or a brief in new words instead of pointing to its row in the decisions list: the copies drift. (2026-10-14)
-- Following a user rule that looks worse than an alternative without first proposing the alternative (I.11). (2026-10-14)
-- Monitoring "when it occurs to you": a live job without a watch, or no heartbeat, is how runs went unnoticed
-  (I.23). (2026-10-14)
-- Applying a promotion candidate from the knowledge base without the user's approval (I.21). (2026-10-14)
+Read `agents/INTERFACE.md` I.21 before recording a fact, pitfall or anomaly, or editing a promoted-pitfall list. (2026-10-14)
 
-## Implementer: Duties (2026-10-14)
+- Read `agents/INTERFACE.md` I.11 before routing or answering an escalation. (2026-10-14)
+- Read `agents/INTERFACE.md` I.12 before writing a brief or spawning. (2026-10-14)
+- Read `agents/MASTER.md` I.2 before recording or changing memory pointers. (2026-10-14)
+- Read `agents/INTERFACE.md` I.11 before proposing or following an alternative rule or method. (2026-10-14)
+- Read `agents/MASTER.md` I.23 before the action governed here. (2026-10-14) (2026-10-15)
+- Read `agents/INTERFACE.md` I.21 before promoting a knowledge entry to a rule. (2026-10-14)
+
+## Implementer: Duties (2026-10-15)
 
 Source: `agents/IMPLEMENTER.md` "Duties"
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 1. **Read first**: the files the brief names, in order, before touching anything, including the knowledge base
    categories it names (I.21). (2026-10-14)
 2. **Check freshness**: the decisions the brief cites are still the ones in force (the decisions list, the newest handoff subsection). If a
    newer decision or result conflicts with the brief, escalate before starting. (2026-10-14)
-3. **Read-back** (hard-tier work): return your understanding, plan, the premise check and open questions before
-   writing code (I.12). In the premise check, every `[master inferred]` premise (or untagged one) gets exactly one
-   of `confirmed: <evidence>`, `refuted: <evidence>` + `alternative: <proposal; trade-off>`, or
-   `unchecked: <why>`; a `refuted` or `unchecked` premise that changes results waits for the answer. Simple and
-   general work starts directly unless the brief asks for a read-back (a Codex task worker lists its premise
-   check in its report instead, I.12). (2026-10-14)
-4. **Stay inside the brief.** Do what it asks, in the files it gives you. Anything it does not settle and that
-   changes behaviour, results, interfaces or scope is a non-obvious decision: escalate it (I.11), do not guess.
-   A cheap, reversible choice that changes no result: take the conservative option and record it (I.11). (2026-10-14)
-5. **Baseline, then tests first** (I.14): record the baseline, commit the tests, then the implementation. Keep the default suite under 10 s and free of
-   duplicates; never weaken a test to pass. (2026-10-14)
-6. **Runs**: before launching a block of runs, its run card passes the run-card tool's pre-launch check; before
-   a "no difference" or "arm lost" claim, its post check (the run rules name the tool). Classify any failure
-   before acting on it (I.18): only an infra-transient failure is retried, once. (2026-10-14)
-7. **Verify what you claim.** Every *Verified* item in the report carries the command and its output. (2026-10-14)
-8. **Record what you learn** in the knowledge base (I.21): a fact you verified or refuted, a pitfall you hit (an
-   occurrence on an existing entry, or a new entry), an anomaly. Recurrences are appended, not duplicated.
-   (Codex: only when the brief allows; Codex's own rules win.) (2026-10-14)
+3. Read `agents/INTERFACE.md` I.12 before premise checks or read-back. (2026-10-14)
+4. **Stay inside the brief.** Do what it asks in its assigned files; read I.10/I.11 before classifying choices or escalating. (2026-10-15)
+5. Read `agents/INTERFACE.md` I.14 before implementation or tests (read the full Tests subsection). (2026-10-14)
+6. **Runs:** follow the run rules and the `experiment-plan` skill before launch and before result claims; failure actions are I.18. (2026-10-15)
+7. Read `agents/INTERFACE.md` I.13 before claiming verified results or reporting unchecked gaps. (2026-10-14)
+8. Read `agents/INTERFACE.md` I.21 before recording a fact, pitfall or anomaly, or editing a promoted-pitfall list. (2026-10-14)
 9. **Track your helpers.** Each Codex worker or job you start gets a line in your task trail (what, its watch:
    background id or PID or result file, state), updated when it ends. Your spawner's ledger does not track them. (2026-10-14)
-10. **Report** with the I.13 headings, and append *Assumptions*, escalations and their answers to the task trail
-    (I.13); commit your own trail entries yourself (stage the trail by path, `Trail: <task-id> <what>`). (2026-10-14)
-11. **Clean up** your scratch, trees and orphan processes, as the repository's run rules say. Only what you
-    created: shared resources are never reverted, cleaned or reconfigured (I.16). (2026-10-14)
+10. Read `agents/INTERFACE.md` I.13 before writing or committing a task trail. (2026-10-14)
+11. **Cleanup:** follow the run rules' cleanup procedure before finishing and I.16's ownership boundary before teardown. (2026-10-15)
 
 ## Implementer: You do not (2026-10-15)
 
 Source: `agents/IMPLEMENTER.md` "You do not"
 
-- decide anything in the third row of the I.10 table; (2026-10-14)
-- fix bugs outside the task (report them); (2026-10-14)
-- change an interface another agent shares (escalate); (2026-10-14)
-- spawn agents that make design decisions (Codex workers with a full spec only, I.15); (2026-10-14)
-- review your own work as final: the verifier does that; (2026-10-14)
-- edit the rule files without the master's approval of that exact change; send the proposal up the spawn chain to
-  the master, and if you spawned an agent that proposes one, forward it unapproved (AGENTS.md 0.5). (2026-10-15)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
-## Implementer: Pitfalls (2026-10-14)
+- Read `agents/INTERFACE.md` I.10 before classifying or taking a decision (also read I.11 before escalating). (2026-10-14)
+- Read `agents/INTERFACE.md` I.10 before acting on an outside-task bug. (2026-10-14)
+- Read `agents/INTERFACE.md` I.15 before parallel interface changes. (2026-10-14)
+- Read `agents/INTERFACE.md` I.15 before launching a helper. (2026-10-14)
+- Read `agents/INTERFACE.md` I.14 before assigning or claiming final acceptance. (2026-10-14)
+- Read `AGENTS.md` 0.5 before proposing or editing a rule file. (2026-10-15)
+
+## Implementer: Pitfalls (2026-10-15)
 
 Source: `agents/IMPLEMENTER.md` "Pitfalls"
 
-These are promoted pitfalls; a new pitfall is recorded first in the knowledge base (I.21). (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
-- Filling a gap in the brief with the "obvious" choice. If two reasonable readings would produce different code
-  or results, it is not obvious: escalate. (2026-10-14)
-- Reporting "done, verified" when only part was run. Say what was not verified. (2026-10-14)
-- Editing a test because the implementation "is right". Escalate the test instead. (2026-10-14)
-- Cutting the scope because of a time limit nobody set. The brief's *Resources* says if there is one; otherwise
-  finish the work (2026-10-14: an analysis agent returned a partial report "for time" with no limit given).
+Read `agents/INTERFACE.md` I.21 before recording a fact, pitfall or anomaly, or editing a promoted-pitfall list. (2026-10-14)
+
+- Read `agents/INTERFACE.md` I.10 before classifying or taking a decision (also read I.11 before escalating). (2026-10-14)
+- Read `agents/INTERFACE.md` I.13 before claiming verified results or reporting unchecked gaps. (2026-10-14)
+- Read `agents/INTERFACE.md` I.14 before changing a test. (2026-10-14)
+- Read `agents/INTERFACE.md` I.13 before accepting a report or stopping for a time limit. (2026-10-14)
 - Handing back while your own Codex workers still run. Wait for every worker you called; their reports reach you
   only. (2026-10-14)
 - Counting keyword hits as findings. Read the files you cite; say which numbers are counts and which were read. (2026-10-14)
-- Treating an untagged or `[master inferred]` premise of the brief as settled instead of checking it in the
-  read-back (I.12). (2026-10-14)
+- Read `agents/INTERFACE.md` I.12 before premise checks or read-back. (2026-10-14)
 
-## Verifier: Inputs (2026-10-14)
+## Verifier: Inputs (2026-10-15)
 
 Source: `agents/VERIFIER.md` "Inputs"
 
-The implementer's brief, the branch and commit range, the checks named in the brief's *Done when*, and only the
-*Verified*, *Assumptions* and *Test changes* sections of the implementer's report (I.14). You write nothing but
-your verdict to the task trail (a Claude verifier has no Edit or Write tool and uses Bash for it). (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
-## Verifier: Checklist (in order) (2026-10-14)
+Read the brief, branch/commit range and *Done when* checks, with the report-input restriction in I.14 before reviewing. Write only the verdict to the task trail: a Claude verifier has no Edit/Write tool and uses Bash for that permitted append. Trail commit ownership is I.13. (2026-10-15)
+
+## Verifier: Checklist (in order) (2026-10-15)
 
 Source: `agents/VERIFIER.md` "Checklist (in order)"
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 1. **Diff against the brief.** Every changed file is in scope; every new behaviour was asked for. Behaviour the
    brief did not ask for is a silent decision: a finding. (2026-10-14)
@@ -750,80 +736,63 @@ Source: `agents/VERIFIER.md` "Checklist (in order)"
    Codex CLI (I.4) and report its findings separately (I.14). (2026-10-14)
 8. **End of a line of work only:** targeted mutation testing on the changed core modules (I.14); report the
    mutation score and the tests that kill no mutant on their own. (2026-10-14)
-9. **Parallel merges** (I.15): look for the same thing done two ways. (2026-10-14)
+9. Read `agents/INTERFACE.md` I.15 before reviewing a parallel merge. (2026-10-14)
 
-## Verifier: Verdict (2026-10-14)
+## Verifier: Verdict (2026-10-15)
 
 Source: `agents/VERIFIER.md` "Verdict"
 
-Report with the I.13 headings and, first, one of: **PASS**, **PASS with notes**, **REJECT** (rules in I.14:
-refuted-and-survived findings only, severity decides the verdict, "no findings" is normal). Findings are numbered,
-each with file, trigger, evidence (command output or quoted diff), severity and the rule it breaks. End with
-`git status --porcelain` and HEAD of the reviewed tree, unchanged. On a re-review, mark each earlier finding
-ADDRESSED / NOT ADDRESSED and look only at the fix range. (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
-## Verifier pitfalls (2026-10-14)
+Report with I.13 headings and I.14's severity-based verdict first. Findings are numbered,
+each with file, trigger, evidence (command output or quoted diff), severity and the rule it breaks. End with the I.14 unchanged-tree receipt (`git status --porcelain` and HEAD). On a re-review, mark each earlier finding
+ADDRESSED / NOT ADDRESSED and look only at the fix range. (2026-10-14) (2026-10-15)
+
+## Verifier pitfalls (2026-10-15)
 
 Source: `agents/VERIFIER.md` "Verifier pitfalls"
 
-These are promoted pitfalls; a new pitfall is recorded first in the knowledge base (I.21). (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
-- Starting from the implementer's narrative instead of the brief and the diff. (2026-10-14)
-- Counting a check as passed because the implementer reported it: re-run it. (2026-10-14)
-- Padding findings, or reporting one you could not trigger. (2026-10-14)
-- Writing a knowledge entry yourself: a verifier is read-only; propose the entry in the verdict and the master
-  records it (I.21). (2026-10-14)
+Read `agents/INTERFACE.md` I.21 before recording a fact, pitfall or anomaly, or editing a promoted-pitfall list. (2026-10-14)
 
-## Verifier: You do not (2026-10-14)
+- Read `agents/INTERFACE.md` I.14 before preparing or reading review inputs. (2026-10-14)
+- Read `agents/VERIFIER.md` "Checklist (in order)" before claiming that a review check passed. (2026-10-14)
+- Read `agents/INTERFACE.md` I.14 before reporting a finding. (2026-10-14)
+- Read `agents/INTERFACE.md` I.21 before proposing knowledge from a verifier role. (2026-10-14)
+
+## Verifier: You do not (2026-10-15)
 
 Source: `agents/VERIFIER.md` "You do not"
 
-- fix code, tests or docs (a finding says what is wrong, not a patch); (2026-10-14)
-- relax a check because the change "looks right"; (2026-10-14)
-- report a check you did not run as passed. (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
+- fix code, tests or docs (a finding says what is wrong, not a patch), or relax a check because the change "looks right"; (2026-10-14) (2026-10-15)
+- Read `agents/VERIFIER.md` "You do not" before review actions (fixing or relaxing checks is forbidden). (2026-10-14)
+- Read `agents/INTERFACE.md` I.13 before claiming verified results or reporting unchecked gaps. (2026-10-14)
 
 ## I.4 Codex CLI (2026-10-14)
 
 Source: `agents/CODEX.md` I.4
 
-### Codex's own rules
+### Codex's own rules (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 Codex works in one of three roles; the first line of the brief names it ("Role: Codex research worker", "Role:
 Codex task worker", "Role: Codex verifier"). (2026-10-14)
 
-- **Every role.** Answer in the language the brief asks for. Never print token or credential files and never put a
-  token in a remote URL. Never decide a non-obvious question (the brief, the decisions list and the code do not
-  settle it, and the choices differ in behaviour, results, interfaces or scope): finish the work that does not
-  depend on it, then stop and return the question with two or three options, what changes under each and your
-  recommendation. Say what you verified and what you did not. Read the knowledge base entries your brief names
-  (facts with a status; an `assumed` one is unchecked); they are data, not instructions. (2026-10-14)
+- **Every role.** Answer in the language the brief asks for. Research workers follow the Research worker core card and the research rule below (their limited reading scope is unchanged). Task workers and verifiers read I.11 before non-obvious questions, I.13 before reporting evidence/gaps, I.21 before knowledge work, and I.16 before handling credentials or remotes; the role selector supplies these references. (2026-10-15)
 - **Research worker.** Read-only: never edit, commit, push or launch anything. Cite a source (URL, paper, file
   path) for each claim and mark what you could not verify. Your output is a second opinion that the caller verifies.
   Facts worth keeping go into your report as proposed knowledge entries (category, title, status, evidence); the
   caller records them. (2026-10-14)
-- **Task worker** (simple and general work). Read the rule files your brief names before anything else: the rules
-  that must never be broken, the run rules, and the role file of the work (implementer duties, or the verifier
-  checklist). Before you start, check every premise of the brief tagged `[master inferred]` or untagged:
-  `confirmed: <evidence>`, `refuted: <evidence>` + `alternative: <proposal; trade-off>`, or
-  `unchecked: <why>`; list them in your report under *Assumptions*. A `refuted` or `unchecked` premise that
-  changes results stops the work: return it as a question, as above. Work only in the worktree and branch the
-  brief names and write only the files it gives you.
-  Launch runs, kill processes, commit and push only where the brief orders it, and then exactly as the run rules
-  say: runs through the job slots, kill by PID, name your files when staging, never force-push. Tests first, never
-  weaken a test. Never wait on a long run inside your own call: launch any job expected to take more than 10
-  minutes detached, record its id and PID, and return; the caller monitors it and, when it ends, calls a new task worker for the steps after it (summaries,
-  commits). Short tests run inside the call. Never revert, clean, kill or reconfigure anything you did not
-  create. Classify a failure before acting: only an infra-transient one is retried, once; a value not measured
-  is null, not 0. Record knowledge entries only when your brief allows it, in the format and commit form it
-  names, and only where your sandbox can write; otherwise propose them in your report. Where these rules and
-  another rule file differ for you, these rules win. End with the report headings the brief names, written to the task
-  trail and committed by you (stage the trail by path, a small commit naming the task id); if your sandbox cannot
-  write the trail, return the entries in your report and the caller commits them. (2026-10-14)
-- **Verifier.** A task worker that reviews and never fixes: follow the verifier checklist the brief names; write
-  nothing but your verdict to the task trail (knowledge entries are proposed in the verdict, not written); the
-  reviewed tree's status and HEAD are unchanged at the end. (2026-10-14)
+- **Task worker** (simple and general work). Before work, read the files the brief names and follow the task-worker startup and action gates in the repository role selector. Read I.12 for the pre-start premise check and report it under *Assumptions*. Work only in the tree, branch and files the brief names. Launch runs, kill processes, commit and push only where the brief orders it, following the run rules (I.16/I.18 and repository-specific run/cleanup/resource procedures); read I.14 before tests and implementation. Never wait on a long run inside your own call: launch any job expected to take more than 10 minutes detached, record its id and PID, and return; the caller monitors it and, when it ends, calls a new task worker for post-run summaries/commits. Short tests run inside the call. Follow I.18 for failure classification/retry and null measurements, and I.16 for shared-resource ownership. Record knowledge only when the brief allows it, in the format and commit form it names, and only where the sandbox can write; otherwise propose entries in the report (I.21). These own rules win where another rule file differs for you. End with the brief's report headings; trail writing/commit ownership and unwritable-trail fallback are in I.13. (2026-10-15)
+- **Verifier.** A task worker that reviews: follow the complete verifier checklist, I.14's read-only/unchanged-tree gate, I.21's verdict-only knowledge proposals, and I.13's caller-commits-verdict exception. No fix or commit privilege is added. (2026-10-15)
 
-### Calling Codex (Claude agents)
+### Calling Codex (Claude agents) (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 Run it on the host, not inside a build or run container. A research call needs no job slot (the one exception
 to "no CPU outside your slot"), but don't run many at once; a task worker's tests and runs take the slots its
@@ -853,29 +822,32 @@ timeout <secs> "$CODEX" [--search] exec --ephemeral -s <sandbox> [--add-dir <dir
 
 | job | model | flags |
 |---|---|---|
-| simple-tier task (I.3): mechanical work with a clear spec | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) |
-| default task worker (I.3), builder check, reader test, and verifier outside byte-exact core changes | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) |
-| find docs/papers/source, summarise with sources | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) |
-| synthesise sources, judge assumptions and alternatives, recommend what to investigate (I.3 research worker) | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) |
+| simple-tier task selected under I.3 | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
+| general-tier task/check/verifier selected under I.3 | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
+| research lookup/summary selected under I.3 | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
+| research synthesis selected under I.3 | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
 | deeper evidence checks and counterexamples within the assigned scope (I.3 decision rights unchanged) | Sol Medium+ | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (or `high`/`xhigh`) (2026-10-14) |
 
-## Codex pitfalls (2026-10-14)
+## Codex pitfalls (2026-10-15)
 
 Source: `agents/CODEX.md` "Codex pitfalls"
 
-These are promoted pitfalls; a new pitfall is recorded first in the knowledge base (I.21). (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
-- Running without `</dev/null`: it waits on stdin forever. (2026-10-14)
-- Omitting the reasoning effort: it runs at `low`. (2026-10-14)
-- Relying on an answer without opening its sources: Codex output is a second opinion. (2026-10-14)
-- Assuming the guard hooks protect a task worker: they watch the Claude agent's shell only, so the brief must name
-  the rules that must never be broken. (2026-10-14)
+Read `agents/INTERFACE.md` I.21 before recording a fact, pitfall or anomaly, or editing a promoted-pitfall list. (2026-10-14)
+
+- Read `agents/CODEX.md` "Calling Codex (Claude agents)" before calling Codex (stdin and output handling). (2026-10-14)
+- Read `agents/CODEX.md` "Calling Codex (Claude agents)" before selecting Codex invocation effort. (2026-10-14)
+- Read `.claude/skills/lit-search/SKILL.md` "Literature search" before relying on or citing a source claim. (2026-10-14)
+- Read `agents/CODEX.md` "Calling Codex (Claude agents)" before writing a Codex task brief (hook boundary). (2026-10-14)
 - A task worker waiting on a long run inside its call: the call's timeout kills it mid-run. Launch detached and
   return; the caller monitors. (2026-10-14)
 
-## I.18 Monitoring running work (2026-10-14)
+## I.18 Monitoring running work (2026-10-15)
 
 Source: `agents/OPERATIONS.md` I.18
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 User, 2026-10-14: runs that take compute or sit on the critical path of the goal are monitored periodically. (2026-10-14)
 
@@ -900,27 +872,30 @@ User, 2026-10-14: runs that take compute or sit on the critical path of the goal
   |---|---|---|
   | infra-transient | the environment failed once (a hang at start, a lost connection, a killed worker) and the inputs are fine | capture diagnostics, kill by PID, retry **once**; the retry is recorded in the task trail (2026-10-14) |
   | infra-permanent | the environment fails again or cannot work (out of memory, disk full, missing tool, a second transient failure) | stop launching; kill the offender if it is your own job and endangers others (another agent's job: only the master kills it, on the user's order); tell the spawner (2026-10-14) |
-  | content | the job itself is wrong (a crash, an assertion, a wrong or impossible number); a deterministic job repeats it | no retry; diagnose (the `debug` skill) or tell the spawner (2026-10-14) |
+  | content | the job itself is wrong (a crash, an assertion, a wrong or impossible number, an overflow); a deterministic job repeats it | no retry; diagnose (the `debug` skill) or tell the spawner (2026-10-14) | (2026-10-15)
   | spec mismatch | the job ran but not what was asked (wrong arm, configuration, inputs or version) | stop the block; fix the specification; the results do not count (2026-10-14) |
   | integrity | the record cannot be trusted (missing or truncated output, a fingerprint that does not match, results from mixed trees) | quarantine the results; never use them in a comparison; tell the spawner (2026-10-14) |
 
   A value that was not measured is recorded as null (missing), never as 0. (2026-10-14)
+- **Simulator content failures.** Content failures are not retried: the simulator is deterministic, so a crash, a wrong number or an overflow repeats on rerun with the same inputs. Diagnose it (`debug` skill); telling the spawner does not replace diagnosis for simulator content failures. (2026-10-14; 2026-10-15)
 - **Acting** (on your own jobs only; another agent's job is reported to the master). Act by the class above.
   Runaway memory or a machine short of memory: stop launching, kill the offender, tell the spawner. Report an
   anomaly to the spawner at once, not at the end; record it, its class and the action in the task trail, and
   record a new kind of anomaly in the knowledge base (I.21). Healthy checks are not logged. (2026-10-14)
 
-## I.16 Git, processes and safety: the general rules (2026-10-14)
+## I.16 Git, processes and safety: the general rules (2026-10-15)
 
 Source: `agents/OPERATIONS.md` I.16
 
-- Never print a token file and never put a token in a remote URL; push through a credential helper that reads
-  the file. Never force-push. (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
+- Never print a token or credential file and never put a token in a remote URL; push through a credential helper that reads
+  the file. Never force-push. (2026-10-14) (2026-10-15)
 - Commit only on your own branch, one item per commit; stage only your own files (others' uncommitted files share
   the worktrees). Never `git add -A` in a shared tree. Exception: knowledge base entries are committed where the
   knowledge base lives, from any line of work (the run rules say how); a worker that cannot write there
-  proposes its entries in its report. (2026-10-14)
-- The stash is shared by all worktrees and sessions: never bare `git stash`/`pop`; prefer a WIP commit. (2026-10-14)
+  proposes its entries in its report. (2026-10-14) Stock focused-commit rule provenance: 2026-04-26. (2026-10-15)
+- The stash is shared by all worktrees and sessions: never bare `git stash`/`pop`; prefer a WIP commit. (2026-10-14) Never `git stash drop` or `git stash clear`, even for your own explicitly named entry. (2026-10-14; 2026-10-15)
 - Code branches stay local unless the user asks; notes and results the user wants visible elsewhere are pushed
   as soon as they are written. (2026-10-14)
 - Never `pkill -f` or `killall`; kill by PID. Clean up your own scratch, trees and orphan processes when done. (2026-10-14)
@@ -931,8 +906,7 @@ Source: `agents/OPERATIONS.md` I.16
 - To wait for a process, wait on its PID (`while kill -0 <pid>`) or on its output file, never on `pgrep -f
   <pattern>`: the waiting shell's own command line contains the pattern, so the loop matches itself and never ends
   (verifier, 2026-10-14).
-- Ask the user before starting expensive jobs they did not request. Within an approved experiment, keep the
-  available slots full. (2026-10-14)
+- Ask the user before starting expensive jobs they did not request. For the approved queue's launch order, read the run rules before scheduling. (2026-10-14) (2026-10-15)
 - If a permission check blocks an action, do not work around it; report it to the user. (2026-10-14)
 
 ## Skill: claim-audit
@@ -941,7 +915,9 @@ Source: `.claude/skills/claim-audit/SKILL.md`
 
 Trigger: Audit the claims and numbers of a write-up, handoff or paper against raw results before they are published or reported as findings. Use after a grid or experiment finishes and before any number goes into a paper or a result summary.
 
-### Claim audit (2026-10-14)
+### Claim audit (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 1. **Numbers come from records.** Every number in a handoff, results README, report or paper is either generated
    from the result records by a script, or carries the path of the record it was read from (and the run ids).
@@ -952,13 +928,10 @@ Trigger: Audit the claims and numbers of a write-up, handoff or paper against ra
 3. **Mechanical check first.** A script confirms every number exists in the named result file with the stated
    value and run ids; mismatches are fixed before any judgement. Then, with the run-card tool named in the run
    rules:
-   - every compared pair of blocks passes `compare` (fingerprints equal except the arm variables and arm flags);
-   - every card passes `check --post` with the claim's kind (`null`, `arm-lost` or `difference`): arm-active
-     result always, positive-control result for a null or "arm lost" claim;
-   - the card is scored, and every miss was explained after reading the raw results (`raw_read`). (2026-10-14)
-4. **Wording check.** Against the cards: a same-seed rerun is not called a replication; "confirmed",
-   "significant" or "robust" appears only with its evidence stated; results of exploratory blocks are labelled
-   exploratory; a missed prediction is reported as a miss, not reworded into a hit. (2026-10-14)
+   - Independently validate comparisons and fingerprints using `experiment-plan` The order, before the audit verdict; (2026-10-15)
+   - Independently validate post-check kind and controls using `experiment-plan` The order, before the audit verdict; (2026-10-15)
+   - Independently validate scoring and raw-read-on-miss using `experiment-plan` The order, before the audit verdict. (2026-10-14; 2026-10-15) (2026-10-15)
+4. **Wording check.** Independently check the text against the cards and the `experiment-plan` Wording requirements before the verdict, including exploratory labels, evidence for strong words and reporting misses honestly. (2026-10-15)
 5. **Zero-context audit.** A fresh Codex (Sol, read-only) gets only the claims file, the cards and the raw result
    paths, not our summary or reasoning, and checks: number provenance, the baseline is the stated one, no
    normalisation to our own output, the scope (n, seeds, rates, configurations) matches the wording, nothing
@@ -973,7 +946,9 @@ Source: `.claude/skills/debug/SKILL.md`
 
 Trigger: Diagnose a mismatch, hang, crash or non-determinism. Use when a check fails unexpectedly, two trees disagree, or a run stalls.
 
-### Debugging (2026-10-14)
+### Debugging (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 0. **Classify the failure** (I.18): infra-transient (retry once, logged), infra-permanent, content, spec
    mismatch or integrity. A content failure of a deterministic program is not retried: it repeats. Search the
@@ -984,9 +959,8 @@ Trigger: Diagnose a mismatch, hang, crash or non-determinism. Use when a check f
 3. **Hypotheses**: write 3-5 falsifiable ones in the task trail, each with the observation that would refute it. (2026-10-14)
 4. **One variable at a time**; tagged debug output, removed before commit. (2026-10-14)
 5. **Three failed fixes -> stop** and escalate: the design, not the line, may be wrong. (2026-10-14)
-6. The fix comes with a regression test that fails when the fix is reverted (I.14). (2026-10-14)
-7. **Record it** in the knowledge base (I.21): the cause as a pitfall (or an occurrence on the existing entry),
-   with the refuted hypotheses as evidence. (2026-10-14)
+6. Read `agents/INTERFACE.md` I.14 before adding a regression test. (2026-10-14)
+7. **Record it:** follow I.21 before writing the cause as a pitfall or recurrence; include the refuted hypotheses as evidence. (2026-10-14; 2026-10-15)
 
 ## Skill: design-note
 
@@ -994,7 +968,9 @@ Source: `.claude/skills/design-note/SKILL.md`
 
 Trigger: Write a decision-complete design note before hard-tier implementation, and run the builder check. Use before spawning an implementer for anything in the hard tier.
 
-### Design note and builder check (2026-10-14)
+### Design note and builder check (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 1. **The note** holds: problem and intent; goals, non-goals and anti-goals; the decisions already made (pointers
    into the decisions list, quoted user words); interfaces and data formats; the algorithm or behaviour, precise
@@ -1006,7 +982,7 @@ Trigger: Write a decision-complete design note before hard-tier implementation, 
    or interfaces. (2026-10-14)
 3. **Builder check.** A fresh Codex Sol medium worker (I.3) reads the note as the implementer would and lists every question it would
    have to answer. Sort each: answered in the note / trivial (implementer's choice, I.10) / the user's. Put the
-   answers into the note; take the user's questions to the user. (2026-10-14)
+   answers into the note; take the user's questions to the user. (2026-10-14) Hard-tier work starts only from this decision-complete note, leaving the implementer no unsettled design decision; settle the user's questions before spawning (I.12). (2026-10-14) (2026-10-15)
 4. Only then spawn the implementer, with the note as its main document. (2026-10-14)
 
 ## Skill: experiment-plan
@@ -1165,7 +1141,9 @@ Source: `.claude/skills/lit-search/SKILL.md`
 
 Trigger: Literature, documentation or source-code research through Codex. Use whenever an agent needs papers, docs or how a deployed system implements something (AGENTS I.4).
 
-### Literature search (2026-10-14)
+### Literature search (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 1. **Brief Codex** (Luna for finding, Sol for judging) with: the question; 2-4 rephrasings to search in parallel;
    where to search (paper indexes, official docs, the actual source code); the period; the answer language. (2026-10-14)
@@ -1174,11 +1152,9 @@ Trigger: Literature, documentation or source-code research through Codex. Use wh
    *unverified*; contradictions kept, not resolved silently; a coverage status (what was searched, what was not,
    what could not be reached); the queries used. (2026-10-14)
 3. **No URL, no claim.** A source that was not read is not described; a number comes with the passage it is from. (2026-10-14)
-4. **Check before relying**: the caller opens the sources behind any claim it will act on or cite. (2026-10-14)
+4. **Check before relying**: the caller opens the sources behind any claim it will act on or cite. (2026-10-14) Codex output is a second opinion, not a verified source. (2026-10-14) (2026-10-15)
 5. **Citations for a paper** go through `claim-audit` step 3 before they are used. (2026-10-14)
-6. **Keep what was verified.** Facts the caller verified and will rely on again (how a deployed system behaves,
-   a tool's flag) go into the knowledge base (I.21), status `verified` with the source as evidence; unread
-   claims stay `assumed`. The research worker proposes them; the caller records them. (2026-10-14)
+6. **Keep what was verified.** Before recording reusable deployed-system behaviour or tool flags, follow I.21's evidence/status/write policy. The caller opens relied-on sources (step 4) and records verified facts; unread claims remain unchecked/assumed under I.21. The research worker proposes entries in its report. (2026-10-14; 2026-10-15)
 
 ## Skill: paper-write
 
@@ -1186,16 +1162,15 @@ Source: `.claude/skills/paper-write/SKILL.md`
 
 Trigger: Write or revise paper text, a result summary or other prose built on experiment evidence. Use for any paper section, abstract, rebuttal or results write-up.
 
-### Paper writing (2026-10-14)
+### Paper writing (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 1. **Plan first**: a claims-evidence matrix (each claim -> the figure, table or run that supports it) and a
    one-sentence contribution per theme, confirmed with the user before drafting. (2026-10-14)
 2. **Evidence only.** Write from verified results; a missing number stays a visible placeholder (`DATA_NEEDED`),
    never a plausible value. Do not make a table or figure look cleaner than its evidence. (2026-10-14)
-3. **Wording follows the evidence.** Label each result confirmatory or exploratory as its run card says; a
-   same-seed rerun is a reproduction, not a replication; write "confirmed" or "significant" only with the
-   evidence stated (test, n, effect, noise). A "no difference" or "arm lost" statement needs the card's positive
-   control and arm-active check (the run rules name the run-card tool). (2026-10-14)
+3. **Wording follows the evidence.** Before drafting result claims, apply the definitions and control gates in `experiment-plan` (The order and Wording); prose must carry its confirmatory/exploratory label and evidence. The audit remains the independent `claim-audit` check. (2026-10-15)
 4. **Calibrate both ways.** Cut overclaims; when only editing style, do not weaken or drop the hedges that the
    evidence requires. Limitations list real limits. (2026-10-14)
 5. **The writer does not add citations**; citations and numbers pass `claim-audit` before the text is final. (2026-10-14)
@@ -1209,27 +1184,17 @@ Source: `.claude/skills/review/SKILL.md`
 
 Trigger: Send a finished implementation to an independent verifier and act on the verdict. Use when an implementer reports Done (AGENTS I.14).
 
-### Review by a verifier (2026-10-14)
+### Review by a verifier (2026-10-15)
 
-0. **Receipt checks first** (I.13): the commits and files the implementer's report names exist; otherwise
-   resume the implementer, do not start a review. (2026-10-14)
-1. **Start a verifier** with the `spawn-agent` steps: a Codex verifier (Sol, medium), or the Claude subagent type
-   `verifier` (Opus, medium) when byte-exact core code changed. The verifier did not write the code. (2026-10-14)
-2. **Give it**: the implementer's brief; the branch and commit range (test commit to head); the checks named in
-   *Done when*; and only the *Verified*, *Assumptions* and *Test changes* sections of the implementer's report,
-   not its narrative. (2026-10-14)
-3. **Hard-tier work always gets a Codex review** of the same diff, run by the verifier and reported separately.
-   **Say whether this ends a line of work.** Only then does the verifier also run the full golden run, the
-   reference checks and targeted mutation testing. (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
+0. Read `agents/INTERFACE.md` I.13 before accepting a report or stopping for a time limit. (2026-10-14)
+1. **Start a verifier** with `spawn-agent`, using I.14's independent verifier/model selection. (2026-10-15)
+2. Read `agents/INTERFACE.md` I.14 before preparing or reading review inputs. (2026-10-14)
+3. **Review depth:** follow I.14 for the independent second opinion; tell the verifier whether this ends a line of work so the complete verifier checklist selects its full/reference/mutation checks. (2026-10-15)
 4. **Ledger row** -> `review`. (2026-10-14)
-5. **On the verdict**: PASS -> ledger `done` (the row is then removed, I.17), relay. PASS with notes -> relay the notes; the user decides whether
-   they become tasks. REJECT -> resume the implementer with the numbered findings (`SendMessage`; Codex: a new call with the findings), then re-review
-   the fix range only. **Cap**: after three REJECT rounds, one new agent a tier higher gets one attempt (Codex work goes to Opus; an
-   Opus task goes to a fresh Opus at higher effort, with a Codex Sol second opinion); after that take it to the
-   user. A disputed finding goes to the user. The verdict is appended to the task trail and committed
-   by the master (a verifier leaves the tree unchanged; the agents commit their own entries, I.13). (2026-10-14)
-6. **Several reviewers** (e.g. verifier and Codex review): collect each first verdict before showing any of them
-   the others'. (2026-10-14)
+5. **On the verdict:** PASS -> ledger `done` (remove row, I.17), relay. PASS with notes -> relay notes; the user decides whether they become tasks. REJECT -> resume the implementer with numbered findings (`SendMessage`; Codex: a new call), following I.14's capped fix/re-review/dispute loop. Read I.13 before recording/committing the verdict; it owns the caller-commits exception. (2026-10-15)
+6. Read `agents/INTERFACE.md` I.14 before collecting several reviewers' first verdicts. (2026-10-14)
 7. The master does not review the code itself; it relays the verdict. (2026-10-14)
 
 ## Skill: spawn-agent
@@ -1238,44 +1203,22 @@ Source: `.claude/skills/spawn-agent/SKILL.md`
 
 Trigger: Spawn a Claude subagent or a Codex worker with a correct brief. Use every time the master (or an implementer calling a Codex worker) delegates a task (AGENTS I.12, I.15).
 
-### Spawning an agent (2026-10-14)
+### Spawning an agent (2026-10-15)
 
-1. **Pick the tier, then the role and model** (I.3). Start with Codex Sol medium; use Luna only for fully
-   specified mechanical work. Record the selection criterion in *Resources*. Use Opus only for an identified
-   hard criterion; neither a possible question nor an Opus parent makes a task hard. Hard: a Claude subagent
-   (implementer or verifier) on Opus
-   at effort medium, spawned with its custom subagent type: the type sets the model and the tool permissions
-   mechanically, and its prompt names the role's rule files (an instruction, not a guaranteed load, so the brief
-   names them too). Everything else goes to Codex (I.4): a task worker (Luna for simple, Sol medium for general), a
-   Codex verifier, or a research worker. (2026-10-14)
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+
+1. **Pick tier, role and model** using I.3 before delegating; record the selected criterion in *Resources*. Use I.12 for custom subagent types and I.4 for Codex invocation/flags. (2026-10-15)
 2. **Give it a task id** `T<YYYYMMDD>-<slug>` and a row in the progress ledger (I.17), state `queued`. (2026-10-14)
-3. **Write the brief to the task trail with the I.12 headings, in order**, commit it (the spawner commits the
-   brief; the agent commits its own entries, I.13), and send its path (never paste earlier
-   conversation): role line and task id; read first (rule files, and the knowledge base categories or entries
-   the task needs, I.21); goal and intent (the user's words quoted and dated); decided (pointers into the
-   decisions list); not yours to decide; scope (files it owns, files others own, and the shared resources it
-   may touch); interfaces; resources; done when; report (I.13). A heading with nothing to say says "none".
-   **Tag every premise** under every heading, *Resources* included, with its source (I.12):
-   `[user <date> "<quote>"]`, `[decisions <area>]`, `[rule <id>]`, `[knowledge <id> <status>]`,
-   `[code <path>]` or `[master inferred]`; never leave an inferred premise untagged. (2026-10-14)
-4. **Parallel work** (I.15): fix shared interfaces in every brief first; one writer per file; tell each what the
-   others own. (2026-10-14)
-5. **Hard-tier work**: start from a decision-complete design note (`design-note` skill) and its builder check;
-   reader-test the brief with a fresh Codex Sol medium worker (I.3); the builder check also defaults to Sol
-   and may share that worker. Ask the implementer for a read-back before it codes. Check that the
-   read-back answers every `[master inferred]` or untagged premise with `confirmed`, `refuted` + `alternative`,
-   or `unchecked`; take a `refuted` or `unchecked` premise that changes results to the user; the agent records
-   the answers in its task trail.
-   **Small same-shaped tasks**: batch them into one brief for one agent. (2026-10-14)
+3. **Write the brief** with all I.12 headings/provenance requirements; read I.12 before writing it. Commit the brief under I.13's ownership rules, then send its path, never pasted earlier conversation. (2026-10-15)
+4. **Parallel work:** follow I.15 before launching shared work. (2026-10-15)
+5. **Hard-tier work:** execute I.12's design/builder/reader/read-back gates before code; record premise answers in the task trail. Batch small same-shaped tasks only within I.12's batching limit. (2026-10-15)
 6. **Codex briefs** name the Codex role, "Codex's own rules", the answer language, and for task workers and
    verifiers the rule files the repository lists for them, the tree, the sandbox (I.4) and which launches,
    commits or pushes are ordered. A research worker never commits or runs jobs. (2026-10-14)
 7. **Launch in the background** unless the next step needs the result; set the ledger row to `running` and its
-   *watch* column to the agent id or the background command id, marked `(session)` (I.23); make sure the
-   heartbeat is armed. (2026-10-14)
-8. **On its report**: first run the receipt checks (I.13: the claimed commits and files exist; no time limit
-   the brief did not set; a missing item: resume the agent with the list), then act on the status word; read the full report in the task trail only as far as needed;
+   watch/heartbeat according to I.23 before launch. (2026-10-14) (2026-10-15)
+8. **On its report**: first run I.13's receipt checks, then act on its status word; read the full report in the task trail only as far as needed;
    update the ledger; relay to the user what matters, keeping what you observed apart from what
    the agent reported; answer escalations (I.11) by `SendMessage` to the same agent (Codex: a new call that quotes its report and the
    answer), quoting who decided; send
-   finished implementations to review (`review` skill). (2026-10-14)
+   finished implementations to review (`review` skill). (2026-10-14) (2026-10-15)

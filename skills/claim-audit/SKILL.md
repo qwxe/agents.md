@@ -4,7 +4,9 @@ description: Audit the claims and numbers of a write-up, handoff or paper agains
 ---
 <!-- general -->
 
-# Claim audit (2026-10-14)
+# Claim audit (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 1. **Numbers come from records.** Every number in a handoff, results README, report or paper is either generated
    from the result records by a script, or carries the path of the record it was read from (and the run ids).
@@ -15,13 +17,10 @@ description: Audit the claims and numbers of a write-up, handoff or paper agains
 3. **Mechanical check first.** A script confirms every number exists in the named result file with the stated
    value and run ids; mismatches are fixed before any judgement. Then, with the run-card tool named in the run
    rules:
-   - every compared pair of blocks passes `compare` (fingerprints equal except the arm variables and arm flags);
-   - every card passes `check --post` with the claim's kind (`null`, `arm-lost` or `difference`): arm-active
-     result always, positive-control result for a null or "arm lost" claim;
-   - the card is scored, and every miss was explained after reading the raw results (`raw_read`). (2026-10-14)
-4. **Wording check.** Against the cards: a same-seed rerun is not called a replication; "confirmed",
-   "significant" or "robust" appears only with its evidence stated; results of exploratory blocks are labelled
-   exploratory; a missed prediction is reported as a miss, not reworded into a hit. (2026-10-14)
+   - Independently validate comparisons and fingerprints using `experiment-plan` The order, before the audit verdict; (2026-10-15)
+   - Independently validate post-check kind and controls using `experiment-plan` The order, before the audit verdict; (2026-10-15)
+   - Independently validate scoring and raw-read-on-miss using `experiment-plan` The order, before the audit verdict. (2026-10-14; 2026-10-15) (2026-10-15)
+4. **Wording check.** Independently check the text against the cards and the `experiment-plan` Wording requirements before the verdict, including exploratory labels, evidence for strong words and reporting misses honestly. (2026-10-15)
 5. **Zero-context audit.** A fresh Codex (Sol, read-only) gets only the claims file, the cards and the raw result
    paths, not our summary or reasoning, and checks: number provenance, the baseline is the stated one, no
    normalisation to our own output, the scope (n, seeds, rates, configurations) matches the wording, nothing

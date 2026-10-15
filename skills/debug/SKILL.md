@@ -4,7 +4,9 @@ description: Diagnose a mismatch, hang, crash or non-determinism. Use when a che
 ---
 <!-- general -->
 
-# Debugging (2026-10-14)
+# Debugging (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 0. **Classify the failure** (I.18): infra-transient (retry once, logged), infra-permanent, content, spec
    mismatch or integrity. A content failure of a deterministic program is not retried: it repeats. Search the
@@ -15,6 +17,5 @@ description: Diagnose a mismatch, hang, crash or non-determinism. Use when a che
 3. **Hypotheses**: write 3-5 falsifiable ones in the task trail, each with the observation that would refute it. (2026-10-14)
 4. **One variable at a time**; tagged debug output, removed before commit. (2026-10-14)
 5. **Three failed fixes -> stop** and escalate: the design, not the line, may be wrong. (2026-10-14)
-6. The fix comes with a regression test that fails when the fix is reverted (I.14). (2026-10-14)
-7. **Record it** in the knowledge base (I.21): the cause as a pitfall (or an occurrence on the existing entry),
-   with the refuted hypotheses as evidence. (2026-10-14)
+6. Read `agents/INTERFACE.md` I.14 before adding a regression test. (2026-10-14)
+7. **Record it:** follow I.21 before writing the cause as a pitfall or recurrence; include the refuted hypotheses as evidence. (2026-10-14; 2026-10-15)

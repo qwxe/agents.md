@@ -11,7 +11,9 @@ Read before changing the simulator: the entries of category `simulator` whose `r
 `knowledge/simulator/overview.md` (what LLMServingSim is, repository layout) and `knowledge/simulator/simulation-flow.md`. (2026-10-14)
 The container images are `knowledge/environment/docker-images.md`.
 
-## Code Style & Formatting (2026-10-14)
+## Code Style & Formatting (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 - **Python**: 4-space indentation, snake_case for functions/variables, PascalCase for classes (2026-04-26)
 - **No enforced formatter** — match surrounding code style in the file you're editing (2026-04-26)
@@ -19,9 +21,11 @@ The container images are `knowledge/environment/docker-images.md`.
 - **Internal Python**: use underscores (`max_num_seqs`, `enable_chunked_prefill`) (2026-04-26)
 - **JSON config filenames**: descriptive snake_case (`single_node_pim_instance.json`) (2026-04-26)
 - **Imports**: keep minimal and consistent; `serving/` modules use relative imports (2026-04-26)
-- **Comments**: use English only — no Korean or other non-English text in comments, docstrings, or log messages (2026-04-26)
+- Read `AGENTS.md` 0.3 rule 11 before writing comments, docstrings or logs. (2026-04-26)
 
-## Rules from the reference sections (2026-10-14)
+## Rules from the reference sections (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 Rules that were embedded in the architecture description; the facts behind each are in the entry named.
 
@@ -49,6 +53,7 @@ Rules that were embedded in the architecture description; the facts behind each 
   q_dim = n_head * head_dim        # NOT n_embd
   kv_dim = kv_head * head_dim      # NOT n_embd // group
   ```
+  Read `knowledge/pitfalls/sim-hidden-size-head-dim.md` before changing these dimensions. (2026-04-26) (2026-10-15)
 - **R10.** Every trace field except the last carries an explicit trailing space in `_FMT`, and `header()` goes
   through `_FMT` too, so the file has one layout (see `knowledge/simulator/trace-format.md`). (2026-08-23)
 - **R11.** Dynamically released sub-requests enter the waiting queue with `bisect.insort`, not `append` (see
@@ -78,11 +83,13 @@ The repo has two documentation surfaces with deliberate scope:
 When you add a new feature with user-visible behavior, document it on the
 website (not the README). (2026-05-04)
 
-## Commit & Pull Request Guidelines (2026-10-14)
+## Commit & Pull Request Guidelines (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 - Short imperative commit messages: `Fix incorrect evict_size accumulation`,
   `Add Qwen3 model support` (2026-04-26)
-- Keep commits focused — one logical change per commit (2026-04-26)
+- Read `agents/OPERATIONS.md` I.16 before staging or committing. (2026-04-26)
 - Include the exact command used for validation and note any output CSV path in PRs (2026-04-26)
 - Describe which simulation mode is affected and the config/dataset used (2026-04-26)
 
@@ -110,7 +117,9 @@ equality against recorded results:
 Before adding or choosing a scenario, read `knowledge/simulator/validation-scenarios.md` (what the scenarios
 exercise). (2026-10-14)
 
-## Common Pitfalls (2026-10-14)
+## Common Pitfalls (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 Each item is a rule; its explanation and history are in the pitfall entry named.
 
@@ -125,7 +134,7 @@ Each item is a rule; its explanation and history are in the pitfall entry named.
 - **Don't gate a DP batch on which NPU is asking** (route on `len(batch.fired) == 1`), and never hand an NPU a DP batch whose `workload_name` is still `None` (see `knowledge/pitfalls/sim-dp-gate-on-npu.md`). (2026-08-21)
 - **Don't give a DP group one slot per member anywhere**: `dp_pending[dg][inst]` and `dp_ready_workloads[npu]` are FIFOs (see `knowledge/pitfalls/sim-dp-single-slot.md`). (2026-08-24)
 - **Don't let the start NPU's join depend on the pipeline being full**: `schedule()` tries `_schedule_existing` before the `len(inflight) >= pp_size` cap (see `knowledge/pitfalls/sim-start-npu-join.md`). (2026-08-24)
-- **Don't assume `hidden_size == num_heads * head_dim`** — use explicit `head_dim` from config (R9) (see `knowledge/pitfalls/sim-hidden-size-head-dim.md`). (2026-04-26)
+- Read `agents/SIM-REFERENCE.md` "Rules from the reference sections" before calculating model head dimensions. (2026-04-26)
 - **Use canonical vLLM layer names**; every name the simulator emits must also appear in the architecture yaml's catalog (see `knowledge/pitfalls/sim-layer-names.md`). (2026-04-26)
 - **Profiler CSVs store microseconds** (`time_us`); the simulator converts to nanoseconds at load time (see `knowledge/pitfalls/sim-profiler-microseconds.md`). (2026-04-26)
 - **First and last trace layers must use REMOTE** (see `knowledge/pitfalls/sim-first-last-remote.md`). (2026-04-26)
