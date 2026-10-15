@@ -77,6 +77,10 @@ This contract is a readable view of the linked rule homes, not an independent po
   decision applies to the task at hand. (2026-10-14)
 - **When a session ends or work moves**: say so ("다음 세션에서 할게", "compact할게", "이건 다른 세션에서"); the
   master runs the handover and gives you the input for the new session. (2026-10-14)
+- **Moving to another machine**: say so ("다른 시스템에서 새로 시작하려고 해"); the master hands over, pushes every
+  branch (diverged ones only after you decide), syncs the published rule copy and lists what a push does not carry (`session-export`). In the new
+  session say "새 시스템에서 시작했어" (or name no line of work): the master lists the open lines and asks which this
+  session takes (`session-import`). (2026-10-15)
 - **Decisions you want to stand**: say them in your own words; the master records them as you said them, without asking for approval, since a record changes no rule (AGENTS.md 0.5). (2026-10-15)
 - **To reopen a closed decision**: name it ("II.1의 X 다시 보자"). (2026-10-14)
 - **Promotion decisions**: approve or reject a knowledge base pitfall the master proposes as a rule. (2026-10-14)
@@ -99,12 +103,12 @@ This contract is a readable view of the linked rule homes, not an independent po
 | Report language | Korean / English | Korean | "영어로" | I.8 (2026-10-14) |
 | Research depth | quick lookup (Codex Luna) or exhaustive survey | by request | "exhaustive하게" | I.4 (2026-10-14) |
 | Hooks | which commands are blocked | the never-break list | "X는 막아줘 / 풀어줘" | `AGENTS.md` 0.3 (2026-10-14) |
-| Rule-file push and publish | when rule-file changes leave the machine | right after the review passes (PASS or PASS with notes); local until then; a decision row recorded by the light path: right after a quote check, no review (2026-10-15) | "바로 push해" / "내가 볼 때까지 push하지 마" | `AGENTS.md` 0.2, 0.5 (2026-10-14) |
+| Rule-file push and publish | when rule-file changes leave the machine | right after the review passes (PASS or PASS with notes); local until then, except that a move to another machine pushes the unreviewed branch without merging or publishing it (`session-export`, 2026-10-15); a decision row recorded by the light path: right after a quote check, no review (2026-10-15) | "바로 push해" / "내가 볼 때까지 push하지 마" | `AGENTS.md` 0.2, 0.5 (2026-10-14) |
 | Rule-file edits | who may edit the rule files | any agent, after approval of the exact change: yours for the master's proposals, the master's for a subagent's (2026-10-15) | "이 규칙 변경 승인" / "규칙은 master만 고쳐" | `AGENTS.md` 0.5 (2026-10-14) |
 
 ## 4. Skills you can call by name
 
-`/spawn-agent`, `/review`, `/handover`, `/lit-search`, `/claim-audit`, `/paper-write`, `/ideation`,
+`/spawn-agent`, `/review`, `/handover`, `/session-export`, `/session-import`, `/lit-search`, `/claim-audit`, `/paper-write`, `/ideation`,
 `/design-note`, `/experiment-plan`, `/debug`. Each says when it applies in its first line; the master also uses
 them on its own when their trigger fires. (2026-10-14)
 

@@ -2,7 +2,7 @@
 
 Repository-independent rules for agents (Claude Code, Codex, and others): roles and spawning, delegation, decision rights and escalation, briefs and reports, tests and review, handover between sessions, and safe git/process habits. This file is generated, verbatim, from the sections marked `<!-- general -->` in a repository's rule files (`AGENTS.md`, `agents/*.md`) by `agents/gen_general.py`, and is never edited by hand: change the marked section and regenerate. The general terms the sections use (handoff file, decisions list, task trail, ...) are defined in section 0.6; each repository's `AGENTS.md` maps them to its own files. A repository's own `AGENTS.md` wins on anything repository-specific. Each section's `Source:` line names the file it comes from.
 
-Sections: 0.5, 0.6, I.10, I.11, I.12, I.13, I.14, I.15, I.19, I.21, I.1, I.2, I.17, I.23, I.3, I.9, I.4, I.18, I.16, plus the role sections (Implementer, Verifier, Master pitfalls) and the skills (claim-audit, debug, design-note, experiment-plan, handover, ideation, lit-search, paper-write, review, spawn-agent).
+Sections: 0.5, 0.6, I.10, I.11, I.12, I.13, I.14, I.15, I.19, I.21, I.1, I.2, I.17, I.23, I.3, I.9, I.4, I.18, I.16, plus the role sections (Implementer, Verifier, Master pitfalls) and the skills (claim-audit, debug, design-note, experiment-plan, handover, ideation, lit-search, paper-write, review, session-export, session-import, spawn-agent).
 
 ---
 
@@ -1205,6 +1205,60 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 5. **On the verdict:** PASS -> ledger `done` (remove row, I.17), relay. PASS with notes -> relay notes; the user decides whether they become tasks. REJECT -> resume the implementer with numbered findings (`SendMessage`; Codex: a new call), following I.14's capped fix/re-review/dispute loop. Read I.13 before recording/committing the verdict; it owns the caller-commits exception. (2026-10-15)
 6. Read `agents/INTERFACE.md` I.14 before collecting several reviewers' first verdicts. (2026-10-14)
 7. The master does not review the code itself; it relays the verdict. (2026-10-14)
+
+## Skill: session-export
+
+Source: `.claude/skills/session-export/SKILL.md`
+
+Trigger: Hand this session's work to another machine. Use when the user says the work moves to another machine or system ("다른 시스템에서 새로 시작하려고 해", "다른 기계로 옮길게", "전부 push하고 넘겨줘").
+
+### Session export (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 해줘. 다른 레포에도 쓰게 해주고, 승인해줘." and, for step 3, "session export할 때 이것도 같이 갱신하도록해줘."
+
+Run this before the user leaves the machine. It extends the `handover` skill with what a move between machines
+needs; the handover procedure itself stays in that skill. (2026-10-15)
+
+1. **Hand over this session** with the `handover` skill, steps 1-6 (handoff subsection, decisions list, memory,
+   progress ledger, commit and push). (2026-10-15)
+2. **Push every branch.** Compare every local branch with the remote. Push each branch that is ahead or missing on
+   the remote. A branch that diverged from the remote is never force-pushed by the agent: first push the remote
+   head to a backup branch on the remote (e.g. `backup/<branch>-remote-<date>`), then show the user the diverged
+   branches (commits on each side) and let the user decide. Branches of other sessions are pushed only on the
+   user's order (I.16). A rule-change branch still under review is pushed too, so the other machine can continue it;
+   pushing it neither merges nor publishes it. (2026-10-15)
+3. **Sync the published rule copy.** Where the repository publishes a copy of its rule files to another repository,
+   check that copy against the main branch and publish any drift of reviewed rule files, so the other machine and
+   other repositories read the same rules. Rule changes still under review stay unpublished; list them in the
+   handoff with their branch and review state. (2026-10-15)
+4. **List what a push does not carry** in the handoff subsection: credentials, untracked data, containers and build
+   environments, tool install paths, the session transcripts, the master's memory, and work still running on this
+   machine (which stops reporting when the session ends). Say where each is on this machine. (2026-10-15)
+5. **Check the push**: no local branch is ahead of the remote, the handoff commit is on the remote, and the published
+   rule copy is in sync. Then tell
+   the user, in the report language, the commits, the backups made, anything not pushed and why, and the words
+   to say in the new session ("새 시스템에서 시작했어"), which start the `session-import` skill. (2026-10-15)
+
+## Skill: session-import
+
+Source: `.claude/skills/session-import/SKILL.md`
+
+Trigger: Take over work on a new machine or in a new session. Use when the user says the session starts on a new machine or system ("새 시스템에서 시작했어", "다른 기계에서 이어서 할게"), or when a master session starts and the user has not named the line of work it takes.
+
+### Session import (2026-10-15)
+
+Approval: user, 2026-10-15: "좋아. 그렇게 해줘. 다른 레포에도 쓰게 해주고, 승인해줘."
+
+1. **Read and fetch**: read the master's startup rule files; fetch the remote so the progress ledgers and handoff
+   files are current. (2026-10-15)
+2. **List the open lines**: every progress ledger with rows not done and every handoff file whose newest
+   subsection is not marked closed. For each line give the newest handoff subsection (number, date), its state in
+   one line, what it waits on, and the work that was in flight with where it publishes. (2026-10-15)
+3. **Ask the user** in the report language which line or lines this session takes. Several sessions may be open:
+   take only the lines the user assigns, and leave the others untouched. (2026-10-15)
+4. **Resume each chosen line** with the `handover` skill's "At the start of a new session" paragraph. (2026-10-15)
+5. **Check the machine-local items** the handoff lists (credentials, untracked data, containers, tool paths,
+   transcripts, memory) before relying on them, and report what is missing on this machine. (2026-10-15)
 
 ## Skill: spawn-agent
 
