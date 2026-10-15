@@ -1,6 +1,6 @@
 ---
 name: session-export
-description: Hand this session's work to another machine. Use when the user says the work moves to another machine or system ("다른 시스템에서 새로 시작하려고 해", "다른 기계로 옮길게", "전부 push하고 넘겨줘").
+description: Hand this session's work to another machine. Use when the user, in a running session, says the work moves to a new system or machine: "새로운 시스템" or similar ("새로운 시스템에서 시작하려고 해", "새로운 시스템으로 인수인계해줘", "다른 시스템으로 옮길게", "다른 기계로 옮길게", "전부 push하고 넘겨줘").
 ---
 <!-- general -->
 
@@ -29,4 +29,4 @@ needs; the handover procedure itself stays in that skill. (2026-10-15)
 5. **Check the push**: no local branch is ahead of the remote, the handoff commit is on the remote, and the published
    rule copy is in sync. Then tell
    the user, in the report language, the commits, the backups made, anything not pushed and why, and the words
-   to say in the new session ("새 시스템에서 시작했어"), which start the `session-import` skill. (2026-10-15)
+   to say in the new session ("새로운 시스템에서 시작했어"), which start the `session-import` skill. (2026-10-15)

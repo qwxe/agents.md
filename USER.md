@@ -75,11 +75,11 @@ This contract is a readable view of the linked rule homes, not an independent po
 - **Approval of new runs and experiment plans** (`experiment-plan` skill) before launch. (2026-10-14)
 - **Standing rules said as standing**: "always", "from now on", "앞으로", "규칙에 넣어줘" make a rule; otherwise a
   decision applies to the task at hand. (2026-10-14)
-- **When a session ends or work moves**: say so ("다음 세션에서 할게", "compact할게", "이건 다른 세션에서"); the
-  master runs the handover and gives you the input for the new session. (2026-10-14)
-- **Moving to another machine**: say so ("다른 시스템에서 새로 시작하려고 해"); the master hands over, pushes every
+- **When a session ends or work moves**: say "인수인계" or similar ("인수인계할게", "다음 세션에서 할게", "compact할게", "이건 다른 세션에서"); the
+  master runs the handover and gives you the input for the new session. (2026-10-15)
+- **Moving to another machine**: say "새로운 시스템" or similar ("새로운 시스템에서 시작하려고 해", "새로운 시스템으로 인수인계해줘"); the master hands over, pushes every
   branch (diverged ones only after you decide), syncs the published rule copy and lists what a push does not carry (`session-export`). In the new
-  session say "새 시스템에서 시작했어" (or name no line of work): the master lists the open lines and asks which this
+  session say "새로운 시스템에서 시작했어" (or name no line of work): the master lists the open lines and asks which this
   session takes (`session-import`). (2026-10-15)
 - **Decisions you want to stand**: say them in your own words; the master records them as you said them, without asking for approval, since a record changes no rule (AGENTS.md 0.5). (2026-10-15)
 - **To reopen a closed decision**: name it ("II.1의 X 다시 보자"). (2026-10-14)

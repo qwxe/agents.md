@@ -1,6 +1,6 @@
 ---
 name: session-import
-description: Take over work on a new machine or in a new session. Use when the user says the session starts on a new machine or system ("새 시스템에서 시작했어", "다른 기계에서 이어서 할게"), or when a master session starts and the user has not named the line of work it takes.
+description: Take over work on a new machine or in a new session. Use when the user, at the start of a session, says it starts on a new system or machine: "새로운 시스템" or similar ("새로운 시스템에서 시작했어", "새 시스템이야", "다른 기계에서 이어서 할게"), or when a master session starts and the user has not named the line of work it takes.
 ---
 <!-- general -->
 

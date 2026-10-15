@@ -1059,7 +1059,7 @@ After the runs, run `claim-audit` before any number leaves the task trail. (2026
 
 Source: `.claude/skills/handover/SKILL.md`
 
-Trigger: Hand the session over to the next one. Use when the user says the session ends or moves on ("다음 세션에서 시작할게", "compact할게", "지금까지 내용을 정리해 둬", "새로운 세션에 넣을 input"), when work moves to another session, or when the master's context nears about 256K tokens (AGENTS I.9).
+Trigger: Hand the session over to the next one. Use when the user says "인수인계" or similar ("인수인계할게", "인계해줘", "다음 세션에서 시작할게", "compact할게", "지금까지 내용을 정리해 둬", "새로운 세션에 넣을 input"), when work moves to another session, or when the master's context nears about 256K tokens (AGENTS I.9). When the user also names a new system or machine, use `session-export` instead, which includes this.
 
 ### Handover procedure (2026-10-15)
 
@@ -1210,7 +1210,7 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
 Source: `.claude/skills/session-export/SKILL.md`
 
-Trigger: Hand this session's work to another machine. Use when the user says the work moves to another machine or system ("다른 시스템에서 새로 시작하려고 해", "다른 기계로 옮길게", "전부 push하고 넘겨줘").
+Trigger: Hand this session's work to another machine. Use when the user, in a running session, says the work moves to a new system or machine: "새로운 시스템" or similar ("새로운 시스템에서 시작하려고 해", "새로운 시스템으로 인수인계해줘", "다른 시스템으로 옮길게", "다른 기계로 옮길게", "전부 push하고 넘겨줘").
 
 ### Session export (2026-10-15)
 
@@ -1237,13 +1237,13 @@ needs; the handover procedure itself stays in that skill. (2026-10-15)
 5. **Check the push**: no local branch is ahead of the remote, the handoff commit is on the remote, and the published
    rule copy is in sync. Then tell
    the user, in the report language, the commits, the backups made, anything not pushed and why, and the words
-   to say in the new session ("새 시스템에서 시작했어"), which start the `session-import` skill. (2026-10-15)
+   to say in the new session ("새로운 시스템에서 시작했어"), which start the `session-import` skill. (2026-10-15)
 
 ## Skill: session-import
 
 Source: `.claude/skills/session-import/SKILL.md`
 
-Trigger: Take over work on a new machine or in a new session. Use when the user says the session starts on a new machine or system ("새 시스템에서 시작했어", "다른 기계에서 이어서 할게"), or when a master session starts and the user has not named the line of work it takes.
+Trigger: Take over work on a new machine or in a new session. Use when the user, at the start of a session, says it starts on a new system or machine: "새로운 시스템" or similar ("새로운 시스템에서 시작했어", "새 시스템이야", "다른 기계에서 이어서 할게"), or when a master session starts and the user has not named the line of work it takes.
 
 ### Session import (2026-10-15)
 

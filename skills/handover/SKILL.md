@@ -1,6 +1,6 @@
 ---
 name: handover
-description: Hand the session over to the next one. Use when the user says the session ends or moves on ("다음 세션에서 시작할게", "compact할게", "지금까지 내용을 정리해 둬", "새로운 세션에 넣을 input"), when work moves to another session, or when the master's context nears about 256K tokens (AGENTS I.9).
+description: Hand the session over to the next one. Use when the user says "인수인계" or similar ("인수인계할게", "인계해줘", "다음 세션에서 시작할게", "compact할게", "지금까지 내용을 정리해 둬", "새로운 세션에 넣을 input"), when work moves to another session, or when the master's context nears about 256K tokens (AGENTS I.9). When the user also names a new system or machine, use `session-export` instead, which includes this.
 ---
 <!-- general -->
 
