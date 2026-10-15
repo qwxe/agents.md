@@ -33,4 +33,4 @@ adopted: its `AGENTS.md` entry file, the role files under `agents/`, the agent d
 The root files are generated from LLMServingSim and are edited there, never in this repository: change the
 marked section in the source repository, regenerate, and run `python3 agents/publish_agentsmd.py`.
 
-Source commit of the last sync: a955cc00
+Source commit of the last sync: 83a4d197
