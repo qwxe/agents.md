@@ -14,6 +14,7 @@ Blocked:
   - printing a token file (`cat gh_token`, `head hf_token`, ...)             (0.3 rule 7)
   - `--dangerously-bypass-approvals-and-sandbox`                             (I.4)
   - `git commit` whose change adds a secret or a token file                  (0.3 rule 7)
+  - cleanup operands with an allow-rule prefix that contain `..` or leave `.wt/` (I.7)
 
 Commands are found inside `;`, `&&`, `||`, `|`, newlines, `$(...)`, backticks, `bash -c`/`-lc`, `eval`, shell
 keywords (`if/then/else/do/while/{/!`), wrappers (`sudo`, `env`, `nohup`, `time`, `xargs`, `timeout`,
@@ -28,6 +29,8 @@ import subprocess
 import sys
 
 TOKEN_FILES = ("gh_token", "hf_token")
+REPO_ROOT = "/home/asd/LLMServingSim"
+WORKTREE_ROOT = REPO_ROOT + "/.wt"
 # Commands that print a file operand to output.
 PRINTERS = {"cat", "tac", "nl", "less", "more", "most", "head", "tail", "xxd", "od", "hexdump", "strings",
             "base64", "base32", "bat", "batcat", "view", "vi", "vim", "nano", "emacs", "pg", "column", "rev",
@@ -251,6 +254,17 @@ def positionals(cmd, args):
     return pos, explicit, redir
 
 
+def check_cleanup_paths(args):
+    """Constrain the cleanup allow-rule prefixes using lexical paths, without following links."""
+    paths, _, _ = positionals("", args)
+    for path in paths:
+        if not path.startswith((".wt/", WORKTREE_ROOT + "/")):
+            continue
+        normalized = os.path.normpath(os.path.join(REPO_ROOT, path))
+        if ".." in path.split("/") or not normalized.startswith(WORKTREE_ROOT + "/"):
+            raise Block("I.7: cleanup allow-rule paths must stay strictly inside .wt/ and contain no ..")
+
+
 def check_argv(argv, ctx, depth):
     argv = unwrap(argv)
     if not argv:
@@ -309,6 +323,9 @@ def check_argv(argv, ctx, depth):
             if is_token_file(p):
                 raise Block("0.3 rule 7: never print a token file (" + base(p) + ")")
 
+    if cmd == "unlink":
+        check_cleanup_paths(args)
+
     if cmd == "git":
         check_git(args)
 
@@ -334,6 +351,8 @@ def check_git(args):
     _, sub, sa = git_sub(args)
     if sub is None or "--help" in sa or "-h" in sa:
         return
+    if sub == "worktree" and sa[:1] == ["remove"]:
+        check_cleanup_paths(sa[1:])
     if sub == "push":
         for a in sa:
             if a in ("--force", "--force-with-lease", "--force-if-includes") or a.startswith("--force-with-lease="):

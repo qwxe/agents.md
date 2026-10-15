@@ -182,6 +182,62 @@ def run_hook(script, payload, env=None):
                           text=True, timeout=30, env=env)
 
 
+@pytest.mark.parametrize("cmd", [
+    "unlink .wt/../outside-link",
+    "unlink /home/asd/LLMServingSim/.wt/../outside-link",
+    "git worktree remove .wt/../outside-tree",
+    "git worktree remove /home/asd/LLMServingSim/.wt/../outside-tree",
+    "git worktree remove --force -- .wt/p2v/../../outside-tree",
+    "unlink -- .wt/p2v/../x",
+    "unlink .wt/.",
+    "git worktree remove .wt/",
+    "cd x && unlink .wt/../outside-link",
+    "cd x && git worktree remove .wt/../outside-tree",
+    "bash -lc 'unlink .wt/../outside-link'",
+    "env X=1 git -C /tmp worktree remove --force .wt/../outside-tree",
+])
+def test_cleanup_boundary_blocks(cmd):
+    # Only send command text to the hook; never execute cleanup commands.
+    r = run_hook("guard_bash.py", {"tool_name": "Bash", "tool_input": {"command": cmd}})
+    assert r.returncode == 2
+    assert r.stderr.startswith("BLOCKED by .claude/hooks/guard_bash.py (I.7:")
+    assert len(r.stderr.strip().splitlines()) == 1
+
+
+@pytest.mark.parametrize("cmd", [
+    "unlink .wt/p2v/x",
+    "unlink /home/asd/LLMServingSim/.wt/p2v/x",
+    "git worktree remove .wt/p2v/x",
+    "git worktree remove --force -- /home/asd/LLMServingSim/.wt/p2v/x",
+    "cd x && unlink .wt/p2v/x",
+    "bash -lc 'git worktree remove .wt/p2v/x'",
+    "unlink ../outside-link",
+    "unlink /tmp/outside-link",
+    "git worktree remove --force ../outside-tree",
+    "git worktree remove /tmp/outside-tree",
+    "unlink .wt-other/../outside-link",
+    "git worktree prune",
+    "echo 'unlink .wt/../outside-link'",
+])
+def test_cleanup_boundary_allows(cmd):
+    r = run_hook("guard_bash.py", {"tool_name": "Bash", "tool_input": {"command": cmd}})
+    assert r.returncode == 0 and r.stderr == ""
+
+
+def test_cleanup_boundary_does_not_follow_operand_symlink(tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    wt = root / ".wt"
+    wt.mkdir(parents=True)
+    outside = tmp_path / "outside"
+    outside.touch()
+    (wt / "link").symlink_to(outside)
+    monkeypatch.setattr(guard_bash, "REPO_ROOT", str(root))
+    monkeypatch.setattr(guard_bash, "WORKTREE_ROOT", str(wt))
+    guard_bash.check_text("unlink .wt/link")
+    guard_bash.check_text("unlink " + str(wt / "link"))
+    assert outside.exists() and (wt / "link").is_symlink()
+
+
 def test_hook_protocol_block_and_allow(tmp_path):
     r = run_hook("guard_bash.py", {"tool_name": "Bash", "tool_input": {"command": "killall x"}, "cwd": str(tmp_path)})
     assert r.returncode == 2 and "0.3 rule 5" in r.stderr and len(r.stderr.strip().splitlines()) == 1

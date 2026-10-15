@@ -1,4 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git worktree remove .wt/*)",
+      "Bash(git worktree remove /home/asd/LLMServingSim/.wt/*)",
+      "Bash(git worktree prune)",
+      "Bash(unlink .wt/*)",
+      "Bash(unlink /home/asd/LLMServingSim/.wt/*)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {

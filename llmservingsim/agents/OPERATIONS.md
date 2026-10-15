@@ -114,13 +114,17 @@ stay here; each names its failure class (I.18) (2026-10-14):
   `python3 agents/publish_agentsmd.py` at once (user, 2026-10-14). (2026-10-14)
 - Branch and worktree layout for research code: II.3 and II.4. (2026-10-14)
 
-## I.7 Processes and cleanup (2026-10-14)
+## I.7 Processes and cleanup (2026-10-15)
 
 - Kill by PID only (AGENTS.md 0.3 rule 5). (2026-10-14)
 - A process reparented to PID 1 runs outside every slot: kill it by PID. (2026-10-14)
 - Before you finish, remove your measurement tree (unless the brief keeps it), fork server, `/tmp` scratch and
   orphan processes. (2026-10-14)
 - Files written by the container are root-owned: delete them with `docker exec servingsim_docker rm -rf ...`. (2026-10-14)
+- Removing your own worktree or symlink under `.wt/`: `git worktree remove .wt/<path>`, `git worktree prune` and
+  `unlink .wt/<path>` run without a prompt (`.claude/settings.json` `permissions.allow`; user, 2026-10-15:
+  "진행해줘." then "permission을 바꿨어,"). `rm -rf` of a directory is not covered and still asks. Remove only what
+  your brief or ledger row owns. (2026-10-15)
 - `validate.sh`/`validate-par` rewrite `bench/examples/*/outputs/sim.log` with only run-id and wall-time changes:
   revert them with `git checkout`. (2026-10-14)
 
@@ -187,6 +191,7 @@ and comments. It is a safety net against mistakes, not against deliberate evasio
 | I.16 (staging) | `git add -A`, `--all`, a cluster with `A`, `.`, `./` (also after `--`) | `git add <paths>`, `-f <path>`, `-u <path>`, `git add -- -A` (a file named -A), `--help` | name your files (2026-10-14) |
 | I.16 (stash) | bare `git stash` (also with options only), `git stash push`, `save`, `clear`, `pop`/`drop` without a ref | `git stash list`, `show`, `apply`, `pop`/`drop stash@{n}`, `--help`/`-h` | a WIP commit on your branch (2026-10-14) |
 | 0.3 rule 4 | `timeout ... slotrun ...` | `slotrun sim timeout N cmd`, `timeout N <other cmd>` | let slotrun manage the job; kill by PID if it hangs (2026-10-14) |
+| I.7 (cleanup boundary) | `unlink` or `git worktree remove [opts]` operands starting with `.wt/` or `/home/asd/LLMServingSim/.wt/` that contain a `..` component or, after `os.path.normpath` against the repository root, are not strictly inside `.wt/` | normal paths inside `.wt/`; symlink operands are not followed; other operand prefixes stay subject to normal permissions | name a path strictly inside `.wt/` with no `..`; remove only what your brief or ledger row owns (2026-10-15) |
 | 0.3 rule 7 (token) | a printer (`cat tac nl less more head tail xxd od hexdump strings base64 sort cut grep rg sed awk ...`) with `gh_token`/`hf_token` as a file operand or as `< file` | the credential helper `$(tr -d "\r\n" < gh_token)`; `ls`, `test -f`, `wc -c <`, `chmod` on the file; searching for the word: `grep [-A N] [-m N] gh_token <files>`, `rg -g '*.md' gh_token` | use the credential helper (I.6); if the hook misreads a search, give the pattern with `-e gh_token` (2026-10-14) |
 | I.4 | `--dangerously-bypass-approvals-and-sandbox` as an argument of any command except text commands (echo, printf, grep, sed, awk, cat, git) | mentioning the flag in text | `codex exec -s read-only`; a task worker uses `-s workspace-write` or `-s danger-full-access` (I.4) (2026-10-14) |
 | 0.3 rule 7 (commit) | `git commit` whose change adds a GitHub (`gh?_`, `github_pat_`), Hugging Face (`hf_`), `sk-` or AWS `AKIA` key, or a private-key header, or adds a file named `gh_token`/`hf_token`. The index is checked; with `-a`, `-i`, `-o` or pathspecs, `git diff HEAD` is checked instead. The block message names `file:line` and the kind, never the value. | mentions such as `ghp_` without a token-length tail; `--dry-run`; `-sm msg` and `-mmsg` checked as index-only | remove the secret, or unstage the file (2026-10-14) |
