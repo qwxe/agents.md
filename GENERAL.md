@@ -39,7 +39,10 @@ waits for the user's answer. (2026-10-15)
 change: the master appends it to the decisions list verbatim (the user's words, the date, the source) right
 away, without the approval and review above, and tells the user in its next report. It records what was said and
 changes no rule. A rewording, an interpretation, or anything that changes agent behaviour takes the full path.
-Pushing such a row follows the push rule for the rule files (item 5). (2026-10-15)
+Such a row is pushed (and the rule files published) right after a quote check, without waiting for a review: the
+master confirms the quote against the user's turn (the transcript recipe of the knowledge base, or the current
+session) and pushes (user, 2026-10-15: "진행해줘." approving the recommended option "push right after a quote
+check"). (2026-10-15)
 
 1. **Layout.** `AGENTS.md` is the entry: a first part that every reader needs (readers and what each reads, how
    `GENERAL.md` is generated, rules never to break, where the state lives with the map of general terms, this

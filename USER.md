@@ -95,7 +95,7 @@ repository-independent ones). If this file and a rule file disagree, the rule fi
 | Report language | Korean / English | Korean | "영어로" | I.8 (2026-10-14) |
 | Research depth | quick lookup (Codex Luna) or exhaustive survey | by request | "exhaustive하게" | I.4 (2026-10-14) |
 | Hooks | which commands are blocked | the never-break list | "X는 막아줘 / 풀어줘" | `AGENTS.md` 0.3 (2026-10-14) |
-| Rule-file push and publish | when rule-file changes leave the machine | right after the review passes (PASS or PASS with notes); local until then (2026-10-14) | "바로 push해" / "내가 볼 때까지 push하지 마" | `AGENTS.md` 0.2, 0.5 (2026-10-14) |
+| Rule-file push and publish | when rule-file changes leave the machine | right after the review passes (PASS or PASS with notes); local until then; a decision row recorded by the light path: right after a quote check, no review (2026-10-15) | "바로 push해" / "내가 볼 때까지 push하지 마" | `AGENTS.md` 0.2, 0.5 (2026-10-14) |
 | Rule-file edits | who may edit the rule files | any agent, after approval of the exact change: yours for the master's proposals, the master's for a subagent's (2026-10-15) | "이 규칙 변경 승인" / "규칙은 master만 고쳐" | `AGENTS.md` 0.5 (2026-10-14) |
 
 ## 4. Skills you can call by name
