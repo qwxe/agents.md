@@ -54,6 +54,9 @@ This contract is a readable view of the linked rule homes, not an independent po
   changes results comes to you (I.12). (2026-10-14)
 - **Reports are checked on receipt.** A "done" report's commits and files are checked to exist before review,
   and a report that stopped "for time" without a limit in its brief is sent back (I.13). (2026-10-14)
+- **Reports you ask for are asked about first.** Before a report or chart page is built, you are asked which claim
+  it shows, what must be explicit on it and every ambiguous choice; it then shows only that claim, minimally
+  (`paper-write` item 8). (2026-10-16)
 - **Runs.** No run you did not approve is started; approved runs keep the shared slots full; anything holding
   compute or on the critical path is health-checked about every 3 minutes by the agent that launched it, which
   alone monitors it until it ends, and anomalies reach you at once (I.5, I.18). Failures are classified (infra-transient, infra-permanent, content, spec mismatch, integrity);
