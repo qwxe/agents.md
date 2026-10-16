@@ -384,7 +384,7 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; roles v2 homes: user
 | | I.9 | Handing over to the next session: when; the procedure is the `handover` skill. |
 | `agents/MANAGER.md` | Core card | Startup reading view for the manager. |
 | | Manager duties | Coordinating one assigned unit: briefs, exclusive monitoring of its launches, receipt and independent verification (Opus unless simple), escalation and rule-proposal forwarding, unit summary, reports. |
-| `.claude/skills/*/SKILL.md` | — | Procedures loaded on demand: `handover` (I.9), `session-export` and `session-import` (moving work between machines and sessions), `spawn-agent` (I.12, I.15), `review` (I.14), `document-audit` (I.14), `lit-search`, `claim-audit`, `paper-write`, `ideation`, `design-note`, `experiment-plan`, `debug`. |
+| `.claude/skills/*/SKILL.md` | — | Procedures loaded on demand: `handover` (I.9), `session-export` and `session-import` (moving work between machines and sessions), `spawn-agent` (I.12, I.15), `review` (I.14), `document-audit` (I.14), `lit-search`, `claim-audit`, `paper-write`, `report`, `ideation`, `design-note`, `experiment-plan`, `debug`. |
 | `agents/IMPLEMENTER.md` | — | Implementer duties, limits, pitfalls. |
 | | Core card | Startup reading view for Claude implementer; full requirements remain in linked homes. |
 | `agents/LEAF.md` | Core card | Startup reading view for the leaf (every depth-three Opus agent; cannot spawn). |

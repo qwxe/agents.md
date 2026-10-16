@@ -2,7 +2,7 @@
 
 Repository-independent rules for agents (Claude Code, Codex, and others): roles and spawning, delegation, decision rights and escalation, briefs and reports, tests and review, handover between sessions, and safe git/process habits. This file is generated, verbatim, from the sections marked `<!-- general -->` in a repository's rule files (`AGENTS.md`, `agents/*.md`) by `agents/gen_general.py`, and is never edited by hand: change the marked section and regenerate. The general terms the sections use (handoff file, decisions list, task trail, ...) are defined in section 0.6; each repository's `AGENTS.md` maps them to its own files. A repository's own `AGENTS.md` wins on anything repository-specific. Each section's `Source:` line names the file it comes from.
 
-Sections: 0.5, 0.6, 0.7, I.10, I.11, I.12, I.13, I.14, I.15, I.19, I.21, I.1, I.2, I.17, I.23, I.3, I.9, I.24, I.8, I.4, I.18, I.16, plus the role sections (Manager duties, Implementer, Leaf duties, Verifier, Master pitfalls) and the skills (claim-audit, debug, design-note, document-audit, experiment-plan, handover, ideation, lit-search, paper-write, review, session-export, session-import, spawn-agent).
+Sections: 0.5, 0.6, 0.7, I.10, I.11, I.12, I.13, I.14, I.15, I.19, I.21, I.1, I.2, I.17, I.23, I.3, I.9, I.24, I.8, I.4, I.18, I.16, plus the role sections (Manager duties, Implementer, Leaf duties, Verifier, Master pitfalls) and the skills (claim-audit, debug, design-note, document-audit, experiment-plan, handover, ideation, lit-search, paper-write, report, review, session-export, session-import, spawn-agent).
 
 ---
 
@@ -377,8 +377,8 @@ The model and the effort are still set on every spawn (I.3). (2026-10-14)
 - **Reader test.** A brief for hard-tier work, a next-session input and a restructured rule file are read once by a
   fresh agent with no context, which says what it would do and what is unclear; fix what it misreads. (2026-10-14)
 - **Activity skills.** Use the skill for the activity: `lit-search`, `claim-audit`, `document-audit`,
-  `paper-write`, `ideation`, `design-note`, `experiment-plan`, `debug`, plus `spawn-agent`, `review`,
-  `handover`. (2026-10-14; 2026-10-15)
+  `paper-write`, `report`, `ideation`, `design-note`, `experiment-plan`, `debug`, plus `spawn-agent`, `review`,
+  `handover`. (2026-10-14; 2026-10-15; 2026-10-16)
 
 ## I.13 The report (interface up) (2026-10-15)
 
@@ -2013,7 +2013,7 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus jud
 
 Source: `.claude/skills/paper-write/SKILL.md`
 
-Trigger: Write or revise paper text, a result summary, a report or chart page for the user, or other prose built on experiment evidence. Use for any paper section, abstract, rebuttal, results write-up or report the user asks for.
+Trigger: Write or revise paper text, a result summary or other prose built on experiment evidence. Use for any paper section, abstract, rebuttal or results write-up.
 
 ### Paper writing (2026-10-16)
 
@@ -2030,11 +2030,36 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus jud
 6. **Reader test**: a fresh agent reads the section with no context and states the claims it takes away; fix what
    it gets wrong. (2026-10-14)
 7. English, short sentences, no filler; the repository's style rules apply. (2026-10-14)
-8. **Reports for the user** (user, 2026-10-16: "보여주고자 하는 주장에 대해서만 최소한으로, 깔끔하고 직관적으로 보고서를 만들어줘. 먼저 물어서 어떤 부분이 명시적으로 드러나는지도 물어보고, 애매한 부분도 묻고."). Before building a report, chart page or result
-   summary for the user, ask in one round: the claim it must show, what must be explicit on it (runs, metrics,
-   axes, numbers), and every ambiguous definition or data choice, each with a recommended option. Then build only
-   what serves that claim: the claim in one line, the charts that carry it, and the labels and numbers the user
-   named; no background, method sections or extra comparisons. (2026-10-16)
+
+## Skill: report
+
+Source: `.claude/skills/report/SKILL.md`
+
+Trigger: Build a report, chart page or meeting summary for the user from results. Use whenever the user asks for a report, charts, a summary to show, or meeting material.
+
+### Report (2026-10-16)
+
+Approval: user, 2026-10-16: "보여주고자 하는 주장에 대해서만 최소한으로, 깔끔하고 직관적으로 보고서를 만들어줘. 먼저 물어서 어떤 부분이 명시적으로 드러나는지도 물어보고, 애매한 부분도 묻고." then "paper-write 말고 report 로 바꿔줘. ... 내가 말한 부분도 추론해서 넣어줘." and, on the draft, "Recommended 기반. 그런데 3번 등 only if asked는 너무 강하고. 필요하면 맥락에 따라 추가할 수 있어." (session e030368e). Items 2-6 are inferred from the user's requests in that session.
+
+1. **Ask first**, in one round, each question with a recommended option: the claim the report must show; what
+   must be explicit on it (runs, metrics, axes, numbers); every ambiguous definition or data choice. Ask again
+   only when an answer is blank or unclear. (2026-10-16)
+2. **Scope follows what the user named**: the runs, arms, settings and quantities the user named come first.
+   Add another run, comparison or derived quantity when the claim needs it in context, and say in its label why
+   it is there. (2026-10-16)
+3. **Prefer distributions to summaries** when the claim is about spread, timing or overlap: plot the
+   distributions themselves (PDF or CDF on a shared axis). Add a summary number (median, share, mean) beside a
+   chart when it helps the reading. (2026-10-16)
+4. **Minimal by default**: the claim in one line, the charts that carry it, a one-line environment label per
+   run (configuration, load), axis labels and the numbers the user named. Background, method notes or caveats
+   go in only when the reader needs them to read a chart correctly, in one line each. (2026-10-16)
+5. **Evidence status in one line** where it changes how a number reads: seeds, upper bound versus exact,
+   audited or not. (2026-10-16)
+6. **Result tables**: configuration on top, arms as rows, unless the user asks otherwise. (2026-10-16)
+7. **Deliver** as a page or file the user can open and share, and give its location; keep the generating script
+   beside it so the report can be rebuilt. (2026-10-16)
+8. A report whose numbers feed a paper or a decision still takes `claim-audit` before those numbers are reused;
+   prose for a paper uses `paper-write`. (2026-10-16)
 
 ## Skill: review
 

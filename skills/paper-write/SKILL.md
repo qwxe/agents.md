@@ -1,6 +1,6 @@
 ---
 name: paper-write
-description: Write or revise paper text, a result summary, a report or chart page for the user, or other prose built on experiment evidence. Use for any paper section, abstract, rebuttal, results write-up or report the user asks for.
+description: Write or revise paper text, a result summary or other prose built on experiment evidence. Use for any paper section, abstract, rebuttal or results write-up.
 ---
 <!-- general -->
 
@@ -19,8 +19,3 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus jud
 6. **Reader test**: a fresh agent reads the section with no context and states the claims it takes away; fix what
    it gets wrong. (2026-10-14)
 7. English, short sentences, no filler; the repository's style rules apply. (2026-10-14)
-8. **Reports for the user** (user, 2026-10-16: "보여주고자 하는 주장에 대해서만 최소한으로, 깔끔하고 직관적으로 보고서를 만들어줘. 먼저 물어서 어떤 부분이 명시적으로 드러나는지도 물어보고, 애매한 부분도 묻고."). Before building a report, chart page or result
-   summary for the user, ask in one round: the claim it must show, what must be explicit on it (runs, metrics,
-   axes, numbers), and every ambiguous definition or data choice, each with a recommended option. Then build only
-   what serves that claim: the claim in one line, the charts that carry it, and the labels and numbers the user
-   named; no background, method sections or extra comparisons. (2026-10-16)

@@ -209,8 +209,8 @@ The model and the effort are still set on every spawn (I.3). (2026-10-14)
 - **Reader test.** A brief for hard-tier work, a next-session input and a restructured rule file are read once by a
   fresh agent with no context, which says what it would do and what is unclear; fix what it misreads. (2026-10-14)
 - **Activity skills.** Use the skill for the activity: `lit-search`, `claim-audit`, `document-audit`,
-  `paper-write`, `ideation`, `design-note`, `experiment-plan`, `debug`, plus `spawn-agent`, `review`,
-  `handover`. (2026-10-14; 2026-10-15)
+  `paper-write`, `report`, `ideation`, `design-note`, `experiment-plan`, `debug`, plus `spawn-agent`, `review`,
+  `handover`. (2026-10-14; 2026-10-15; 2026-10-16)
 
 ## I.13 The report (interface up) (2026-10-15)
 <!-- general -->
