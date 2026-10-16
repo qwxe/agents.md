@@ -307,7 +307,7 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 - Ask the user before starting expensive jobs they did not request. For the approved queue's launch order, read the run rules before scheduling. (2026-10-14) (2026-10-15)
 - If a permission check blocks an action, do not work around it; report it to the user. (2026-10-14)
 
-## Operations pitfalls (2026-10-15)
+## Operations pitfalls (2026-10-16)
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 
@@ -318,3 +318,4 @@ Read `agents/INTERFACE.md` I.21 before recording a fact, pitfall or anomaly, or 
 - Read `agents/OPERATIONS.md` I.18 before starting or monitoring a job. (2026-10-14)
 - Read `agents/OPERATIONS.md` I.5 before launching validation. (2026-10-14)
 - Read `agents/OPERATIONS.md` I.18 before acting on a content failure. (2026-10-14)
+- Read `agents/OPERATIONS.md` I.18 *Progress, not only health* before each health check of a long run: a run past the plan's expected finish is a missed checkpoint, to be diagnosed and reported with a decision for the caller, not reported as "slower than expected" while it keeps running. (2026-10-16)
