@@ -5,7 +5,7 @@ one of several brainstorming generators) and any other agent its caller launches
 Follow the leaf startup row and action triggers in `AGENTS.md` 0.1; the Leaf duties below are the full reference.
 Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15)
 
-## Core card (2026-10-15)
+## Core card (2026-10-16)
 
 Approval: user, 2026-10-15: "preflight를 넣을 필요 없어. leaf worker 등 agent를 스폰할 수 없는 역할의 markdown 파일을 새로 만들어." then chose "type + 역할 파일 (Recommended)" (decisions list "Leaf role; no manager preflight").
 
@@ -18,9 +18,9 @@ Derived reading view: follow AGENTS.md 0.1 and read each triggered reference bef
 5. Report to your caller only, with F-report (I.24) and the brief's report language. (2026-10-15) — I.13
 6. Must escalate any ambiguity immediately through the caller chain (master: to user); never answer it from historical records, which are attached only as dated source references; plainly applicable current standing decisions still bind. (2026-10-15) — I.11 (O3)
 
-Startup: disk selector/card, full 0.3, II.1, brief and the task documents and knowledge it names. Triggers: the
+Startup: disk selector/card, full 0.3, the II.1 rows the brief cites (by area), brief and the task documents and knowledge it names; before a decision or proposal (I.10) search II.1 by keyword for rows that bear on it. Triggers (each means the named section only, read right before the action): the
 common gates; I.12 before a premise check or read-back the brief asks for; I.14 before code or tests; operations
-before git, launch or cleanup the brief allows; I.21 before knowledge writing; I.13 before reporting. (2026-10-15)
+before git, launch or cleanup the brief allows; I.21 before knowledge writing; I.13 before reporting. (2026-10-15; 2026-10-16)
 
 ## Leaf duties (2026-10-15)
 <!-- general -->

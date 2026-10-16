@@ -4,11 +4,11 @@ For the user. What the agents promise you (the contract), what they need from yo
 choose. Rules are cited by id; the rule files hold the detail (`AGENTS.md` lists them, and `GENERAL.md` has the
 repository-independent ones). If this file and a rule file disagree, the rule file wins and this file is fixed (2026-10-14).
 
-## 1. The contract: what you can expect (2026-10-15)
+## 1. The contract: what you can expect (2026-10-16)
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; roles v2 (managers, Opus verification with simple verification below Opus, launcher monitoring, formats and records, reference-only history, rule branches): user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (decisions list "Simple verification below Opus", "Simple verification: scope and placement"); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (decisions list "Verification on demand", "Verification on demand: limits").
 
-This contract is a readable view of the linked rule homes, not an independent policy copy. Agents start with their role card and AGENTS.md 0.1 routing instructions, then read full references before each matching action. Every full requirement remains binding; task-specific reading is additional. The counted startup set and separately counted references triggered during startup are defined in AGENTS.md 0.1. (2026-10-15)
+This contract is a readable view of the linked rule homes, not an independent policy copy. Agents start with their role card and AGENTS.md 0.1 routing instructions, then read, right before each matching action, the section it names (not the whole file). Only the master reads the whole decisions list at startup; other agents read the rows their brief cites and search it by keyword before a decision (AGENTS.md 0.1). Every requirement remains binding; task-specific reading is additional. The counted startup set and separately counted references triggered during startup are defined in AGENTS.md 0.1. (2026-10-15; 2026-10-16)
 
 - **One conversation partner.** You talk to the session explicitly assigned the master role, including a GPT/Codex session
   (AGENTS.md 0.1); the model name alone does not assign its duties. It hands general (not simple) work to a

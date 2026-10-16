@@ -23,7 +23,7 @@ job or agent. Monitoring: not applicable because this role launches no jobs or a
 this research invocation. Its only artifact is the sourced return packet; it owns no writable artifact (I.4/I.18).
 Source collection or synthesis is permitted; acceptance of another worker's answer is a verifier assignment. (2026-10-15)
 
-## Core card — Task worker (2026-10-15)
+## Core card — Task worker (2026-10-16)
 
 Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"; the §2 role cards of the roles v2 design).
 
@@ -37,9 +37,9 @@ Derived reading view: follow AGENTS.md 0.1 and read each triggered reference bef
 6. Report exact evidence/gaps and authorized trail entries using F-report; propose knowledge when unwritable. (2026-10-15) — I.13/I.21
 7. Must escalate any ambiguity immediately through the caller chain (master: to user); never answer it from historical records, which are attached only as dated source references; plainly applicable current standing decisions still bind. (2026-10-15) — I.11 (O3)
 
-Startup: disk selector/card, full 0.3, brief/named sources, current cited II.1 decisions/newest named handoff
-freshness check in every activity. Preserve common gates, applicable Duties/full Pitfalls, operations and simulator
-triggers. (2026-10-15)
+Startup: disk selector/card, full 0.3, brief/named sources, the II.1 rows the brief cites (by area) and the newest named handoff
+for the freshness check in every activity (done on the cited rows; before a decision or proposal, I.10, search II.1 by keyword for rows that bear on it). Preserve common gates, applicable Duties/full Pitfalls, operations and simulator
+triggers. (2026-10-15; 2026-10-16)
 
 ## Core card — Fallback (research-fallback, task-fallback) (2026-10-15)
 

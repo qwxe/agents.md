@@ -17,7 +17,7 @@ Derived reading view: follow AGENTS.md 0.1 and read each triggered reference bef
 7. Report evidence/gaps and authorized commits/cleanup; use F-report/F-assumptions. (2026-10-15) — I.13/I.16; Duties
 8. Must escalate any ambiguity immediately through the caller chain (master: to user); never answer it from historical records, which are attached only as dated source references; plainly applicable current standing decisions still bind. (2026-10-15) — I.11 (O3)
 
-Startup: disk selector/card, full 0.3, II.1, brief/newest named handoff/material; apply the O8 revision checks of
+Startup: disk selector/card, full 0.3, the II.1 rows the brief cites (by area), brief/newest named handoff/material; before a decision or proposal (I.10) search II.1 by keyword for rows that bear on it; each trigger means the named section only, read right before the action; apply the O8 revision checks of
 AGENTS.md 0.1. A depth-three Opus child is a leaf: it uses the leaf card and `leaf` type (`agents/LEAF.md`) and
 F-brief `actual depth: 3` for any working activity named in its brief; it never coordinates other agents, never
 judges or accepts a result it is part of, and may spawn nothing, including through Bash/CLI (I.15). Retain full Duties/Pitfalls trigger reading;
@@ -26,7 +26,7 @@ simulator work, CODEX before CLI helper invocation, activity skills. Hard **impl
 design/builder/reader/read-back. Hard **investigation** may begin with a bounded question/evidence brief and
 F-read-back, no implementation authority; dependent implementation waits for decisions. An explicit Opus model
 request alone does not change tier; Resources must name tier and whether read-back is required. Verifiers are
-exempt from implementer read-back (I.12). (2026-10-15)
+exempt from implementer read-back (I.12). (2026-10-15; 2026-10-16)
 
 
 ## Duties (2026-10-16)

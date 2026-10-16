@@ -6,7 +6,7 @@ Sections: 0.5, 0.6, 0.7, I.10, I.11, I.12, I.13, I.14, I.15, I.19, I.21, I.1, I.
 
 ---
 
-## 0.5 How to write these files (2026-10-15)
+## 0.5 How to write these files (2026-10-16)
 
 Source: `AGENTS.md` 0.5
 
@@ -47,7 +47,7 @@ master confirms the quote against the user's turn (the transcript recipe of the 
 session) and pushes (user, 2026-10-15: "진행해줘." approving the recommended option "push right after a quote
 check"). (2026-10-15)
 
-1. **Layout.** `AGENTS.md` is the entry: a first part that every reader needs (readers and what each reads, how
+1. **Layout.** `AGENTS.md` is the entry (the session-start file `CLAUDE.md` is a short pointer to it, not a copy, so injected context stays small): a first part that every reader needs (readers and what each reads, how
    `GENERAL.md` is generated, rules never to break, where the state lives with the map of general terms, this
    section) and the catalog. Each role or topic has its own rule file, so an agent loads only what its role
    needs. Every file opens with a one-line scope saying who reads it. Section ids
@@ -87,7 +87,7 @@ check"). (2026-10-15)
    then follow the stale one); evidence tables and history inside a rules file; machine status that goes stale
    ("as of <date> nothing exists"); code line numbers; editing `GENERAL.md` by hand; Claude-only rules phrased so that Codex takes them as its
    own; the same rule written twice with different wording; a rule placed in a file the role that needs it does
-   not read; a marked section that only makes sense in this repository. (2026-10-14)
+   not read; a marked section that only makes sense in this repository. (2026-10-14; 2026-10-16)
 
 ## 0.6 General terms (2026-10-15)
 
@@ -140,20 +140,20 @@ follow that pointer. (2026-10-14)
 - **the approved rule-evolution specification** — The approved versioned rule-evolution design together with its controlling roles-migration overrides; deferred topics confer no authority. (2026-10-15)
 - **the master memory pointers** — Recall pointers and short gists whose referenced source files remain authoritative. (2026-10-15)
 
-## 0.7 The rule source on disk (2026-10-15)
+## 0.7 The rule source on disk (2026-10-16)
 
 Source: `AGENTS.md` 0.7
 
 Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); written generally and moved here from the role selector: user, 2026-10-15: "지금 규칙이 repo 에 의존된 방향으로 써지고 있는데, 일반적으로도 써져야 해." (the decisions list).
 
 The rule files on disk at the current head of the main branch take precedence over every session-start injected
-copy, within system/developer constraints. Every role must read its startup set from disk before acting, record
+copy, within system/developer constraints. The session-start entry file, where the repository has one, is only a pointer to the rule files; it is never the startup set, and each role reads that set from disk by section. Every role must read its startup set from disk before acting, record
 the full rule-source commit named by its brief, and compare it with the current main branch. The master, which has
 no brief, pins the reviewed head of the main branch at session start as its reference commit and records that
 reference separately from the actual read revision, even when equal. When a newer rule commit exists, reread the
 changed sections and any changed startup/trigger routes before dependent action; never continue from the injected
 snapshot. A reference already read from the same unchanged source need not be reread solely because its trigger
-recurs. (2026-10-15)
+recurs. (2026-10-15; 2026-10-16)
 
 The main branch carries reviewed or accepted (I.14) operating rules plus quote-checked light-path decision rows
 (0.5); those rows are not rule-file edits under the branch rule. Unreviewed branch text is a review target, never
@@ -286,7 +286,7 @@ launch, launching is blocked. Ending a turn with owned background waits preserve
 wake is a continuation, not a final handoff. Record pending packets and later answers in its own trail.
 (2026-10-15)
 
-## I.12 The brief (interface down) (2026-10-15)
+## I.12 The brief (interface down) (2026-10-16)
 
 Source: `agents/INTERFACE.md` I.12
 
@@ -299,7 +299,7 @@ anything short; it never pastes earlier conversation. (2026-10-14; 2026-10-15)
 - **Role line.** The role is named explicitly and never inferred from the model or provider; the model in
   *Resources* and the assigned role are independent, and a model name never assigns duties. (2026-10-14; 2026-10-15)
 - **Read first.** The role's startup set (the role selector lists it per role), the knowledge base categories or
-  entries the task needs (I.21), and the task's own documents, each with when to read it. The custom agent type's
+  entries the task needs (I.21), the task's own documents, each with when to read it, and every row of the decisions list (by area) that the task rests on, because only the master reads the whole decisions list at startup and every other role reads the rows its brief cites. The custom agent type's
   prompt repeats the rule files; the brief names them anyway, because a prompt is an instruction, not a guaranteed
   load. Every brief names the full commit of the main branch whose rule files it was written against; every Codex
   brief also quotes the never-break section verbatim from that commit, because guard hooks do not watch Codex
@@ -311,7 +311,7 @@ anything short; it never pastes earlier conversation. (2026-10-14; 2026-10-15)
   non-obvious decisions the caller already sees coming; the agent escalates these (I.11). (2026-10-14)
 - **Resources.** Tier, model and selection criterion (I.3), effort, slot budget and lifetime, fallback, and
   whether a read-back is required. An Opus brief names the hard question or the explicit byte-exact core
-  preservation requirement. (2026-10-14; 2026-10-15)
+  preservation requirement. (2026-10-14; 2026-10-15; 2026-10-16)
 
 **Premise provenance** (user, 2026-10-14). Every premise in a brief (a fact or decision the task rests on, under
 any heading, *Resources* included) carries exactly one source tag (2026-10-14):
@@ -932,7 +932,7 @@ to the direct caller, with dependent work stopped. Cards, reports, verdicts and 
 1. Role line and task id: role; custom type; report language; caller; parent_task; actual depth; maximum permitted depth; reporting destination.
 2. Read first: brief rule-source commit (current reviewed main HEAD when brief is written); actual read revision
    (worker records separately in F-assumptions/F-report after freshness check); disk startup row/card;
-   named sources/categories; newest handoff; timing of each reference; for every Codex role, the full never-break section copied
+   named sources/categories; every decisions-list row (by area) the task rests on (the worker reads only the cited rows); newest handoff; timing of each reference; for every Codex role, the full never-break section copied
    verbatim from that committed source, including heading/approval/dates/explanatory text (not a pointer).
 3. Goal and intent: outcome/purpose; dated verbatim user intent.
 4. Decided: current decision/approved-design pointers; provenance tags.

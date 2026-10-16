@@ -33,7 +33,7 @@ to the direct caller, with dependent work stopped. Cards, reports, verdicts and 
 1. Role line and task id: role; custom type; report language; caller; parent_task; actual depth; maximum permitted depth; reporting destination.
 2. Read first: brief rule-source commit (current reviewed main HEAD when brief is written); actual read revision
    (worker records separately in F-assumptions/F-report after freshness check); disk startup row/card;
-   named sources/categories; newest handoff; timing of each reference; for every Codex role, the full never-break section copied
+   named sources/categories; every decisions-list row (by area) the task rests on (the worker reads only the cited rows); newest handoff; timing of each reference; for every Codex role, the full never-break section copied
    verbatim from that committed source, including heading/approval/dates/explanatory text (not a pointer).
 3. Goal and intent: outcome/purpose; dated verbatim user intent.
 4. Decided: current decision/approved-design pointers; provenance tags.

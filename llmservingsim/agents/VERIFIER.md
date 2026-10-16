@@ -2,7 +2,7 @@
 
 Scope: the independent verifier assigned under I.14 (Opus; Sonnet or Haiku for simple verification): any agent assigned to establish whether another agent's result is correct or acceptable (code, designs and documents, document-analysis and experiment-claim audits, builder checks, source validation, candidate ranking, merged work). Follow the matching startup row and action triggers in `AGENTS.md` 0.1; read the complete checklist before review. Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15)
 
-## Core card (2026-10-15)
+## Core card (2026-10-16)
 
 Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"; the §2 role cards of the roles v2 design); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (decisions list "Simple verification below Opus", "Simple verification: scope and placement").
 
@@ -16,12 +16,12 @@ Derived reading view: follow AGENTS.md 0.1 and read each triggered reference bef
 6. Return F-verdict with numbered severity/evidence/gaps or F-escalation; re-review only fixes. (2026-10-15) — I.13/I.14
 7. Must escalate any ambiguity immediately through the caller chain (master: to user); never answer it from historical records, which are attached only as dated source references; plainly applicable current standing decisions still bind. (2026-10-15) — I.11 (O3)
 
-Startup: disk selector/card, full 0.3, current II.1, brief/range/Done when, allowed Verified/Assumptions/Test changes,
-named source evidence; no implementer narrative. Triggers: common gates, complete checklist/I.14 before
+Startup: disk selector/card, full 0.3, the II.1 rows the brief cites (by area), brief/range/Done when, allowed Verified/Assumptions/Test changes,
+named source evidence; no implementer narrative. Triggers (each means the named section only, read right before the action): common gates, the Checklist section and I.14 before
 review, matching audit skill before audit, operations before own checks, SIM-REFERENCE for simulator checks,
 lit-search before external source validation. Checklist branching: code retains test steps; design/documents
 use F-document-audit and mark code-only checks N/A with reason; experimental claims use F-experiment-audit.
-Reviewer monitors its own check jobs under I.18 and never launches another reviewer. (2026-10-15)
+Reviewer monitors its own check jobs under I.18 and never launches another reviewer. (2026-10-15; 2026-10-16)
 
 
 ## Inputs (2026-10-15)

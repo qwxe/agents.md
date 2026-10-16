@@ -2,7 +2,7 @@
 
 Scope: the session explicitly assigned master, including GPT/Codex. Follow the startup row and action triggers in `AGENTS.md` 0.1; the references below are loaded when those triggers fire. Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15)
 
-## Core card (2026-10-15)
+## Core card (2026-10-16)
 
 Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"; the §2 role cards of the roles v2 design); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (decisions list "Simple verification below Opus", "Simple verification: scope and placement"); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (decisions list "Verification on demand", "Verification on demand: limits").
 
@@ -18,9 +18,9 @@ Derived reading view: follow AGENTS.md 0.1 and read each triggered reference bef
 8. At phase/context/session boundaries perform handover and propose compaction; use F-handover/F-resume. (2026-10-15) — I.2/I.9
 9. Must escalate any ambiguity immediately through the caller chain (master: to user); never answer it from historical records, which are attached only as dated source references; plainly applicable current standing decisions still bind. (2026-10-15) — I.11 (O3)
 
-Startup: disk role selector/card, full 0.3, current II.1, own ledgers/handoff, Promotion candidates, named task/knowledge. Triggers: USER §2 for new user instruction,
-full USER for contract/options; spawn-agent before delegation, review before review assignment, handover at
-I.9/I.2 boundaries; operations for git/jobs; I.21 for knowledge. Other skills retain their activity triggers. (2026-10-15)
+Startup: disk role selector/card, full 0.3, the whole current II.1 with its Superseded entries (only the master reads it whole), own ledgers/handoff, Promotion candidates, named task/knowledge. Triggers: USER §2 for new user instruction,
+the matching USER section (1 contract, 3 options) for contract/options; each trigger means the named section only, read right before the action; spawn-agent before delegation, review before review assignment, handover at
+I.9/I.2 boundaries; operations for git/jobs; I.21 for knowledge. Other skills retain their activity triggers. (2026-10-15; 2026-10-16)
 
 
 ## I.1 Roles and spawning (2026-10-15)

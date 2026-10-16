@@ -119,7 +119,7 @@ launch, launching is blocked. Ending a turn with owned background waits preserve
 wake is a continuation, not a final handoff. Record pending packets and later answers in its own trail.
 (2026-10-15)
 
-## I.12 The brief (interface down) (2026-10-15)
+## I.12 The brief (interface down) (2026-10-16)
 <!-- general -->
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; rule-source commit, never-break copy, role table and hard-work staging: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); leaf role at depth three: user, 2026-10-15: "preflight를 넣을 필요 없어. leaf worker 등 agent를 스폰할 수 없는 역할의 markdown 파일을 새로 만들어." then chose "type + 역할 파일 (Recommended)" (the decisions list).
@@ -131,7 +131,7 @@ anything short; it never pastes earlier conversation. (2026-10-14; 2026-10-15)
 - **Role line.** The role is named explicitly and never inferred from the model or provider; the model in
   *Resources* and the assigned role are independent, and a model name never assigns duties. (2026-10-14; 2026-10-15)
 - **Read first.** The role's startup set (the role selector lists it per role), the knowledge base categories or
-  entries the task needs (I.21), and the task's own documents, each with when to read it. The custom agent type's
+  entries the task needs (I.21), the task's own documents, each with when to read it, and every row of the decisions list (by area) that the task rests on, because only the master reads the whole decisions list at startup and every other role reads the rows its brief cites. The custom agent type's
   prompt repeats the rule files; the brief names them anyway, because a prompt is an instruction, not a guaranteed
   load. Every brief names the full commit of the main branch whose rule files it was written against; every Codex
   brief also quotes the never-break section verbatim from that commit, because guard hooks do not watch Codex
@@ -143,7 +143,7 @@ anything short; it never pastes earlier conversation. (2026-10-14; 2026-10-15)
   non-obvious decisions the caller already sees coming; the agent escalates these (I.11). (2026-10-14)
 - **Resources.** Tier, model and selection criterion (I.3), effort, slot budget and lifetime, fallback, and
   whether a read-back is required. An Opus brief names the hard question or the explicit byte-exact core
-  preservation requirement. (2026-10-14; 2026-10-15)
+  preservation requirement. (2026-10-14; 2026-10-15; 2026-10-16)
 
 **Premise provenance** (user, 2026-10-14). Every premise in a brief (a fact or decision the task rests on, under
 any heading, *Resources* included) carries exactly one source tag (2026-10-14):
