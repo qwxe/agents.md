@@ -4,7 +4,7 @@ description: Write a decision-complete design note before hard-tier implementati
 ---
 <!-- general -->
 
-# Design note and builder check (2026-10-15)
+# Design note and builder check (2026-10-16)
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus judging: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list).
 
@@ -14,6 +14,10 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus jud
    the pre-agreed response to each, so the implementer does not have to decide them); acceptance criteria that
    can fail; what would show the design wrong. Every premise carries its source tag (I.12); the knowledge base
    entries the design relies on are named, with their status (I.21). (2026-10-14)
+   The note also states its **scope ceiling**: the files the change may touch and what it must not add (new schema
+   versions, manifest kinds, validation layers or diagnostic fields nobody asked for), so that the implementation is
+   the smallest change that delivers the decided behaviour; a revision that adds an interface requirement says
+   which decision asks for it (user, 2026-10-16: "좋아. 그리고 그건 개념을 상정할 때만 코드 구현을 상관하지 않아도 된다는 의미였어. 실제 구현할 때는 최소 구현으로."). (2026-10-16)
 2. **Decision complete** means an implementer would have nothing left to decide that changes behaviour, results
    or interfaces. (2026-10-14)
 3. **Builder check.** A fresh independent Opus verifier (I.3, I.14) reads the note as the implementer would and lists every question it would
