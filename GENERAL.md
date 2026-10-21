@@ -1756,7 +1756,7 @@ Trigger: Exploratory, coverage-driven topic survey - build a coverage map, searc
 
 ### Coverage-driven topic search, tentative (2026-10-21)
 
-Approval: requested by the user, 2026-10-21: "그 라인에 브랜치를 새로 파서 explorative하게 주제를 search하는 skill을 하나 더 만들거야." with the flow "1. coverage map을 만든다. 2. exhaustive search를 한다. 3. coverage map을 확장할 수 있는지 확인한 후 2번을 반복한다. 4. 각각 digest & summary 하고, relation map을 만들어서 breakdown한다. 5. 각 분야별로 search한다."; per-field screen: user, 2026-10-21: "per-field search에서는 각 주제마다 최대 10~20 분 단위의 간결한 feasibility check & room at the top analysis 를 일괄적으로 하고, 그 다음에 더 깊게 search하는 식으로 해줘."; name and tentative status: user, 2026-10-21: "아직은 임시니까 coverage-search-tentative 로 해줘. 우선 이렇게 가볍게 만든 후에 쓸거야."; deep search without a user pick: user, 2026-10-21: "필요 없어. 일단 explorative 하게 찾고 feasibility check 등을 통과한 것만 하도록 할거니까."; review before main: user, 2026-10-21: "review를 한번 거친 후에 main 에 넣어줘."
+Approval: requested by the user, 2026-10-21: "그 라인에 브랜치를 새로 파서 explorative하게 주제를 search하는 skill을 하나 더 만들거야." with the flow "1. coverage map을 만든다. 2. exhaustive search를 한다. 3. coverage map을 확장할 수 있는지 확인한 후 2번을 반복한다. 4. 각각 digest & summary 하고, relation map을 만들어서 breakdown한다. 5. 각 분야별로 search한다."; per-field screen: user, 2026-10-21: "per-field search에서는 각 주제마다 최대 10~20 분 단위의 간결한 feasibility check & room at the top analysis 를 일괄적으로 하고, 그 다음에 더 깊게 search하는 식으로 해줘."; name and tentative status: user, 2026-10-21: "아직은 임시니까 coverage-search-tentative 로 해줘. 우선 이렇게 가볍게 만든 후에 쓸거야."; deep search without a user pick: user, 2026-10-21: "필요 없어. 일단 explorative 하게 찾고 feasibility check 등을 통과한 것만 하도록 할거니까."; review before main: user, 2026-10-21: "review를 한번 거친 후에 main 에 넣어줘."; gate 2 as a notice only: user, 2026-10-21: "일단 그렇게 해줘." (to the proposal that gate 2 only notifies)
 
 This skill is the loop above `lit-search`: every search call it makes follows that skill's contract; this skill
 decides what to ask, when a region is covered and what to read. One run is one task with one task trail and one
@@ -1795,8 +1795,8 @@ the manager of the unit) resumes from the files alone. (2026-10-21)
 3. **Map expansion.** An agent that did not search proposes new or split cells from three signals: relevant items
    no cell explains (orphans), cells whose items fall into distinct groups, and vocabulary that recurs in new items
    but in no query. New cells go back to step 2. **Converged** when a round adds no cell and every in-scope cell is
-   saturated; stop also at the round or budget cap, and say which ended the loop. **Gate 2: the user sees the round
-   metrics and the converged map before reading starts.** (2026-10-21)
+   saturated; stop also at the round or budget cap, and say which ended the loop. **Gate 2 (notice only): the coordinator
+   reports the round metrics and the converged map to the user and goes on to step 4 without waiting.** (2026-10-21)
 4. **Digest, relation map, breakdown.** Fix the digest form before any reader starts (open fields; no map or
    candidate vocabulary imposed). Pilot it on two items, check their cites against the sources, correct the reader
    brief, then scale; size each reader's batch from the first batch's measured context use. Two depths: an
@@ -1825,8 +1825,8 @@ the manager of the unit) resumes from the files alone. (2026-10-21)
 
 - **Models.** Finding: the simple tier; relevance and abstract cards: the general tier; full reads: the general tier;
   merging, clustering and the relation map: the hard tier (an unsettled structural judgement); map expansion (step 3): a model other than the
-  searchers', at the highest rigour available; the step-5 screen: the general tier. Before gates 2 and 3 an independent `document-audit` checks the
-  digest pilot, the saturation evidence and the relation map. (2026-10-21)
+  searchers', at the highest rigour available; the step-5 screen: the general tier. Before step 4 starts (after the gate-2 notice) and
+  before gate 3, an independent `document-audit` checks the saturation evidence, the digest pilot and the relation map. (2026-10-21)
 - **Coordinator rotation.** Every worker hand-back lands in the coordinator's context: rotate the coordinator after
   about 25-30 hand-backs and resume from the files. (2026-10-21)
 - **Stops.** A usage-limit stop can end the whole agent tree at once: resume from the last round commit with a fresh
