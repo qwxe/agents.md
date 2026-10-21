@@ -6,7 +6,7 @@ description: Exploratory, coverage-driven topic survey - build a coverage map, s
 
 # Coverage-driven topic search, tentative (2026-10-21)
 
-Approval: requested by the user, 2026-10-21: "그 라인에 브랜치를 새로 파서 explorative하게 주제를 search하는 skill을 하나 더 만들거야." with the flow "1. coverage map을 만든다. 2. exhaustive search를 한다. 3. coverage map을 확장할 수 있는지 확인한 후 2번을 반복한다. 4. 각각 digest & summary 하고, relation map을 만들어서 breakdown한다. 5. 각 분야별로 search한다."; per-field screen: user, 2026-10-21: "per-field search에서는 각 주제마다 최대 10~20 분 단위의 간결한 feasibility check & room at the top analysis 를 일괄적으로 하고, 그 다음에 더 깊게 search하는 식으로 해줘."; name and tentative status: user, 2026-10-21: "아직은 임시니까 coverage-search-tentative 로 해줘. 우선 이렇게 가볍게 만든 후에 쓸거야."; deep search without a user pick: user, 2026-10-21: "필요 없어. 일단 explorative 하게 찾고 feasibility check 등을 통과한 것만 하도록 할거니까."; review before main: user, 2026-10-21: "review를 한번 거친 후에 main 에 넣어줘."; gate 2 as a notice only: user, 2026-10-21: "일단 그렇게 해줘." (to the proposal that gate 2 only notifies); realism in the feasibility check: user, 2026-10-21: "그리고 주제가 현실적인지(실제 있는 workload인지)도 feasibility check에 같이 넣어줘."
+Approval: requested by the user, 2026-10-21: "그 라인에 브랜치를 새로 파서 explorative하게 주제를 search하는 skill을 하나 더 만들거야." with the flow "1. coverage map을 만든다. 2. exhaustive search를 한다. 3. coverage map을 확장할 수 있는지 확인한 후 2번을 반복한다. 4. 각각 digest & summary 하고, relation map을 만들어서 breakdown한다. 5. 각 분야별로 search한다."; per-field screen: user, 2026-10-21: "per-field search에서는 각 주제마다 최대 10~20 분 단위의 간결한 feasibility check & room at the top analysis 를 일괄적으로 하고, 그 다음에 더 깊게 search하는 식으로 해줘."; name and tentative status: user, 2026-10-21: "아직은 임시니까 coverage-search-tentative 로 해줘. 우선 이렇게 가볍게 만든 후에 쓸거야."; deep search without a user pick: user, 2026-10-21: "필요 없어. 일단 explorative 하게 찾고 feasibility check 등을 통과한 것만 하도록 할거니까."; review before main: user, 2026-10-21: "review를 한번 거친 후에 main 에 넣어줘."; gate 2 as a notice only: user, 2026-10-21: "일단 그렇게 해줘." (to the proposal that gate 2 only notifies); realism in the feasibility check: user, 2026-10-21: "그리고 주제가 현실적인지(실제 있는 workload인지)도 feasibility check에 같이 넣어줘."; per-field stages in parallel: user, 2026-10-21: "그리고 search가 끝난 후 각 단계 (분야 분석 => feasibility check)는 병렬적으로 실행하라고 해줘." and "즉 하나의 분야에서 하나의 주제가 나왔다면 asynchronous하게 바로 주제로 실험을 설계하고, 체크할 수 있다는 얘기야."
 
 This skill is the loop above `lit-search`: every search call it makes follows that skill's contract; this skill
 decides what to ask, when a region is covered and what to read. One run is one task with one task trail and one
@@ -57,32 +57,39 @@ the manager of the unit) resumes from the files alone. (2026-10-21)
    one context. Fields that differ from the map's axes are recorded in the map as candidate axes for the step-5
    sub-runs; steps 2-3 are not rerun after gate 2. **Gate 3: the user
    approves the relation map and the field list before step 5.** (2026-10-21)
-5. **Per-field search.** First a screen of every approved field in one batch, then deep search. (2026-10-21)
-   - **Screen.** Each field gets the same short check, time-boxed to at most 10-20 minutes per field, run in
-     parallel: *feasibility* (are there enough sources and a tractable question; is the problem realistic, i.e. does it occur
+5. **Per-field search.** The unit of work after gate 3 is a topic, and topics run asynchronously: every approved
+   field is analysed in parallel, each topic a field analysis yields goes at once to its own screen, and each topic
+   that passes goes at once to deep search, without waiting for other topics or fields. (2026-10-21)
+   - **Field analysis.** From the field's cards and its part of the relation map: the problem, the main
+     approaches, the best known results and the open questions, each with cites; and the candidate topics (one
+     concrete question each), released one by one as they are found. (2026-10-21)
+   - **Topic screen.** The same short check for every topic, time-boxed to at most 10-20 minutes per topic: a
+     sketch of the experiment that would answer it (setup, baseline, metric, the result that would count); its
+     *feasibility* (are there enough sources and a tractable question; is the problem realistic, i.e. does it occur
      in real workloads, shown by public traces, production reports or deployed systems rather than only synthetic
-     setups; what blocks it) and *room at the
-     top* (how far the best known result is from the field's limit or ideal, and what would close the gap), each
-     with its cited evidence and a confidence. A field *passes* when it is feasible and its room at the top is not
-     closed. The results are reported to the user as one table when the screen ends; the screen is not a gate.
-     (2026-10-21)
-   - **Deep search.** Every field that passed the screen becomes a sub-run of steps 1-4 that extends the
-     parent's scope card, map and ledger (never copies them) under its own budget (default: an equal share of the
-     remaining run budget). Gates 1-3 do not apply inside a sub-run: it runs without stopping for the user and
-     reports its result at its end. A sub-run ends at whichever comes first: a round that adds nothing new to the
-     parent ledger, step 3's convergence, or its budget. A sub-run starts no sub-run of its own beyond the depth
-     cap (default 1: sub-runs do not nest). (2026-10-21)
+     setups; can the sketched experiment be run with the resources at hand; what blocks it); and its *room at the
+     top* (how far the best known result is from the limit or ideal, and what would close the gap); each with its
+     cited evidence and a confidence. A topic *passes* when it is feasible and its room at the top is not closed.
+     The sketch is not an approved experiment: running anything still takes the repository's experiment-approval
+     procedure. Screen results are reported as they finish and as one table when the last screen ends; the screen
+     is not a gate. (2026-10-21)
+   - **Deep search.** Every topic that passed becomes a sub-run of steps 1-4 that extends the parent's scope card,
+     map and ledger (never copies them) under its own budget (default: an equal share of the remaining run
+     budget). Gates 1-3 do not apply inside a sub-run: it runs without stopping for the user and reports its result
+     at its end. A sub-run ends at whichever comes first: a round that adds nothing new to the parent ledger, step
+     3's convergence, or its budget. A sub-run starts no sub-run of its own beyond the depth cap (default 1:
+     sub-runs do not nest). (2026-10-21)
 
 ## Running it
 
 - **Models.** Finding: the simple tier; relevance and abstract cards: the general tier; full reads: the general tier;
   merging, clustering and the relation map: the hard tier (an unsettled structural judgement); map expansion (step 3): a model other than the
-  searchers', at the highest rigour available; the step-5 screen: the general tier. Before step 4 starts (after the gate-2 notice) and
+  searchers', at the highest rigour available; the step-5 field analysis and topic screen: the general tier. Before step 4 starts (after the gate-2 notice) and
   before gate 3, an independent `document-audit` checks the saturation evidence, the digest pilot and the relation map. (2026-10-21)
 - **Coordinator rotation.** Every worker hand-back lands in the coordinator's context: rotate the coordinator after
   about 25-30 hand-backs and resume from the files. (2026-10-21)
 - **Stops.** A usage-limit stop can end the whole agent tree at once: resume from the last round commit with a fresh
   coordinator, skipping items whose files exist. (2026-10-21)
-- **Report.** At each gate, at the end of the step-5 screen, at the end of each sub-run and at the end, F-research for the run: the map, queries and sources searched and not
+- **Report.** At each gate, as each step-5 topic screen finishes and when the last one ends, at the end of each sub-run and at the end, F-research for the run: the map, queries and sources searched and not
   reached, saturation per cell from the query log, ledger counts, the relation map, thin and unreachable cells,
   what was not verified. (2026-10-21)

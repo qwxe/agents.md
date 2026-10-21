@@ -134,8 +134,8 @@ This contract is a readable view of the linked rule homes, not an independent po
 `/spawn-agent`, `/review`, `/handover`, `/session-export`, `/session-import`, `/lit-search`, `/coverage-search-tentative`, `/claim-audit`, `/document-audit`, `/paper-write`, `/report`,
 `/ideation`, `/design-note`, `/experiment-plan`, `/debug`. Each says when it applies in its first line; the master
 also uses them on its own when their trigger fires. `/coverage-search-tentative` stops at two gates for you: the scope card
-and initial map, and the relation map and field list; it only notifies you of the converged map; then every field that passes its short
-feasibility (including whether it occurs in real workloads) and room-at-the-top screen is searched deeply without another stop. It is tentative while you try it. (2026-10-14; 2026-10-15; 2026-10-21)
+and initial map, and the relation map and field list; it only notifies you of the converged map; then each field is analysed in parallel and each topic it yields is screened at once (an experiment sketch,
+feasibility including whether it occurs in real workloads, and room at the top); every topic that passes is searched deeply without another stop. It is tentative while you try it. (2026-10-14; 2026-10-15; 2026-10-21)
 
 ## 5. Where to look
 
