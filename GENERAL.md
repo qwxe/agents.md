@@ -1756,7 +1756,7 @@ Trigger: Exploratory, coverage-driven topic survey - build a coverage map, searc
 
 ### Coverage-driven topic search, tentative (2026-10-21)
 
-Approval: requested by the user, 2026-10-21: "그 라인에 브랜치를 새로 파서 explorative하게 주제를 search하는 skill을 하나 더 만들거야." with the flow "1. coverage map을 만든다. 2. exhaustive search를 한다. 3. coverage map을 확장할 수 있는지 확인한 후 2번을 반복한다. 4. 각각 digest & summary 하고, relation map을 만들어서 breakdown한다. 5. 각 분야별로 search한다."; per-field screen: user, 2026-10-21: "per-field search에서는 각 주제마다 최대 10~20 분 단위의 간결한 feasibility check & room at the top analysis 를 일괄적으로 하고, 그 다음에 더 깊게 search하는 식으로 해줘."; name and tentative status: user, 2026-10-21: "아직은 임시니까 coverage-search-tentative 로 해줘. 우선 이렇게 가볍게 만든 후에 쓸거야."; deep search without a user pick: user, 2026-10-21: "필요 없어. 일단 explorative 하게 찾고 feasibility check 등을 통과한 것만 하도록 할거니까."; review before main: user, 2026-10-21: "review를 한번 거친 후에 main 에 넣어줘."; gate 2 as a notice only: user, 2026-10-21: "일단 그렇게 해줘." (to the proposal that gate 2 only notifies)
+Approval: requested by the user, 2026-10-21: "그 라인에 브랜치를 새로 파서 explorative하게 주제를 search하는 skill을 하나 더 만들거야." with the flow "1. coverage map을 만든다. 2. exhaustive search를 한다. 3. coverage map을 확장할 수 있는지 확인한 후 2번을 반복한다. 4. 각각 digest & summary 하고, relation map을 만들어서 breakdown한다. 5. 각 분야별로 search한다."; per-field screen: user, 2026-10-21: "per-field search에서는 각 주제마다 최대 10~20 분 단위의 간결한 feasibility check & room at the top analysis 를 일괄적으로 하고, 그 다음에 더 깊게 search하는 식으로 해줘."; name and tentative status: user, 2026-10-21: "아직은 임시니까 coverage-search-tentative 로 해줘. 우선 이렇게 가볍게 만든 후에 쓸거야."; deep search without a user pick: user, 2026-10-21: "필요 없어. 일단 explorative 하게 찾고 feasibility check 등을 통과한 것만 하도록 할거니까."; review before main: user, 2026-10-21: "review를 한번 거친 후에 main 에 넣어줘."; gate 2 as a notice only: user, 2026-10-21: "일단 그렇게 해줘." (to the proposal that gate 2 only notifies); realism in the feasibility check: user, 2026-10-21: "그리고 주제가 현실적인지(실제 있는 workload인지)도 feasibility check에 같이 넣어줘."
 
 This skill is the loop above `lit-search`: every search call it makes follows that skill's contract; this skill
 decides what to ask, when a region is covered and what to read. One run is one task with one task trail and one
@@ -1809,7 +1809,9 @@ the manager of the unit) resumes from the files alone. (2026-10-21)
    approves the relation map and the field list before step 5.** (2026-10-21)
 5. **Per-field search.** First a screen of every approved field in one batch, then deep search. (2026-10-21)
    - **Screen.** Each field gets the same short check, time-boxed to at most 10-20 minutes per field, run in
-     parallel: *feasibility* (are there enough sources and a tractable question; what blocks it) and *room at the
+     parallel: *feasibility* (are there enough sources and a tractable question; is the problem realistic, i.e. does it occur
+     in real workloads, shown by public traces, production reports or deployed systems rather than only synthetic
+     setups; what blocks it) and *room at the
      top* (how far the best known result is from the field's limit or ideal, and what would close the gap), each
      with its cited evidence and a confidence. A field *passes* when it is feasible and its room at the top is not
      closed. The results are reported to the user as one table when the screen ends; the screen is not a gate.
