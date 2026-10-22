@@ -21,6 +21,7 @@ session transcripts (`~/.claude/projects/-home-asd-LLMServingSim/<id>.jsonl`). T
 
 | area | decision | date | source |
 |---|---|---|---|
+| Experiment design: axis-first | User: "모든 실험은 그렇게 해줘. 단순 grid search가 아니라 axis 위주로 실험 시간을 줄이도록." | 2026-10-22 | Current user turn; `notes/tasks/T20261022-axis-first.md` |
 | Fast mode and parallel execution | User: "지금부터 fast mode on으로 하고, subagent를 많이 소환할 수 있어. 병렬적으로 빠르게 실행해줘." | 2026-10-22 | Current user turn; `notes/tasks/T20261022-ece-parallel.md` |
 | Role and model | Resolve the assigned role independently of the model/provider, so GPT/Codex does not imply worker duties; AGENTS.md 0.1 is the canonical reading rule. Existing roles and I.3 routing remain unchanged; no standing decision is superseded. | 2026-10-14 | User: "3개밖에 밖에 역할이 없나? 모델 역할을 구분하도록 하기만 해줘."; AGENTS.md 0.1 |
 | Worker model routing | Sol medium by default; Luna for fully specified mechanical work; Opus only for the explicit hard criteria in I.3. Builder checks are Opus (Roles v2 Q2-A); reader tests stay Sol tier (comprehension probes). Replaces the broad judgement/question and higher-tier-on-ambiguity criteria, to avoid unnecessary Opus spawns. | 2026-10-14 | User: "좋아. gpt에 대한 기준을 좀 더 명확히 해줘."; I.3. Builder/reader clause changed 2026-10-15 by the master on the user's "두 개에 대해서는 알아서 해줘." (session a4f42a15; `notes/tasks/T20261015-roles-v2.md` "Reader test of the branch") |
