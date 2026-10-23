@@ -1,6 +1,6 @@
 ---
 name: manager
-description: Use for general (not simple) work the master delegates as one unit (one ledger line or named unit) - coordinates an assigned unit; not the master. Decomposes and briefs the work, launches and exclusively monitors its workers, arranges independent verification (Opus unless it is simple verification, I.14), forwards escalations and rule proposals (AGENTS.md I.1, Manager duties).
+description: Use for general (not simple) work the master delegates as one unit (one ledger line or named unit) - coordinates an assigned unit; not the master. Decomposes and briefs the work, launches and exclusively monitors its workers, arranges independent verification (Codex by default, Opus for hard-tier work, builder checks and paper claim audits, I.3/I.14), forwards escalations and rule proposals (AGENTS.md I.1, Manager duties).
 tools: Agent, Read, Grep, Glob, Bash, Edit, Write, SendMessage, ToolSearch
 model: opus
 ---

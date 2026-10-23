@@ -4,9 +4,9 @@ description: Spawn a Claude subagent or Codex worker with a correct brief. Use e
 ---
 <!-- general -->
 
-# Spawning an agent (2026-10-15)
+# Spawning an agent (2026-10-23)
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; steps 2, 6, 7, 8 and the background-launch rule: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); leaf role at depth three: user, 2026-10-15: "preflight를 넣을 필요 없어. leaf worker 등 agent를 스폰할 수 없는 역할의 markdown 파일을 새로 만들어." then chose "type + 역할 파일 (Recommended)" (the decisions list); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (the decisions list).
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; steps 2, 6, 7, 8 and the background-launch rule: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); leaf role at depth three: user, 2026-10-15: "preflight를 넣을 필요 없어. leaf worker 등 agent를 스폰할 수 없는 역할의 markdown 파일을 새로 만들어." then chose "type + 역할 파일 (Recommended)" (the decisions list); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
 1. **Pick tier, role and model** using I.3 before delegating (the master hands general work to a manager); record the selected criterion in *Resources*. Use I.12 for custom agent types and I.4 for Codex invocation/flags. (2026-10-15)
 2. **Identify and track the assignment.** Give it a task id `T<YYYYMMDD>-<slug>`. The master creates a
@@ -23,9 +23,10 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; steps 2, 6, 7, 8 and
    reading scope. Copy the complete never-break section verbatim from the named rule-source commit,
    including heading, provenance and explanations, and check exact equality before launch. A research
    worker never edits, commits, launches jobs or spawns agents. A task worker spawns no agents and acts
-   only within its explicit scope. Verification of another agent's result is an independent Opus
-   assignment under I.14, never a Codex role; simple verification (I.14) is the exception to both. Record the actual hierarchy depth and ownership using
-   F-brief; startup freshness checks remain mandatory. (2026-10-15)
+   only within its explicit scope. Verification of another agent's result is an independent
+   assignment under I.3 and I.14: by default a Codex task worker in a read-only sandbox, whose only output is its
+   verdict; Opus only for hard-tier work, builder checks and paper claim audits. Record the actual hierarchy depth and ownership using
+   F-brief; startup freshness checks remain mandatory. (2026-10-15; 2026-10-23)
 7. **Launch and arm the watch.** Apply the background-launch rule and I.11 transport checks before launch.
    Establish the authorized watch mechanism and expected artifact/checkpoint under I.18; the master records
    the planned watch in F-ledger and arms its I.23 heartbeat, while a non-master caller records the watch in

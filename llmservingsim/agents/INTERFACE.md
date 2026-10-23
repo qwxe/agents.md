@@ -2,10 +2,10 @@
 
 Scope: master, manager, Claude implementer/verifier and Codex task worker, by the action triggers in `AGENTS.md` 0.1. Research workers retain their limited scope. The field templates these sections name (F-*) are in I.24 (`agents/FORMATS.md`); records are I.8 (`agents/RECORDS.md`). Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15)
 
-## I.10 Decision rights (2026-10-15)
+## I.10 Decision rights (2026-10-23)
 <!-- general -->
 
-Approval of the decision table (role restructuring): user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list).
+Approval of the decision table (role restructuring): user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
 A decision belongs to the lowest level that can settle it from what it was given. A decision is **non-obvious**
 when the brief, the decisions in force (the decisions list) and the existing code do not settle it, and the reasonable choices
@@ -17,7 +17,7 @@ differ in behaviour, results, interfaces, scope or byte-exactness. (2026-10-14)
 | Task decomposition, scheduling and task-level design explicitly settled by brief/current standing decisions/code (historical quotes are reference-only under I.11) | Direct caller, including manager, within its delegated scope (2026-10-15) |
 | Cross-line scheduling and shared ownership assignment inside already approved interfaces/budgets | Master; manager forwards conflicts across its unit (2026-10-15) |
 | Algorithms/model semantics, paper claims, experiments/new runs, scope, result-changing defaults, shared interface changes, or conflicts with decisions | User through master; no manager authority is added (2026-10-15) |
-| Whether another agent's completed result satisfies its brief | Independent verifier under I.14 (Opus unless it is simple verification); disputed rejects go to user (2026-10-15) |
+| Whether another agent's completed result satisfies its brief | Independent verifier under I.14 (Codex by default, Opus for hard-tier work, builder checks and paper claim audits, I.3); disputed rejects go to user (2026-10-15; 2026-10-23) |
 | Exact subagent-origin rule proposal | Master under 0.5; every intermediate manager only forwards (2026-10-15) |
 | Master-origin rule proposal, knowledge promotion, or standing user decision | User; recording a verbatim decision uses 0.5 light path (2026-10-15) |
 | Outside-task bug | Report only; no incidental repair (2026-10-15) |
@@ -119,10 +119,10 @@ launch, launching is blocked. Ending a turn with owned background waits preserve
 wake is a continuation, not a final handoff. Record pending packets and later answers in its own trail.
 (2026-10-15)
 
-## I.12 The brief (interface down) (2026-10-16)
+## I.12 The brief (interface down) (2026-10-23)
 <!-- general -->
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; rule-source commit, never-break copy, role table and hard-work staging: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); leaf role at depth three: user, 2026-10-15: "preflight를 넣을 필요 없어. leaf worker 등 agent를 스폰할 수 없는 역할의 markdown 파일을 새로 만들어." then chose "type + 역할 파일 (Recommended)" (the decisions list).
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; rule-source commit, never-break copy, role table and hard-work staging: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); leaf role at depth three: user, 2026-10-15: "preflight를 넣을 필요 없어. leaf worker 등 agent를 스폰할 수 없는 역할의 markdown 파일을 새로 만들어." then chose "type + 역할 파일 (Recommended)" (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
 Every spawn gets a brief in the F-brief format (I.24): its ten headings in order, each field filled; a heading
 with nothing to say says "none". The brief is written to the task trail and the spawn message gives its path plus
@@ -191,9 +191,9 @@ the harness defers it. (2026-10-14; 2026-10-15)
 | manager | `manager` (Opus) | Agent, Read, Grep, Glob, Bash, Edit, Write, SendMessage; spawns workers within three edges, never another manager (I.15) (2026-10-15) |
 | implementer (hard tier, depth two) | `implementer` (Opus) | Agent, Read, Grep, Glob, Bash, Edit, Write, SendMessage, plus web search and fetch for assigned source work; at depth two it may spawn an Opus leaf child or call Codex helpers (I.15) (2026-10-15) |
 | leaf (every depth-three Opus agent; any agent that must not spawn) | `leaf` (Opus by default) | the implementer's tools without Agent: Read, Grep, Glob, Bash, Edit, Write, SendMessage, plus web search and fetch for assigned source work; spawns nothing by permission and never through Bash/CLI (I.15; the leaf role card) (2026-10-15) |
-| verifier (every check of another agent's result) | `verifier` (Opus; Sonnet or Haiku for simple verification, I.14) | Read, Grep, Glob, Bash, SendMessage, plus web search and fetch for source audits; no Edit, Write or Agent; writes only its designated verdict artifact (I.14) (2026-10-15) |
+| verifier (Claude: Opus verification; Sonnet or Haiku when Codex is unusable, I.3) | `verifier` (Opus by default; model `sonnet` or `haiku` set on the spawn for a Codex replacement) | Read, Grep, Glob, Bash, SendMessage, plus web search and fetch for source audits; no Edit, Write or Agent; writes only its designated verdict artifact (I.14) (2026-10-15; 2026-10-23) |
 | research fallback / task fallback (Codex unusable) | `research-fallback` / `task-fallback` (Sonnet or Haiku) | the replaced Codex role's rights; SendMessage; no Agent; no verification (I.3) (2026-10-15) |
-| Codex task worker (simple, general) | — (CLI, I.4) | sandbox by I.4; the brief names Codex's own rules, the rule files and the never-break section verbatim (2026-10-14; 2026-10-15) |
+| Codex task worker (simple, general; default verifier) | — (CLI, I.4) | sandbox by I.4 (read-only for a verification, its verdict through `-o` into the designated verdict artifact); the brief names Codex's own rules, the rule files and the never-break section verbatim (2026-10-14; 2026-10-15; 2026-10-23) |
 | Codex research worker | — (CLI, I.4) | read-only sandbox; the brief names Codex's own rules and quotes the never-break section verbatim (2026-10-14; 2026-10-15) |
 
 The model and the effort are still set on every spawn (I.3). (2026-10-14)
@@ -259,10 +259,10 @@ cannot write the trail (a sandbox, a read-only role) returns its entries in its 
 The master relays to the user what matters, in Korean, and keeps what it observed itself apart from what an agent
 reported. (2026-10-14)
 
-## I.14 Tests and review (2026-10-15)
+## I.14 Tests and review (2026-10-23)
 <!-- general -->
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; all verification by Opus: user, 2026-10-15, "1. verify는 뭐든지 opus가 하도록 바꿔줘." and "2. 다른 에이전트의 결과를 verify하는건 모두 opus. verifier의 정의를 그렇게 적어줘." (the decisions list), narrowed by simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); review procedure: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (the decisions list).
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; all verification by Opus: user, 2026-10-15, "1. verify는 뭐든지 opus가 하도록 바꿔줘." and "2. 다른 에이전트의 결과를 verify하는건 모두 opus. verifier의 정의를 그렇게 적어줘." (the decisions list), narrowed by simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); review procedure: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
 **Scope of review.** Whether a result is verified is decided as *Verification on demand* below says; when it
 is verified, a code change gets a verifier review. Results of runs and analyses that feed a decision,
@@ -298,39 +298,35 @@ changed rights or approval paths; small additions and fixes are not structural);
 enter a paper or a handoff. A skipped verification is recorded with a one-line reason in the task trail and in the
 report. Where the review of a rule-file change is skipped, its merge, push and publication follow the upper tier's
 acceptance instead of a review verdict. A verification that runs keeps every rule of this section: tests are never
-weakened, and the simple and Opus verifiers are split as below. (2026-10-15)
+weakened, and the verifier's model follows *The verifier* below. (2026-10-15; 2026-10-23)
 
 **Review.**
-- **The verifier.** A verifier is an agent assigned to establish whether another agent's result is correct or
-  acceptable. The caller (the master or a manager) starts it after the agent reports, and it authored none of the
-  assessed result. Every verification that is not simple verification (next bullet) is done by an independent
-  Claude Opus verifier (custom type `verifier`, medium); there is no Codex, Sonnet or Haiku fallback for it.
-  Comprehension-only reader probes and deterministic extraction are not verification (I.3). No report is accepted
-  solely on a non-Opus second opinion, except a simple verification. (2026-10-15)
-- **Simple verification** (user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list; Codex path: the decisions list)). Simple verification is a check whose pass criterion is stated in the
-  brief and needs little judgement: receipt checks of a report, verbatim-installation checks, rerunning tests or
-  checks, existence of files or commits, format checks of documents. It goes below Opus: purely mechanical checks
-  to the Luna tier, the other simple checks to the Sol tier (I.3), which are Claude Haiku and Claude Sonnet where
-  Codex is not used. Opus verifies the correctness of code or rules, the acceptance of hard-tier results, claim
-  audits whose numbers enter a paper, and every ambiguous case: when unsure whether a check is simple, it is not.
-  The agent that assigns the verification (the master or a manager) judges whether it is simple; a check of a
-  change to rule text is correctness of rules (Opus), even when the rule text is a document.
-  A simple verifier keeps the verifier's independence and limits: a Claude one runs as the `verifier` custom type
-  with its model set on the spawn; a Codex one is a task worker in a read-only sandbox that returns its verdict in
-  its report. (2026-10-15)
+- **The verifier** (user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose
+  "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list)). A verifier is an agent
+  assigned to establish whether another agent's result is correct or acceptable. The caller (the master or a
+  manager) starts it after the agent reports, and it authored none of the assessed result. By default a
+  verification is done by a Codex task worker (Sol medium; Luna medium for purely mechanical checks) in a read-only
+  sandbox, whose only output is its verdict, written through the CLI's last-message file into the designated
+  verdict artifact. A Claude Opus verifier (custom type `verifier`, medium) is used only for the verification of
+  hard-tier work, builder checks and claim audits of numbers that enter a paper. When Codex is unusable
+  (authentication or availability), a Sol verification goes to Claude Sonnet (medium) and a Luna verification to
+  Claude Haiku (medium), both as the custom type `verifier` with the model set on the spawn; Opus does not replace
+  Codex. The assigning agent chooses the model by I.3 and records it in the brief's *Resources*. Comprehension-only
+  reader probes and deterministic extraction are not verification (I.3). No report is accepted solely on an
+  unassigned second opinion, such as a research worker's answer. (2026-10-15; 2026-10-23)
 - The verifier gets the review input artifact the caller prepared (I.8): the brief (including Done when), the
   branch/commit range, the diff or the assessed artifact with its digest, the repository, and only the *Verified*,
   *Assumptions* and *Test changes* sections of the agent's report, not its narrative, so it is not anchored on the
   agent's reasoning; a document's own prose is permitted evidence. It is read-only by permission (I.12) and writes
   nothing but its designated verdict artifact, checked below. (2026-10-14; 2026-10-15)
-- **Second review for hard work.** For hard-tier work the caller starts a second independent Opus verifier as a
-  sibling, with the same permitted evidence and without either verdict or the author's reasoning; neither reviewer
-  launches the other. Model review is evidence, not an oracle; exact checks win. (2026-10-14; 2026-10-15)
+- **Second review for hard work.** For hard-tier work the caller starts a second independent verifier, a Codex
+  Sol task worker (Claude Sonnet when Codex is unusable), as a sibling of the Opus verifier, with the same permitted evidence and without either verdict or the author's reasoning; neither reviewer
+  launches the other. Model review is evidence, not an oracle; exact checks win. (2026-10-14; 2026-10-15; 2026-10-23)
 - **Independence is procedural.** No authorship of the assessed result, restricted evidence packets and
   independent first verdicts before reviews are shared. The verdict records the reviewer's model and version, its
   evidence access and its prior exposure (F-verdict, I.24); missing metadata or compromised separation is disclosed
-  to the caller before acceptance. Separate Opus instances can share errors: this is not statistical independence
-  or a measured reliability. (2026-10-15)
+  to the caller before acceptance. Separate model instances can share errors: this is not statistical independence
+  or a measured reliability. (2026-10-15; 2026-10-23)
 - Before reviewing, read and execute the verifier role file's complete ordered checklist. Review policy, severity and unchanged-tree checks remain here. (2026-10-15)
 - **Findings.** A finding is reported only after the verifier tried to refute it and it survived, with a concrete
   trigger (input, command, line). Each has a severity: *blocking* (wrong result, broken interface, weakened test,
@@ -349,9 +345,10 @@ weakened, and the simple and Opus verifiers are split as below. (2026-10-15)
   blocks acceptance; a disagreement goes through the master to the user, never to a majority vote. (2026-10-14; 2026-10-15)
 - **Fix loop with a cap.** On REJECT the caller resumes the implementer with the findings; the re-review covers
   only the fix range and marks each finding ADDRESSED / NOT ADDRESSED. After three rounds, one fresh Opus
-  implementation attempt at higher effort, followed by an independent Opus review; after that the master takes it
+  implementation attempt at higher effort, followed by an independent Opus review (a hard-tier escalation, so with the
+  second verifier of hard work; user, 2026-10-23, chose "Opus 유지 (Recommended)"); after that the master takes it
   to the user. No fresh-verifier tactic resets the cap. Never loop until the verifier is quiet. A disputed finding
-  goes to the user. (2026-10-14; 2026-10-15)
+  goes to the user. (2026-10-14; 2026-10-15; 2026-10-23)
 
 ## I.15 Parallel work and spawn depth (2026-10-15)
 <!-- general -->

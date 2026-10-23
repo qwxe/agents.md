@@ -1,6 +1,6 @@
 # agents/CODEX.md — Codex workers (research worker, task worker) and their fallbacks
 
-Scope: Codex workers, their Claude fallback types and Claude callers. Follow the assigned role's startup row and triggers in `AGENTS.md` 0.1. Research workers read only their card, the never-break section and the brief's named documents/knowledge; caller mechanics below apply to Claude callers. Verification of another agent's result is never a Codex role, except simple verification (I.14). Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15)
+Scope: Codex workers, their Claude fallback types and Claude callers. Follow the assigned role's startup row and triggers in `AGENTS.md` 0.1. Research workers read only their card, the never-break section and the brief's named documents/knowledge; caller mechanics below apply to Claude callers. A Codex task worker is the default verifier of another agent's result (I.14). Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15; 2026-10-23)
 
 ## Core card — Research worker (2026-10-15)
 
@@ -41,9 +41,9 @@ Startup: disk selector/card, full 0.3, brief/named sources, the II.1 rows the br
 for the freshness check in every activity (done on the cited rows; before a decision or proposal, I.10, search II.1 by keyword for rows that bear on it). Preserve common gates, applicable Duties/full Pitfalls, operations and simulator
 triggers. (2026-10-15; 2026-10-16)
 
-## Core card — Fallback (research-fallback, task-fallback) (2026-10-15)
+## Core card — Fallback (research-fallback, task-fallback) (2026-10-23)
 
-Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"; the §2 role cards of the roles v2 design); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (decisions list "Simple verification below Opus", "Simple verification: scope and placement").
+Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"; the §2 role cards of the roles v2 design); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (decisions list "Simple verification below Opus", "Simple verification: scope and placement"); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (decisions list "Verification by Codex by default").
 
 Derived reading view: follow AGENTS.md 0.1 and read each triggered reference before acting; full source rules and role limits remain binding.
 
@@ -62,21 +62,22 @@ WebFetch, WebSearch, SendMessage) and `task-fallback` (tools Read, Grep, Glob, B
 each also with ToolSearch to load SendMessage where it is deferred,
 both with default model sonnet: override the model to sonnet medium for a Sol replacement and to haiku medium for a
 Luna replacement. Neither has Agent; the spawn, shell, transport and depth limits of a fallback
-are I.3 *Fallback launch*. No fallback type replaces a manager or an Opus verifier; Opus being unavailable
-blocks every verification that is not simple and the acceptance it decides (simple verification: I.14). (2026-10-15)
+are I.3 *Fallback launch*. No fallback type replaces a manager or a verifier: a
+Codex verification whose Codex is unusable goes to the `verifier` type with model sonnet or haiku (I.3, I.14), and Opus
+being unavailable blocks an Opus verification and the acceptance it decides. (2026-10-15; 2026-10-23)
 
 
-## I.4 Codex CLI (2026-10-15)
+## I.4 Codex CLI (2026-10-23)
 <!-- general -->
 
-### Codex's own rules (2026-10-15)
+### Codex's own rules (2026-10-23)
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; two roles (no Codex verifier), launch-and-monitor and escalation transport: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list).
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; two roles (no Codex verifier), launch-and-monitor and escalation transport: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
 Codex works in one of two roles; the first line of the brief names it ("Role: Codex research worker", "Role:
-Codex task worker"). Verifying another agent's result is not a Codex role, except simple verification
-(I.14), which a task worker does in a read-only sandbox and returns as a verdict in its report; any other
-verification is an independent Opus assignment. (2026-10-14; 2026-10-15)
+Codex task worker"). Verifying another agent's result is by default a task-worker assignment (I.14): the worker
+runs in a read-only sandbox, follows the verifier checklist and returns only its verdict, which the CLI writes into
+the designated verdict artifact; Opus verification is an independent Claude assignment (I.3). (2026-10-14; 2026-10-15; 2026-10-23)
 
 - **Every role.** Answer in the language the brief asks for. Obey the never-break section, which every Codex brief
   quotes verbatim. Never print a credential or token file and never put a token in a remote URL. A question is
@@ -112,10 +113,10 @@ File append is immediate delivery to the watched channel; caller detection has t
 launch at preflight; a runtime channel failure is an anomaly subject to the existing owner-death/recovery
 procedure, never an implicit monitoring transfer. No Codex spawn rights or interactive answer polling is added. (2026-10-15)
 
-### Calling Codex (Claude agents) (2026-10-15)
+### Calling Codex (Claude agents) (2026-10-23)
 
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
 Run it on the host, not inside a build or run container. A research call needs no job slot (the one exception
 to "no CPU outside your slot"); research workers share the I.15 limits (job slots, memory, one writer per file,
@@ -131,6 +132,7 @@ timeout <secs> "$CODEX" [--search] exec --ephemeral -s <sandbox> [--add-dir <dir
 | role | sandbox | timeout |
 |---|---|---|
 | research worker | `-s read-only` | 600 s (2026-10-14) |
+| task worker assigned a verification (I.14) | `-s read-only`; `-o` is the designated verdict artifact | sized to the checks it reruns (2026-10-23) |
 | task worker that edits, tests or commits in a worktree | `-s workspace-write --add-dir <main repo>/.git` (a worktree's git metadata lives in the main repository's `.git`); a worker whose task trail or launcher channel file lies outside its tree also gets `--add-dir <directory of that file>` | sized to the whole authorised task, including the launch-and-monitor lifetime of any job it launches (I.18 *Codex launchers*); a default of 3600 s must not truncate a known longer assignment (2026-10-14; 2026-10-15) |
 | task worker that launches runs, uses the container runtime, kills processes or pushes | `-s danger-full-access` (workspace-write blocks the network and, unverified, the container socket) | as above (2026-10-14) |
 
@@ -148,8 +150,8 @@ timeout <secs> "$CODEX" [--search] exec --ephemeral -s <sandbox> [--add-dir <dir
 
 | job | model | flags |
 |---|---|---|
-| simple-tier task selected under I.3 | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
-| general-tier task or check selected under I.3 (verification only when it is simple verification, I.14) | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
+| simple-tier task selected under I.3, including a purely mechanical verification (I.14) | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) (2026-10-23) |
+| general-tier task or check selected under I.3, including a default verification (I.14) | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) (2026-10-23) |
 | research lookup/summary selected under I.3 | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
 | research synthesis selected under I.3 | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
 | deeper evidence checks and counterexamples within the assigned scope (I.3 decision rights unchanged) | Sol Medium+ | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (or `high`/`xhigh`) (2026-10-14) |

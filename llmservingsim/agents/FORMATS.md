@@ -2,10 +2,10 @@
 
 Scope: every role, when a card, rule or skill names an F-* format. I.24 is the only normative home of the field templates; cards and skills say when to use a format, I.24 says which fields it has. Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15)
 
-## I.24 Formats (2026-10-15)
+## I.24 Formats (2026-10-23)
 <!-- general -->
 
-Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the role-restructuring design, the decisions list). Every format, field list and rule paragraph of this section was set on 2026-10-15. (2026-10-15)
+Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the role-restructuring design, the decisions list). Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list). Every format, field list and rule paragraph of this section was set on 2026-10-15, except the verifier-model wording of F-verdict, F-document-audit and F-reader, changed on 2026-10-23. (2026-10-15; 2026-10-23)
 
 Fields below are exact headings/columns in order; empty fields say `none`; N/A carries a reason. `<...>` are
 placeholders. Every factual premise carries I.12 provenance; evidence claims are verified/inferred/unverified.
@@ -132,7 +132,7 @@ Answer: <pending OR date/decider/verbatim words/source; routed back through call
 Not verified: <unconfirmed evidence, choices or channel capability; none if applicable>.
 ```
 
-**F-verdict** — independent review/audit output (Opus unless it is simple verification, I.14) in the designated verdict artifact, without opening the
+**F-verdict** — independent review/audit output (Codex by default, Opus for hard-tier work, builder checks and paper claim audits, I.3/I.14) in the designated verdict artifact, without opening the
 author's explanatory report narrative; the assessed artifact itself, including a design/document's prose, is permitted input. The caller commits and links the verdict:
 
 ```text
@@ -163,7 +163,7 @@ none
 Reviewer independence is procedural: no authorship of the assessed result, restricted evidence packets and
 independent first verdicts before sharing reviews. Record model/version, evidence access and prior exposure
 in F-verdict; disclose missing metadata and any compromised separation to the caller before acceptance.
-Separate Opus instances can share errors: procedural independence does not establish statistically independent
+Separate model instances can share errors: procedural independence does not establish statistically independent
 error distributions or measured reliability.
 
 Blocking findings imply REJECT; only nonblocking imply PASS WITH NOTES; none imply PASS. Audit per-claim
@@ -172,7 +172,7 @@ without sending implementer narrative to reviewer.
 
 ### Source and experiment formats
 
-**F-document-audit** — Opus auditing document analysis/design, including design notes:
+**F-document-audit** — the assigned verifier (I.3) auditing document analysis/design, including design notes:
 
 ```text
 Artifact/digest; task; source snapshot; audit scope; reviewer independence.
@@ -246,7 +246,7 @@ Evidence/verification limits; builder-check and reader-test references when comp
 <DONE_WITH_CONCERNS | DONE>
 Input paths/digests; no prior context.
 What I would do; claims/instructions I understand; ambiguous text; questions I would need answered.
-No acceptance verdict. Caller assigns Opus if a correctness judgment is required.
+No acceptance verdict. Caller assigns a verifier (I.3) if a correctness judgment is required.
 Not verified: <scope limits; no correctness/acceptance check performed>.
 ```
 

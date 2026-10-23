@@ -4,9 +4,9 @@ description: Write a decision-complete design note before hard-tier implementati
 ---
 <!-- general -->
 
-# Design note and builder check (2026-10-16)
+# Design note and builder check (2026-10-23)
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus judging: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list).
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus judging: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
 1. **The note** uses the F-design fields (I.24) and holds: problem and intent; goals, non-goals and anti-goals; the decisions already made (pointers
    into the decisions list, quoted user words); interfaces and data formats; the algorithm or behaviour, precise
@@ -25,6 +25,6 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus jud
    answers into the note; take the user's questions to the user. (2026-10-14) Hard-tier work starts only from this decision-complete note, leaving the implementer no unsettled design decision; settle the user's questions before spawning (I.12). (2026-10-14) (2026-10-15)
 4. **Reader test.** The brief built on the note gets a separate comprehension probe (F-reader, I.24; Codex Sol
    allowed, I.3); it reports only what it understands and what is ambiguous, and a reader that starts judging
-   correctness stops and goes back to the caller for an Opus assignment. (2026-10-15)
+   correctness stops and goes back to the caller for a verification assignment (I.3). (2026-10-15; 2026-10-23)
 5. Only then spawn the implementer, with the note as its main document. A hard investigation may start earlier with
    a bounded question-and-evidence brief and a read-back, without implementation authority (I.12). (2026-10-14; 2026-10-15)

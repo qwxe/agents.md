@@ -1,15 +1,15 @@
 # agents/VERIFIER.md — the verifier subagent
 
-Scope: the independent verifier assigned under I.14 (Opus; Sonnet or Haiku for simple verification): any agent assigned to establish whether another agent's result is correct or acceptable (code, designs and documents, document-analysis and experiment-claim audits, builder checks, source validation, candidate ranking, merged work). Follow the matching startup row and action triggers in `AGENTS.md` 0.1; read the complete checklist before review. Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15)
+Scope: the independent verifier assigned under I.14 (a Codex task worker by default; a Claude `verifier`, Opus for hard-tier work, builder checks and paper claim audits, Sonnet or Haiku when Codex is unusable): any agent assigned to establish whether another agent's result is correct or acceptable (code, designs and documents, document-analysis and experiment-claim audits, builder checks, source validation, candidate ranking, merged work). Follow the matching startup row and action triggers in `AGENTS.md` 0.1; read the complete checklist before review. Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15; 2026-10-23)
 
-## Core card (2026-10-16)
+## Core card (2026-10-23)
 
-Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"; the §2 role cards of the roles v2 design); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (decisions list "Simple verification below Opus", "Simple verification: scope and placement").
+Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"; the §2 role cards of the roles v2 design); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (decisions list "Simple verification below Opus", "Simple verification: scope and placement"); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (decisions list "Verification by Codex by default").
 
 Derived reading view: follow AGENTS.md 0.1 and read each triggered reference before acting; full source rules and role limits remain binding.
 
 1. Read the assigned role's startup set from disk at current main HEAD; compare the brief's rule-source commit and reread changed sections before acting. (2026-10-15) — AGENTS 0.1 (O8)
-2. Verify another agent's result only as an independent verifier (Opus unless the brief assigns simple verification, I.14), from brief/scope and restricted evidence. (2026-10-15) — I.3/I.14; Inputs
+2. Verify another agent's result only as an independent verifier (the model the brief assigns under I.3: Codex by default, Opus for hard-tier work, builder checks and paper claim audits), from brief/scope and restricted evidence. (2026-10-15; 2026-10-23) — I.3/I.14; Inputs
 3. Execute the ordered checklist appropriate to artifact kind, with caller-prepared isolated check trees and named output paths for historical/mutation tests; run checks yourself or report blocking inability. (2026-10-15) — Checklist; I.14
 4. Challenge premises and reproduce/sample evidence; refute each proposed finding before retaining it. (2026-10-15) — Checklist; I.10/I.12/I.14
 5. Preserve reviewed HEAD/status; write only the designated verdict, never fixes/commits/knowledge entries. (2026-10-15) — I.14/I.21; Inputs
@@ -24,17 +24,17 @@ use F-document-audit and mark code-only checks N/A with reason; experimental cla
 Reviewer monitors its own check jobs under I.18 and never launches another reviewer. (2026-10-15; 2026-10-16)
 
 
-## Inputs (2026-10-15)
+## Inputs (2026-10-23)
 <!-- general -->
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
-Read the review input artifact the caller prepared (I.8): the brief, branch/commit range or assessed artifact and its digest, and *Done when* checks, with the report-input restriction in I.14, before reviewing. Write only the verdict, to the designated verdict artifact the brief names: a Claude verifier has no Edit/Write tool and uses Bash for that permitted write. Checks that need a historical checkout, a reverted fix or mutants run in the scratch review tree and output paths the caller prepared. Verdict commit ownership is I.13: the caller commits it. (2026-10-15)
+Read the review input artifact the caller prepared (I.8): the brief, branch/commit range or assessed artifact and its digest, and *Done when* checks, with the report-input restriction in I.14, before reviewing. Write only the verdict, to the designated verdict artifact the brief names: a Claude verifier has no Edit/Write tool and uses Bash for that permitted write; a Codex verifier runs in a read-only sandbox and returns the verdict as its final message, which the CLI writes into that artifact. Checks that need a historical checkout, a reverted fix or mutants run in the scratch review tree and output paths the caller prepared. Verdict commit ownership is I.13: the caller commits it. (2026-10-15; 2026-10-23)
 
-## Checklist (in order) (2026-10-15)
+## Checklist (in order) (2026-10-23)
 <!-- general -->
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
 0. **Pick the branch for the artifact kind.** Code: steps 1-9. A design or document: the `document-audit` skill
    and F-document-audit (I.24), with steps 1, 5, 6 and 9 and the code-only steps marked N/A with the reason.
@@ -54,9 +54,9 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 6. **Assumptions against I.10 and I.11.** An assumption that belongs to the spawner or the user, or one that
    should have stopped the work, is a finding. So is building on a premise the read-back marked `refuted` or
    `unchecked` when it changes results, without an answer recorded in the task trail (I.12). (2026-10-14)
-7. **Hard-tier work, always:** the caller starts a second independent Opus verifier as your sibling (I.14). You
-   never launch another reviewer and form your first verdict without seeing its verdict. For a simple verification
-   (I.14) this step is N/A. (2026-10-15)
+7. **Hard-tier work, always:** the caller starts a second independent verifier (a Codex Sol task worker) as a
+   sibling of the Opus verifier (I.14). You never launch another reviewer and form your first verdict without
+   seeing its verdict. For a verification of work that is not hard tier this step is N/A. (2026-10-15; 2026-10-23)
 8. **End of a line of work only:** targeted mutation testing on the changed core modules (I.14), in the scratch
    review tree; report the mutation score and the tests that kill no mutant on their own. (2026-10-14; 2026-10-15)
 9. Read I.15 before reviewing a parallel merge. (2026-10-14)

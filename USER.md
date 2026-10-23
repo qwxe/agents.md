@@ -4,9 +4,9 @@ For the user. What the agents promise you (the contract), what they need from yo
 choose. Rules are cited by id; the rule files hold the detail (`AGENTS.md` lists them, and `GENERAL.md` has the
 repository-independent ones). If this file and a rule file disagree, the rule file wins and this file is fixed (2026-10-14).
 
-## 1. The contract: what you can expect (2026-10-16)
+## 1. The contract: what you can expect (2026-10-23)
 
-Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; roles v2 (managers, Opus verification with simple verification below Opus, launcher monitoring, formats and records, reference-only history, rule branches): user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (decisions list "Simple verification below Opus", "Simple verification: scope and placement"); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (decisions list "Verification on demand", "Verification on demand: limits").
+Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; roles v2 (managers, Opus verification with simple verification below Opus, launcher monitoring, formats and records, reference-only history, rule branches): user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (decisions list "Simple verification below Opus", "Simple verification: scope and placement"); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (decisions list "Verification on demand", "Verification on demand: limits"); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (decisions list "Verification by Codex by default").
 
 This contract is a readable view of the linked rule homes, not an independent policy copy. Agents start with their role card and AGENTS.md 0.1 routing instructions, then read, right before each matching action, the section it names (not the whole file). Only the master reads the whole decisions list at startup; other agents read the rows their brief cites and search it by keyword before a decision (AGENTS.md 0.1). Every requirement remains binding; task-specific reading is additional. The counted startup set and separately counted references triggered during startup are defined in AGENTS.md 0.1. (2026-10-15; 2026-10-16)
 
@@ -17,8 +17,9 @@ This contract is a readable view of the linked rule homes, not an independent po
   other work to Codex. The master keeps its own context for you (I.1, I.2). It reports in Korean and keeps what it saw itself apart from what an
   agent reported (I.13). Sol medium is the default worker: it can reason, debug and implement within settled
   requirements. Luna handles fully specified mechanical tasks; Opus handles the hard criteria in I.3, every manager
-  and every verification except simple verification, which goes to Sonnet or Haiku (I.14). A possible question does not by itself require Opus; mixed work assigns only its hard
-  part to Opus. (2026-10-14; 2026-10-15)
+  and only the verification of hard work, builder checks and claim audits of paper numbers; every other
+  verification goes to Codex (I.3, I.14). A possible question does not by itself require Opus; mixed work assigns only its hard
+  part to Opus. (2026-10-14; 2026-10-15; 2026-10-23)
 - **Nothing that changes results is decided without you.** A result-changing, semantic, scope or interface
   question comes to you as an escalation: the question, two or three options, what changes under each, a
   recommendation. No agent guesses on your behalf (I.10, I.11). Cheap, reversible choices are made by the agents
@@ -37,17 +38,16 @@ This contract is a readable view of the linked rule homes, not an independent po
   byte-exact core code, structural rule-file changes and claim audits of numbers that enter the paper or a
   handoff; a skipped verification is recorded with a one-line reason in the trail and the report (I.14). Every check of
   whether another agent's result is correct or acceptable is done by a separate read-only verifier that did not
-  write it. Simple verification, a check whose pass criterion the brief states and that needs little judgement
-  (receipt checks, verbatim-installation checks, reruns of tests or checks, existence of files or commits, format
-  checks of documents), goes to Haiku when purely mechanical and to Sonnet otherwise (where Codex is used, Codex
-  Luna or Sol); everything else is Claude Opus: the correctness of code or rules, the acceptance of hard work,
-  claim audits whose numbers enter the paper, and every unclear case. Hard work gets a second independent Opus
-  verifier. It gives
+  write it. By default that verifier is a Codex worker (Sol; Luna for purely mechanical checks such as
+  existence of files or commits, reruns of named checks and format checks); Claude Opus verifies only hard work,
+  builder checks and claim audits whose numbers enter the paper. Hard work gets a second independent verifier,
+  Codex Sol. When Codex is unusable, Claude Sonnet replaces Sol and Claude Haiku replaces Luna. It gives
   PASS / PASS WITH NOTES / REJECT in its own verdict file; a REJECT loop is capped and comes to you if it does not
-  converge (I.14). The caller commits the verdict under I.13; the verifier leaves the reviewed tree unchanged. (2026-10-14; 2026-10-15)
-- **Claims are audited.** Numbers that go into a handoff or the paper are checked against raw results by an Opus
-  reviewer that sees only the results (`claim-audit` skill); decision-feeding document or source analyses and
-  designs are checked against their primary sources the same way (`document-audit` skill). (2026-10-14; 2026-10-15)
+  converge (I.14). The caller commits the verdict under I.13; the verifier leaves the reviewed tree unchanged. (2026-10-14; 2026-10-15; 2026-10-23)
+- **Claims are audited.** Numbers that go into a handoff or the paper are checked against raw results by an
+  independent reviewer that sees only the results (`claim-audit` skill; Opus for numbers that enter the paper,
+  Codex otherwise); decision-feeding document or source analyses and designs are checked against their primary
+  sources the same way (`document-audit` skill). (2026-10-14; 2026-10-15; 2026-10-23)
 - **Briefs say where each premise comes from.** Every premise in a brief is tagged as your words (quoted, dated),
   a decision in force, the code, or the master's inference. The agent checks each inferred premise in its
   read-back (confirmed / refuted with an alternative / unchecked) before it builds on it; a refuted one that
@@ -108,15 +108,15 @@ This contract is a readable view of the linked rule homes, not an independent po
 - **To reopen a closed decision**: name it ("II.1의 X 다시 보자"). (2026-10-14)
 - **Promotion decisions**: approve or reject a knowledge base pitfall the master proposes as a rule. (2026-10-14)
 
-## 3. Options you can choose
+## 3. Options you can choose (2026-10-23)
 
 | option | choices | default | how to ask | rule |
 |---|---|---|---|---|
 | Escalation mode | stop and ask on result-changing decisions; *rulings mode* (agents decide reversible questions and log them, for unattended runs) | stop and ask; rulings mode deferred (2026-10-14) | "rulings 모드 켜줘" (reopens the deferred decision) | I.11 (2026-10-14) |
 | Who decides what | the I.10 table; you can move a class of decision up or down | I.10 | "X는 네가 정해" / "X는 나한테 물어봐" | I.10 (2026-10-14) |
-| Model per task | Opus (medium) / Codex Sol / Codex Luna; Sonnet / Haiku when Codex is unusable | Sol medium by default; Luna medium for fully specified mechanical work; Opus medium for I.3 hard criteria and always for managers and for verification other than simple verification (Sonnet or Haiku, I.14); if Codex fails on authentication or availability, Sol work goes to Sonnet (medium) and Luna work to Haiku, never for management or for verification that is not simple (2026-10-15) | "이건 Opus로" | I.3 (2026-10-14) |
+| Model per task | Opus (medium) / Codex Sol / Codex Luna; Sonnet / Haiku when Codex is unusable | Sol medium by default; Luna medium for fully specified mechanical work; Opus medium for I.3 hard criteria, always for managers, and for verification only of hard work, builder checks and paper claim audits (other verification: Codex Sol, Luna for purely mechanical checks, I.14); if Codex fails on authentication or availability, Sol work goes to Sonnet (medium) and Luna work to Haiku (medium), verification included (custom type `verifier`), never for management or an Opus verification (2026-10-15; 2026-10-23) | "이건 Opus로" | I.3 (2026-10-14; 2026-10-23) |
 | Parallelism | split every isolated or divisible task into parallel agents; or cap the number | split for speed, within the job-slot budget | "에이전트 N개까지만" | I.15 (2026-10-14) |
-| Review depth | Opus verifier only; plus a second independent Opus verifier; plus full golden run and mutation testing | verification when the agent that ordered the work judges it needed, always for byte-exact core code, structural rule-file changes and claim audits of numbers entering the paper or a handoff; when it runs, an Opus verifier for every review that is not simple verification (Sonnet or Haiku, I.14); a second independent Opus verifier for hard work; full checks at the end of a line (2026-10-15) | "두 번째 Opus 리뷰도 붙여" | I.14 (2026-10-14; 2026-10-15) |
+| Review depth | one verifier (Codex or Opus); plus a second independent verifier; plus full golden run and mutation testing | verification when the agent that ordered the work judges it needed, always for byte-exact core code, structural rule-file changes and claim audits of numbers entering the paper or a handoff; when it runs, a Codex verifier (Sol; Luna for purely mechanical checks), Opus only for hard work, builder checks and paper claim audits (I.3, I.14); for hard work a second independent verifier, Codex Sol; full checks at the end of a line (2026-10-15; 2026-10-23) | "두 번째 Opus 리뷰도 붙여" | I.14 (2026-10-14; 2026-10-15; 2026-10-23) |
 | Read-back / builder check / reader test | on or off per task | on for hard work; builder checks by an independent Opus verifier, reader tests by independent Sol medium workers (2026-10-15) | "바로 구현해" / "먼저 계획 보여줘" | I.12 (2026-10-14) |
 | Monitoring cadence | interval | ~3 min | "N분마다" | I.18 (2026-10-14) |
 | Master heartbeat | interval of the master's wake-up while work is live | ~30 min (2026-10-14) | "heartbeat N분" | I.23 (2026-10-14) |
