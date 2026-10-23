@@ -20,6 +20,9 @@ This contract is a readable view of the linked rule homes, not an independent po
   and only the verification of hard work, builder checks and claim audits of paper numbers; every other
   verification goes to Codex (I.3, I.14). A possible question does not by itself require Opus; mixed work assigns only its hard
   part to Opus. (2026-10-14; 2026-10-15; 2026-10-23)
+- **A query advisor input at session start.** When a Claude Code master session (not a meta session) starts, the master gives
+  you a ready-to-paste input for a second session that runs the query advisor: it reads your exchanges with the
+  master and tells you what an answer missed and which question to ask next (AGENTS.md 0.1, master row). (2026-10-23)
 - **Nothing that changes results is decided without you.** A result-changing, semantic, scope or interface
   question comes to you as an escalation: the question, two or three options, what changes under each, a
   recommendation. No agent guesses on your behalf (I.10, I.11). Cheap, reversible choices are made by the agents

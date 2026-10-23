@@ -18,7 +18,7 @@ Derived reading view: follow AGENTS.md 0.1 and read each triggered reference bef
 8. At phase/context/session boundaries perform handover and propose compaction; use F-handover/F-resume. (2026-10-15) — I.2/I.9
 9. Must escalate any ambiguity immediately through the caller chain (master: to user); never answer it from historical records, which are attached only as dated source references; plainly applicable current standing decisions still bind. (2026-10-15) — I.11 (O3)
 
-Startup: disk role selector/card, full 0.3, the whole current II.1 with its Superseded entries (only the master reads it whole), own ledgers/handoff, Promotion candidates, named task/knowledge. Triggers: USER §2 for new user instruction,
+Startup: disk role selector/card, full 0.3, the whole current II.1 with its Superseded entries (only the master reads it whole), own ledgers/handoff, Promotion candidates, named task/knowledge. Then a Claude Code master gives the user the query advisor starter input (AGENTS 0.1 master row; not in a meta session). (2026-10-23) Triggers: USER §2 for new user instruction,
 the matching USER section (1 contract, 3 options) for contract/options; each trigger means the named section only, read right before the action; spawn-agent before delegation, review before review assignment, handover at
 I.9/I.2 boundaries; operations for git/jobs; I.21 for knowledge. Other skills retain their activity triggers. (2026-10-15; 2026-10-16)
 
