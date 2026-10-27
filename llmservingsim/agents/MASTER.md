@@ -156,57 +156,57 @@ a working watch and that the progress ledger matches reality. (2026-10-14)
 - A job the master launches itself is the master's own: it runs that job's health loop under I.18, recording the
   checkpoint and progress in F-ledger's linked progress record (I.24). Delegation stays the normal route. (2026-10-15)
 
-## I.3 Model choice (2026-10-23)
+## I.3 Model choice (2026-10-27)
 <!-- general -->
 
 User, 2026-10-14: "어려운 작업은 모두 opus 5.5 medium, 나머지 작업은 전부 codex (sol, luna 등.)";
-clarified by the user on 2026-10-14: "좋아. gpt에 대한 기준을 좀 더 명확히 해줘." Use Codex Sol at medium
+clarified by the user on 2026-10-14: "좋아. gpt에 대한 기준을 좀 더 명확히 해줘." Use Codex Terra at medium
 effort by default. Choose Luna only for fully specified mechanical work; choose Opus only for the hard criteria
 below, always for managers, and for verification only as the Opus verification row says (user, 2026-10-15: "1. verify는 뭐든지 opus가 하도록 바꿔줘.",
 "manager는 opus를 쓰자.", "2. 다른 에이전트의 결과를 verify하는건 모두 opus. verifier의 정의를 그렇게 적어줘. 나머지
 간단한 작업은 다른 에이전트한테 맡겨도 돼."; simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list)). This replaces the broad "design or judgement", "anything that may
 need to stop and ask" and "between two tiers, use the higher one" criteria. Set the model and effort explicitly on
-every spawn. (2026-10-14; 2026-10-15; 2026-10-23)
+every spawn. (2026-10-14; 2026-10-15; 2026-10-23) (2026-10-27)
 
 | tier | model | selection criteria |
 |---|---|---|
-| general (default) | Codex Sol, effort `medium` (I.4 task worker) | Work requiring code comprehension, several steps, local implementation choices, evidence-based comparison or ordinary debugging within settled requirements. Includes implementing a decided design, script and harness changes, reproducing and comparing approved runs, result analysis and write-ups. (2026-10-14; 2026-10-15) |
+| general (default) | Codex Terra, effort `medium` (I.4 task worker) | Work requiring code comprehension, several steps, local implementation choices, evidence-based comparison or ordinary debugging within settled requirements. Includes implementing a decided design, script and harness changes, reproducing and comparing approved runs, result analysis and write-ups. (2026-10-14; 2026-10-15) (2026-10-27) |
 | simple | Codex Luna, effort `medium` (I.4 task worker) | Commands, inputs, outputs and acceptance checks are specified; execution requires no substantive interpretation or diagnosis. Includes exact file lookups, extracting named log fields, fixed-format tables, known-output checks, fully specified approved launches and killing listed PIDs. (2026-10-14) |
 | hard | Claude Opus 5.5, effort `medium` (a Claude implementer: model `opus`, effort `medium`) | Resolving an unsettled core algorithm or experiment design; adapting policy semantics; diagnosing a mismatch, hang or non-determinism whose cause remains unresolved after bounded evidence collection; implementing a change to byte-exact core behaviour under an explicit preservation requirement. User-owned decisions still follow I.10-I.11. (2026-10-14; 2026-10-15) |
 | manager | Claude Opus 5.5, effort `medium` (custom type `manager`) | Every manager (I.1, Manager duties). (2026-10-15) |
-| verification (default) | Codex Sol, effort `medium` (I.4 task worker in a read-only sandbox, verdict only, I.14); Codex Luna, effort `medium`, for purely mechanical checks | Every assignment, other than Opus verification (next row), to establish whether another agent's result is correct or acceptable: code review, acceptance of designs and documents, document-analysis and experiment-claim audits, source validation of another agent's answer, candidate ranking or judging, review of merged work, and the second independent review of hard work (I.14). Purely mechanical checks have a pass criterion stated in the brief and need no judgement: existence of files, commits or outputs, verbatim-installation checks, rerunning named tests or checks against a stated result, format checks of documents, including the mechanical receipt of files, commits or outputs when the caller delegates it (the caller's own I.13 receipt check is not a verification assignment); when unsure whether a check is mechanical, choose Sol. Comprehension-only reader probes and deterministic extraction scripts are not verification; executing an agent's own tests is part of its implementation. (2026-10-15; 2026-10-23) |
-| Opus verification | Claude Opus 5.5, effort `medium` (custom type `verifier`) | Only: the verification of hard-tier work (the hard row's criteria; its first review, I.14), builder checks, and claim audits of numbers that enter a paper. If Sol and Opus overlap without one of these, choose Sol. (2026-10-23) |
-| research | Codex (I.4 research worker, read-only) | Luna for a specified lookup or source summary; Sol medium for synthesis, assumption checks, alternatives, counterexamples and recommendations. Recommendations inform the decision owner; they do not approve a design, and validating another agent's answer is a verification assignment. (2026-10-14; 2026-10-15) |
+| verification (default) | Codex Terra, effort `medium` (I.4 task worker in a read-only sandbox, verdict only, I.14); Codex Luna, effort `medium`, for purely mechanical checks | Every assignment, other than Opus verification (next row), to establish whether another agent's result is correct or acceptable: code review, acceptance of designs and documents, document-analysis and experiment-claim audits, source validation of another agent's answer, candidate ranking or judging, review of merged work, and the second independent review of hard work (I.14). Purely mechanical checks have a pass criterion stated in the brief and need no judgement: existence of files, commits or outputs, verbatim-installation checks, rerunning named tests or checks against a stated result, format checks of documents, including the mechanical receipt of files, commits or outputs when the caller delegates it (the caller's own I.13 receipt check is not a verification assignment); when unsure whether a check is mechanical, choose Terra. Comprehension-only reader probes and deterministic extraction scripts are not verification; executing an agent's own tests is part of its implementation. (2026-10-15; 2026-10-23) (2026-10-27) |
+| Opus verification | Claude Opus 5.5, effort `medium` (custom type `verifier`) | Only: the verification of hard-tier work (the hard row's criteria; its first review, I.14), builder checks, and claim audits of numbers that enter a paper. If Terra and Opus overlap without one of these, choose Terra. (2026-10-23) (2026-10-27) |
+| research | Codex (I.4 research worker, read-only) | Luna for a specified lookup or source summary; Terra medium for synthesis, assumption checks, alternatives, counterexamples and recommendations. Recommendations inform the decision owner; they do not approve a design, and validating another agent's answer is a verification assignment. (2026-10-14; 2026-10-15) (2026-10-27) |
 
 - **Choose by the work, not its label.** Task length, file count, the word "design", ordinary uncertainty or the
   possibility of asking a question do not justify Opus. A file in a core directory alone is not a byte-exact
-  preservation requirement. If Luna and Sol overlap, choose Sol; if Sol and Opus overlap without an identified
-  hard criterion, choose Sol. Record the selected criterion in the brief's *Resources*; an Opus brief names
+  preservation requirement. If Luna and Terra overlap, choose Terra; if Terra and Opus overlap without an identified
+  hard criterion, choose Terra. Record the selected criterion in the brief's *Resources*; an Opus brief names
   the unresolved question or the core behaviour and exactness requirement. An explicit Opus model request alone
-  does not change the tier. (2026-10-14; 2026-10-15)
-- **Sol may reason and implement.** It may inspect source, choose local structure and tests, diagnose an ordinary
+  does not change the tier. (2026-10-14; 2026-10-15) (2026-10-27)
+- **Terra may reason and implement.** It may inspect source, choose local structure and tests, diagnose an ordinary
   bug against expected behaviour, compare evidence, and recommend alternatives. It follows I.10-I.11 for
   unresolved semantic, result, scope or interface decisions: it sends the question at once and continues only
-  independent work. A question alone does not promote the task to Opus. (2026-10-14; 2026-10-15)
+  independent work. A question alone does not promote the task to Opus. (2026-10-14; 2026-10-15) (2026-10-27)
 - **Split mixed work at the decision boundary.** Give Opus only the part meeting a hard criterion. Once the
   required decisions are settled, give ordinary implementation, approved launches, collection and reporting
-  to Sol or Luna by their criteria above. Classify each independent part separately; an Opus parent does not
-  make its helpers hard tier. Parallelism and ownership still follow I.15. (2026-10-14)
-- **Escalate with evidence.** Luna returns substantive interpretation or diagnosis to its caller for a Sol
-  task. Sol returns a concrete hard question with the evidence collected, hypotheses tested and the remaining
+  to Terra or Luna by their criteria above. Classify each independent part separately; an Opus parent does not
+  make its helpers hard tier. Parallelism and ownership still follow I.15. (2026-10-14) (2026-10-27)
+- **Escalate with evidence.** Luna returns substantive interpretation or diagnosis to its caller for a Terra
+  task. Terra returns a concrete hard question with the evidence collected, hypotheses tested and the remaining
   blocker; the caller assigns only that part to Opus. Use existing logs and authorised checks first; extra
-  simulator runs still require approval. The three-round review escalation in I.14 remains in force. (2026-10-14)
-- **When Codex is unusable** (the Codex CLI fails on authentication or availability), give Sol-tier work to a
+  simulator runs still require approval. The three-round review escalation in I.14 remains in force. (2026-10-14) (2026-10-27)
+- **When Codex is unusable** (the Codex CLI fails on authentication or availability), give Terra-tier work to a
   Claude Sonnet subagent (`model: sonnet`, effort medium) and Luna-tier work to a Claude Haiku subagent
   (`model: haiku`), launched with the research-fallback or task-fallback custom type, with the same brief, role
   rules and limits as the Codex worker it replaces (the fallback card). A default (Codex) verification goes the same
-  way, Sol verification to Claude Sonnet (medium) and Luna verification to Claude Haiku (medium), but launched
+  way, Terra verification to Claude Sonnet (medium) and Luna verification to Claude Haiku (medium), but launched
   as the custom type `verifier` with the model set on the spawn, never as a fallback type (user, 2026-10-23,
   fallback "Sonnet/Haiku", the decisions list). The hard tier, managers and Opus verification stay Opus: no
   fallback replaces a manager or an Opus verifier, Opus never replaces Codex, and Opus being unavailable blocks
   an Opus verification and the acceptance it decides (2026-10-15; 2026-10-23). Record the fallback and the Codex
   error in the brief's *Resources*. (user, 2026-10-14: "codex
-  사용이 불가능한 경우 이전처럼 sonnet 이하를 사용하는 걸로") (2026-10-14; 2026-10-15; 2026-10-23)
+  사용이 불가능한 경우 이전처럼 sonnet 이하를 사용하는 걸로") (2026-10-14; 2026-10-15; 2026-10-23) (2026-10-27)
 - **Fallback launch.** A fallback agent has no agent-spawning tool and never spawns, even through a shell or CLI;
   its shell use is limited by policy to the replaced role, not by an operating-system read-only sandbox. The Claude
   caller uses native reply/resume transport but keeps the replaced role's decision, report and write limits. At an
@@ -214,10 +214,10 @@ every spawn. (2026-10-14; 2026-10-15; 2026-10-23)
   depth-two caller, on detecting the Codex failure, asks the manager for the fallback, and the manager assigns it as
   a depth-two sibling of that caller, never as a depth-three Sonnet or Haiku child. (2026-10-15)
 - **Checks.** A builder check is verification: an independent Opus verifier. A reader test (I.12) is a
-  comprehension probe: an independent Codex Sol medium worker that returns only what it understands and what is
+  comprehension probe: an independent Codex Terra medium worker that returns only what it understands and what is
   ambiguous; a reader that starts judging correctness stops and returns to its caller for a verification
   assignment (the verification rows above). If a check exposes a hard question, report it to its owner rather than
-  silently solving it. Review routing is I.14. (2026-10-14; 2026-10-15; 2026-10-23)
+  silently solving it. Review routing is I.14. (2026-10-14; 2026-10-15; 2026-10-23) (2026-10-27)
 
 
 ## I.9 Handing over to the next session (2026-10-15)

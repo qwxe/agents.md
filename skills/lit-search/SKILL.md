@@ -4,12 +4,12 @@ description: Literature, documentation or source-code research through Codex. Us
 ---
 <!-- general -->
 
-# Literature search (2026-10-23)
+# Literature search (2026-10-27)
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus judging: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
-1. **Brief Codex** (Luna for finding, Sol for judging) with: the question; 2-4 rephrasings to search in parallel;
-   where to search (paper indexes, official docs, the actual source code); the period; the answer language. (2026-10-14)
+1. **Brief Codex** (Luna for finding, Terra for judging) with: the question; 2-4 rephrasings to search in parallel;
+   where to search (paper indexes, official docs, the actual source code); the period; the answer language. (2026-10-14) (2026-10-27)
 2. **Output contract** to ask for: the F-research format (I.24), with an evidence table (claim, source URL, source type: paper / preprint / docs /
    code / blog, how it was checked: read / abstract only / not checked); claims labelled *verified*, *inferred*,
    *unverified*; contradictions kept, not resolved silently; a coverage status (what was searched, what was not,

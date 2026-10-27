@@ -31,7 +31,7 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; Codex default verifi
 
 Read the review input artifact the caller prepared (I.8): the brief, branch/commit range or assessed artifact and its digest, and *Done when* checks, with the report-input restriction in I.14, before reviewing. Write only the verdict, to the designated verdict artifact the brief names: a Claude verifier has no Edit/Write tool and uses Bash for that permitted write; a Codex verifier runs in a read-only sandbox and returns the verdict as its final message, which the CLI writes into that artifact. Checks that need a historical checkout, a reverted fix or mutants run in the scratch review tree and output paths the caller prepared. Verdict commit ownership is I.13: the caller commits it. (2026-10-15; 2026-10-23)
 
-## Checklist (in order) (2026-10-23)
+## Checklist (in order) (2026-10-27)
 <!-- general -->
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
@@ -54,9 +54,9 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; Codex default verifi
 6. **Assumptions against I.10 and I.11.** An assumption that belongs to the spawner or the user, or one that
    should have stopped the work, is a finding. So is building on a premise the read-back marked `refuted` or
    `unchecked` when it changes results, without an answer recorded in the task trail (I.12). (2026-10-14)
-7. **Hard-tier work, always:** the caller starts a second independent verifier (a Codex Sol task worker) as a
+7. **Hard-tier work, always:** the caller starts a second independent verifier (a Codex Terra task worker) as a
    sibling of the Opus verifier (I.14). You never launch another reviewer and form your first verdict without
-   seeing its verdict. For a verification of work that is not hard tier this step is N/A. (2026-10-15; 2026-10-23)
+   seeing its verdict. For a verification of work that is not hard tier this step is N/A. (2026-10-15; 2026-10-23) (2026-10-27)
 8. **End of a line of work only:** targeted mutation testing on the changed core modules (I.14), in the scratch
    review tree; report the mutation score and the tests that kill no mutant on their own. (2026-10-14; 2026-10-15)
 9. Read I.15 before reviewing a parallel merge. (2026-10-14)

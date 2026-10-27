@@ -119,7 +119,7 @@ launch, launching is blocked. Ending a turn with owned background waits preserve
 wake is a continuation, not a final handoff. Record pending packets and later answers in its own trail.
 (2026-10-15)
 
-## I.12 The brief (interface down) (2026-10-23)
+## I.12 The brief (interface down) (2026-10-27)
 <!-- general -->
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; rule-source commit, never-break copy, role table and hard-work staging: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); leaf role at depth three: user, 2026-10-15: "preflight를 넣을 필요 없어. leaf worker 등 agent를 스폰할 수 없는 역할의 markdown 파일을 새로 만들어." then chose "type + 역할 파일 (Recommended)" (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
@@ -201,8 +201,8 @@ The model and the effort are still set on every spawn (I.3). (2026-10-14)
 - **Tier.** The tier of a task is the one the brief's *Resources* names, not the custom type's default model. (2026-10-14)
 - **Order for hard work**: design note -> builder check -> brief -> reader test -> spawn -> read-back. The builder
   check is verification by an independent Opus verifier; the reader test is a comprehension probe that may use a
-  Codex Sol medium worker (I.3). One fresh Opus verifier may do the builder check and the reader test in one pass
-  (note and brief together). (2026-10-14; 2026-10-15)
+  Codex Terra medium worker (I.3). One fresh Opus verifier may do the builder check and the reader test in one pass
+  (note and brief together). (2026-10-14; 2026-10-15) (2026-10-27)
 - Read the `design-note` skill "Design note and builder check" before starting hard-tier work. (2026-10-14)
 - **Batching.** Only tasks too small to be worth an agent (each a few tool calls) are batched into one brief;
   anything that would make the batch slower than running in parallel is split instead (I.15). (2026-10-14)
@@ -259,7 +259,7 @@ cannot write the trail (a sandbox, a read-only role) returns its entries in its 
 The master relays to the user what matters, in Korean, and keeps what it observed itself apart from what an agent
 reported. (2026-10-14)
 
-## I.14 Tests and review (2026-10-23)
+## I.14 Tests and review (2026-10-27)
 <!-- general -->
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; all verification by Opus: user, 2026-10-15, "1. verify는 뭐든지 opus가 하도록 바꿔줘." and "2. 다른 에이전트의 결과를 verify하는건 모두 opus. verifier의 정의를 그렇게 적어줘." (the decisions list), narrowed by simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); review procedure: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
@@ -305,23 +305,23 @@ weakened, and the verifier's model follows *The verifier* below. (2026-10-15; 20
   "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list)). A verifier is an agent
   assigned to establish whether another agent's result is correct or acceptable. The caller (the master or a
   manager) starts it after the agent reports, and it authored none of the assessed result. By default a
-  verification is done by a Codex task worker (Sol medium; Luna medium for purely mechanical checks) in a read-only
+  verification is done by a Codex task worker (Terra medium; Luna medium for purely mechanical checks) in a read-only
   sandbox, whose only output is its verdict, written through the CLI's last-message file into the designated
   verdict artifact. A Claude Opus verifier (custom type `verifier`, medium) is used only for the verification of
   hard-tier work, builder checks and claim audits of numbers that enter a paper. When Codex is unusable
-  (authentication or availability), a Sol verification goes to Claude Sonnet (medium) and a Luna verification to
+  (authentication or availability), a Terra verification goes to Claude Sonnet (medium) and a Luna verification to
   Claude Haiku (medium), both as the custom type `verifier` with the model set on the spawn; Opus does not replace
   Codex. The assigning agent chooses the model by I.3 and records it in the brief's *Resources*. Comprehension-only
   reader probes and deterministic extraction are not verification (I.3). No report is accepted solely on an
-  unassigned second opinion, such as a research worker's answer. (2026-10-15; 2026-10-23)
+  unassigned second opinion, such as a research worker's answer. (2026-10-15; 2026-10-23) (2026-10-27)
 - The verifier gets the review input artifact the caller prepared (I.8): the brief (including Done when), the
   branch/commit range, the diff or the assessed artifact with its digest, the repository, and only the *Verified*,
   *Assumptions* and *Test changes* sections of the agent's report, not its narrative, so it is not anchored on the
   agent's reasoning; a document's own prose is permitted evidence. It is read-only by permission (I.12) and writes
   nothing but its designated verdict artifact, checked below. (2026-10-14; 2026-10-15)
 - **Second review for hard work.** For hard-tier work the caller starts a second independent verifier, a Codex
-  Sol task worker (Claude Sonnet when Codex is unusable), as a sibling of the Opus verifier, with the same permitted evidence and without either verdict or the author's reasoning; neither reviewer
-  launches the other. Model review is evidence, not an oracle; exact checks win. (2026-10-14; 2026-10-15; 2026-10-23)
+  Terra task worker (Claude Sonnet when Codex is unusable), as a sibling of the Opus verifier, with the same permitted evidence and without either verdict or the author's reasoning; neither reviewer
+  launches the other. Model review is evidence, not an oracle; exact checks win. (2026-10-14; 2026-10-15; 2026-10-23) (2026-10-27)
 - **Independence is procedural.** No authorship of the assessed result, restricted evidence packets and
   independent first verdicts before reviews are shared. The verdict records the reviewer's model and version, its
   evidence access and its prior exposure (F-verdict, I.24); missing metadata or compromised separation is disclosed

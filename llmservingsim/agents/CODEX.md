@@ -41,7 +41,7 @@ Startup: disk selector/card, full 0.3, brief/named sources, the II.1 rows the br
 for the freshness check in every activity (done on the cited rows; before a decision or proposal, I.10, search II.1 by keyword for rows that bear on it). Preserve common gates, applicable Duties/full Pitfalls, operations and simulator
 triggers. (2026-10-15; 2026-10-16)
 
-## Core card — Fallback (research-fallback, task-fallback) (2026-10-23)
+## Core card — Fallback (research-fallback, task-fallback) (2026-10-27)
 
 Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (decisions list "Roles v2 approval"; the §2 role cards of the roles v2 design); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (decisions list "Simple verification below Opus", "Simple verification: scope and placement"); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (decisions list "Verification by Codex by default").
 
@@ -60,14 +60,14 @@ exclusively monitors each permitted job through receipt using F-helper/F-report.
 **Launch contract** (Claude callers). The custom types are `research-fallback` (tools Read, Grep, Glob, Bash,
 WebFetch, WebSearch, SendMessage) and `task-fallback` (tools Read, Grep, Glob, Bash, Edit, Write, SendMessage),
 each also with ToolSearch to load SendMessage where it is deferred,
-both with default model sonnet: override the model to sonnet medium for a Sol replacement and to haiku medium for a
+both with default model sonnet: override the model to sonnet medium for a Terra replacement and to haiku medium for a
 Luna replacement. Neither has Agent; the spawn, shell, transport and depth limits of a fallback
 are I.3 *Fallback launch*. No fallback type replaces a manager or a verifier: a
 Codex verification whose Codex is unusable goes to the `verifier` type with model sonnet or haiku (I.3, I.14), and Opus
-being unavailable blocks an Opus verification and the acceptance it decides. (2026-10-15; 2026-10-23)
+being unavailable blocks an Opus verification and the acceptance it decides. (2026-10-15; 2026-10-23) (2026-10-27)
 
 
-## I.4 Codex CLI (2026-10-23)
+## I.4 Codex CLI (2026-10-27)
 <!-- general -->
 
 ### Codex's own rules (2026-10-23)
@@ -113,7 +113,7 @@ File append is immediate delivery to the watched channel; caller detection has t
 launch at preflight; a runtime channel failure is an anomaly subject to the existing owner-death/recovery
 procedure, never an implicit monitoring transfer. No Codex spawn rights or interactive answer polling is added. (2026-10-15)
 
-### Calling Codex (Claude agents) (2026-10-23)
+### Calling Codex (Claude agents) (2026-10-27)
 
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
@@ -151,10 +151,10 @@ timeout <secs> "$CODEX" [--search] exec --ephemeral -s <sandbox> [--add-dir <dir
 | job | model | flags |
 |---|---|---|
 | simple-tier task selected under I.3, including a purely mechanical verification (I.14) | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) (2026-10-23) |
-| general-tier task or check selected under I.3, including a default verification (I.14) | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) (2026-10-23) |
+| general-tier task or check selected under I.3, including a default verification (I.14) | Terra Medium | `-m gpt-6.1-terra -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) (2026-10-23) (2026-10-27) |
 | research lookup/summary selected under I.3 | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
-| research synthesis selected under I.3 | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
-| deeper evidence checks and counterexamples within the assigned scope (I.3 decision rights unchanged) | Sol Medium+ | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (or `high`/`xhigh`) (2026-10-14) |
+| research synthesis selected under I.3 | Terra Medium | `-m gpt-6.1-terra -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) (2026-10-27) |
+| deeper evidence checks and counterexamples within the assigned scope (I.3 decision rights unchanged) | Terra Medium+ | `-m gpt-6.1-terra -c model_reasoning_effort="medium"` (or `high`/`xhigh`) (2026-10-14) (2026-10-27) |
 
 ## Codex in this repository (2026-10-15)
 

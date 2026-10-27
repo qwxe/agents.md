@@ -286,7 +286,7 @@ launch, launching is blocked. Ending a turn with owned background waits preserve
 wake is a continuation, not a final handoff. Record pending packets and later answers in its own trail.
 (2026-10-15)
 
-## I.12 The brief (interface down) (2026-10-23)
+## I.12 The brief (interface down) (2026-10-27)
 
 Source: `agents/INTERFACE.md` I.12
 
@@ -369,8 +369,8 @@ The model and the effort are still set on every spawn (I.3). (2026-10-14)
 - **Tier.** The tier of a task is the one the brief's *Resources* names, not the custom type's default model. (2026-10-14)
 - **Order for hard work**: design note -> builder check -> brief -> reader test -> spawn -> read-back. The builder
   check is verification by an independent Opus verifier; the reader test is a comprehension probe that may use a
-  Codex Sol medium worker (I.3). One fresh Opus verifier may do the builder check and the reader test in one pass
-  (note and brief together). (2026-10-14; 2026-10-15)
+  Codex Terra medium worker (I.3). One fresh Opus verifier may do the builder check and the reader test in one pass
+  (note and brief together). (2026-10-14; 2026-10-15) (2026-10-27)
 - Read the `design-note` skill "Design note and builder check" before starting hard-tier work. (2026-10-14)
 - **Batching.** Only tasks too small to be worth an agent (each a few tool calls) are batched into one brief;
   anything that would make the batch slower than running in parallel is split instead (I.15). (2026-10-14)
@@ -428,7 +428,7 @@ cannot write the trail (a sandbox, a read-only role) returns its entries in its 
 The master relays to the user what matters, in Korean, and keeps what it observed itself apart from what an agent
 reported. (2026-10-14)
 
-## I.14 Tests and review (2026-10-23)
+## I.14 Tests and review (2026-10-27)
 
 Source: `agents/INTERFACE.md` I.14
 
@@ -475,23 +475,23 @@ weakened, and the verifier's model follows *The verifier* below. (2026-10-15; 20
   "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list)). A verifier is an agent
   assigned to establish whether another agent's result is correct or acceptable. The caller (the master or a
   manager) starts it after the agent reports, and it authored none of the assessed result. By default a
-  verification is done by a Codex task worker (Sol medium; Luna medium for purely mechanical checks) in a read-only
+  verification is done by a Codex task worker (Terra medium; Luna medium for purely mechanical checks) in a read-only
   sandbox, whose only output is its verdict, written through the CLI's last-message file into the designated
   verdict artifact. A Claude Opus verifier (custom type `verifier`, medium) is used only for the verification of
   hard-tier work, builder checks and claim audits of numbers that enter a paper. When Codex is unusable
-  (authentication or availability), a Sol verification goes to Claude Sonnet (medium) and a Luna verification to
+  (authentication or availability), a Terra verification goes to Claude Sonnet (medium) and a Luna verification to
   Claude Haiku (medium), both as the custom type `verifier` with the model set on the spawn; Opus does not replace
   Codex. The assigning agent chooses the model by I.3 and records it in the brief's *Resources*. Comprehension-only
   reader probes and deterministic extraction are not verification (I.3). No report is accepted solely on an
-  unassigned second opinion, such as a research worker's answer. (2026-10-15; 2026-10-23)
+  unassigned second opinion, such as a research worker's answer. (2026-10-15; 2026-10-23) (2026-10-27)
 - The verifier gets the review input artifact the caller prepared (I.8): the brief (including Done when), the
   branch/commit range, the diff or the assessed artifact with its digest, the repository, and only the *Verified*,
   *Assumptions* and *Test changes* sections of the agent's report, not its narrative, so it is not anchored on the
   agent's reasoning; a document's own prose is permitted evidence. It is read-only by permission (I.12) and writes
   nothing but its designated verdict artifact, checked below. (2026-10-14; 2026-10-15)
 - **Second review for hard work.** For hard-tier work the caller starts a second independent verifier, a Codex
-  Sol task worker (Claude Sonnet when Codex is unusable), as a sibling of the Opus verifier, with the same permitted evidence and without either verdict or the author's reasoning; neither reviewer
-  launches the other. Model review is evidence, not an oracle; exact checks win. (2026-10-14; 2026-10-15; 2026-10-23)
+  Terra task worker (Claude Sonnet when Codex is unusable), as a sibling of the Opus verifier, with the same permitted evidence and without either verdict or the author's reasoning; neither reviewer
+  launches the other. Model review is evidence, not an oracle; exact checks win. (2026-10-14; 2026-10-15; 2026-10-23) (2026-10-27)
 - **Independence is procedural.** No authorship of the assessed result, restricted evidence packets and
   independent first verdicts before reviews are shared. The verdict records the reviewer's model and version, its
   evidence access and its prior exposure (F-verdict, I.24); missing metadata or compromised separation is disclosed
@@ -772,58 +772,58 @@ a working watch and that the progress ledger matches reality. (2026-10-14)
 - A job the master launches itself is the master's own: it runs that job's health loop under I.18, recording the
   checkpoint and progress in F-ledger's linked progress record (I.24). Delegation stays the normal route. (2026-10-15)
 
-## I.3 Model choice (2026-10-23)
+## I.3 Model choice (2026-10-27)
 
 Source: `agents/MASTER.md` I.3
 
 User, 2026-10-14: "어려운 작업은 모두 opus 5.5 medium, 나머지 작업은 전부 codex (sol, luna 등.)";
-clarified by the user on 2026-10-14: "좋아. gpt에 대한 기준을 좀 더 명확히 해줘." Use Codex Sol at medium
+clarified by the user on 2026-10-14: "좋아. gpt에 대한 기준을 좀 더 명확히 해줘." Use Codex Terra at medium
 effort by default. Choose Luna only for fully specified mechanical work; choose Opus only for the hard criteria
 below, always for managers, and for verification only as the Opus verification row says (user, 2026-10-15: "1. verify는 뭐든지 opus가 하도록 바꿔줘.",
 "manager는 opus를 쓰자.", "2. 다른 에이전트의 결과를 verify하는건 모두 opus. verifier의 정의를 그렇게 적어줘. 나머지
 간단한 작업은 다른 에이전트한테 맡겨도 돼."; simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list)). This replaces the broad "design or judgement", "anything that may
 need to stop and ask" and "between two tiers, use the higher one" criteria. Set the model and effort explicitly on
-every spawn. (2026-10-14; 2026-10-15; 2026-10-23)
+every spawn. (2026-10-14; 2026-10-15; 2026-10-23) (2026-10-27)
 
 | tier | model | selection criteria |
 |---|---|---|
-| general (default) | Codex Sol, effort `medium` (I.4 task worker) | Work requiring code comprehension, several steps, local implementation choices, evidence-based comparison or ordinary debugging within settled requirements. Includes implementing a decided design, script and harness changes, reproducing and comparing approved runs, result analysis and write-ups. (2026-10-14; 2026-10-15) |
+| general (default) | Codex Terra, effort `medium` (I.4 task worker) | Work requiring code comprehension, several steps, local implementation choices, evidence-based comparison or ordinary debugging within settled requirements. Includes implementing a decided design, script and harness changes, reproducing and comparing approved runs, result analysis and write-ups. (2026-10-14; 2026-10-15) (2026-10-27) |
 | simple | Codex Luna, effort `medium` (I.4 task worker) | Commands, inputs, outputs and acceptance checks are specified; execution requires no substantive interpretation or diagnosis. Includes exact file lookups, extracting named log fields, fixed-format tables, known-output checks, fully specified approved launches and killing listed PIDs. (2026-10-14) |
 | hard | Claude Opus 5.5, effort `medium` (a Claude implementer: model `opus`, effort `medium`) | Resolving an unsettled core algorithm or experiment design; adapting policy semantics; diagnosing a mismatch, hang or non-determinism whose cause remains unresolved after bounded evidence collection; implementing a change to byte-exact core behaviour under an explicit preservation requirement. User-owned decisions still follow I.10-I.11. (2026-10-14; 2026-10-15) |
 | manager | Claude Opus 5.5, effort `medium` (custom type `manager`) | Every manager (I.1, Manager duties). (2026-10-15) |
-| verification (default) | Codex Sol, effort `medium` (I.4 task worker in a read-only sandbox, verdict only, I.14); Codex Luna, effort `medium`, for purely mechanical checks | Every assignment, other than Opus verification (next row), to establish whether another agent's result is correct or acceptable: code review, acceptance of designs and documents, document-analysis and experiment-claim audits, source validation of another agent's answer, candidate ranking or judging, review of merged work, and the second independent review of hard work (I.14). Purely mechanical checks have a pass criterion stated in the brief and need no judgement: existence of files, commits or outputs, verbatim-installation checks, rerunning named tests or checks against a stated result, format checks of documents, including the mechanical receipt of files, commits or outputs when the caller delegates it (the caller's own I.13 receipt check is not a verification assignment); when unsure whether a check is mechanical, choose Sol. Comprehension-only reader probes and deterministic extraction scripts are not verification; executing an agent's own tests is part of its implementation. (2026-10-15; 2026-10-23) |
-| Opus verification | Claude Opus 5.5, effort `medium` (custom type `verifier`) | Only: the verification of hard-tier work (the hard row's criteria; its first review, I.14), builder checks, and claim audits of numbers that enter a paper. If Sol and Opus overlap without one of these, choose Sol. (2026-10-23) |
-| research | Codex (I.4 research worker, read-only) | Luna for a specified lookup or source summary; Sol medium for synthesis, assumption checks, alternatives, counterexamples and recommendations. Recommendations inform the decision owner; they do not approve a design, and validating another agent's answer is a verification assignment. (2026-10-14; 2026-10-15) |
+| verification (default) | Codex Terra, effort `medium` (I.4 task worker in a read-only sandbox, verdict only, I.14); Codex Luna, effort `medium`, for purely mechanical checks | Every assignment, other than Opus verification (next row), to establish whether another agent's result is correct or acceptable: code review, acceptance of designs and documents, document-analysis and experiment-claim audits, source validation of another agent's answer, candidate ranking or judging, review of merged work, and the second independent review of hard work (I.14). Purely mechanical checks have a pass criterion stated in the brief and need no judgement: existence of files, commits or outputs, verbatim-installation checks, rerunning named tests or checks against a stated result, format checks of documents, including the mechanical receipt of files, commits or outputs when the caller delegates it (the caller's own I.13 receipt check is not a verification assignment); when unsure whether a check is mechanical, choose Terra. Comprehension-only reader probes and deterministic extraction scripts are not verification; executing an agent's own tests is part of its implementation. (2026-10-15; 2026-10-23) (2026-10-27) |
+| Opus verification | Claude Opus 5.5, effort `medium` (custom type `verifier`) | Only: the verification of hard-tier work (the hard row's criteria; its first review, I.14), builder checks, and claim audits of numbers that enter a paper. If Terra and Opus overlap without one of these, choose Terra. (2026-10-23) (2026-10-27) |
+| research | Codex (I.4 research worker, read-only) | Luna for a specified lookup or source summary; Terra medium for synthesis, assumption checks, alternatives, counterexamples and recommendations. Recommendations inform the decision owner; they do not approve a design, and validating another agent's answer is a verification assignment. (2026-10-14; 2026-10-15) (2026-10-27) |
 
 - **Choose by the work, not its label.** Task length, file count, the word "design", ordinary uncertainty or the
   possibility of asking a question do not justify Opus. A file in a core directory alone is not a byte-exact
-  preservation requirement. If Luna and Sol overlap, choose Sol; if Sol and Opus overlap without an identified
-  hard criterion, choose Sol. Record the selected criterion in the brief's *Resources*; an Opus brief names
+  preservation requirement. If Luna and Terra overlap, choose Terra; if Terra and Opus overlap without an identified
+  hard criterion, choose Terra. Record the selected criterion in the brief's *Resources*; an Opus brief names
   the unresolved question or the core behaviour and exactness requirement. An explicit Opus model request alone
-  does not change the tier. (2026-10-14; 2026-10-15)
-- **Sol may reason and implement.** It may inspect source, choose local structure and tests, diagnose an ordinary
+  does not change the tier. (2026-10-14; 2026-10-15) (2026-10-27)
+- **Terra may reason and implement.** It may inspect source, choose local structure and tests, diagnose an ordinary
   bug against expected behaviour, compare evidence, and recommend alternatives. It follows I.10-I.11 for
   unresolved semantic, result, scope or interface decisions: it sends the question at once and continues only
-  independent work. A question alone does not promote the task to Opus. (2026-10-14; 2026-10-15)
+  independent work. A question alone does not promote the task to Opus. (2026-10-14; 2026-10-15) (2026-10-27)
 - **Split mixed work at the decision boundary.** Give Opus only the part meeting a hard criterion. Once the
   required decisions are settled, give ordinary implementation, approved launches, collection and reporting
-  to Sol or Luna by their criteria above. Classify each independent part separately; an Opus parent does not
-  make its helpers hard tier. Parallelism and ownership still follow I.15. (2026-10-14)
-- **Escalate with evidence.** Luna returns substantive interpretation or diagnosis to its caller for a Sol
-  task. Sol returns a concrete hard question with the evidence collected, hypotheses tested and the remaining
+  to Terra or Luna by their criteria above. Classify each independent part separately; an Opus parent does not
+  make its helpers hard tier. Parallelism and ownership still follow I.15. (2026-10-14) (2026-10-27)
+- **Escalate with evidence.** Luna returns substantive interpretation or diagnosis to its caller for a Terra
+  task. Terra returns a concrete hard question with the evidence collected, hypotheses tested and the remaining
   blocker; the caller assigns only that part to Opus. Use existing logs and authorised checks first; extra
-  simulator runs still require approval. The three-round review escalation in I.14 remains in force. (2026-10-14)
-- **When Codex is unusable** (the Codex CLI fails on authentication or availability), give Sol-tier work to a
+  simulator runs still require approval. The three-round review escalation in I.14 remains in force. (2026-10-14) (2026-10-27)
+- **When Codex is unusable** (the Codex CLI fails on authentication or availability), give Terra-tier work to a
   Claude Sonnet subagent (`model: sonnet`, effort medium) and Luna-tier work to a Claude Haiku subagent
   (`model: haiku`), launched with the research-fallback or task-fallback custom type, with the same brief, role
   rules and limits as the Codex worker it replaces (the fallback card). A default (Codex) verification goes the same
-  way, Sol verification to Claude Sonnet (medium) and Luna verification to Claude Haiku (medium), but launched
+  way, Terra verification to Claude Sonnet (medium) and Luna verification to Claude Haiku (medium), but launched
   as the custom type `verifier` with the model set on the spawn, never as a fallback type (user, 2026-10-23,
   fallback "Sonnet/Haiku", the decisions list). The hard tier, managers and Opus verification stay Opus: no
   fallback replaces a manager or an Opus verifier, Opus never replaces Codex, and Opus being unavailable blocks
   an Opus verification and the acceptance it decides (2026-10-15; 2026-10-23). Record the fallback and the Codex
   error in the brief's *Resources*. (user, 2026-10-14: "codex
-  사용이 불가능한 경우 이전처럼 sonnet 이하를 사용하는 걸로") (2026-10-14; 2026-10-15; 2026-10-23)
+  사용이 불가능한 경우 이전처럼 sonnet 이하를 사용하는 걸로") (2026-10-14; 2026-10-15; 2026-10-23) (2026-10-27)
 - **Fallback launch.** A fallback agent has no agent-spawning tool and never spawns, even through a shell or CLI;
   its shell use is limited by policy to the replaced role, not by an operating-system read-only sandbox. The Claude
   caller uses native reply/resume transport but keeps the replaced role's decision, report and write limits. At an
@@ -831,10 +831,10 @@ every spawn. (2026-10-14; 2026-10-15; 2026-10-23)
   depth-two caller, on detecting the Codex failure, asks the manager for the fallback, and the manager assigns it as
   a depth-two sibling of that caller, never as a depth-three Sonnet or Haiku child. (2026-10-15)
 - **Checks.** A builder check is verification: an independent Opus verifier. A reader test (I.12) is a
-  comprehension probe: an independent Codex Sol medium worker that returns only what it understands and what is
+  comprehension probe: an independent Codex Terra medium worker that returns only what it understands and what is
   ambiguous; a reader that starts judging correctness stops and returns to its caller for a verification
   assignment (the verification rows above). If a check exposes a hard question, report it to its owner rather than
-  silently solving it. Review routing is I.14. (2026-10-14; 2026-10-15; 2026-10-23)
+  silently solving it. Review routing is I.14. (2026-10-14; 2026-10-15; 2026-10-23) (2026-10-27)
 
 ## I.9 Handing over to the next session (2026-10-15)
 
@@ -902,7 +902,7 @@ Approval: user, 2026-10-15: "2. Manager duties 좋아." (the decisions list); si
    the master appends the authoritative line handoff. Retain I.19's data/instruction boundary and
    the role's report language and committed-prose rules. (2026-10-15)
 
-## I.24 Formats (2026-10-23)
+## I.24 Formats (2026-10-27)
 
 Source: `agents/FORMATS.md` I.24
 
@@ -1141,7 +1141,7 @@ Per-file patch/move map; migration/commit order; open choices with effects/recom
 Evidence/verification limits; builder-check and reader-test references when completed.
 ```
 
-**F-reader** — Sol comprehension probe:
+**F-reader** — Terra comprehension probe:
 
 ```text
 <DONE_WITH_CONCERNS | DONE>
@@ -1447,7 +1447,7 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; Codex default verifi
 
 Read the review input artifact the caller prepared (I.8): the brief, branch/commit range or assessed artifact and its digest, and *Done when* checks, with the report-input restriction in I.14, before reviewing. Write only the verdict, to the designated verdict artifact the brief names: a Claude verifier has no Edit/Write tool and uses Bash for that permitted write; a Codex verifier runs in a read-only sandbox and returns the verdict as its final message, which the CLI writes into that artifact. Checks that need a historical checkout, a reverted fix or mutants run in the scratch review tree and output paths the caller prepared. Verdict commit ownership is I.13: the caller commits it. (2026-10-15; 2026-10-23)
 
-## Verifier: Checklist (in order) (2026-10-23)
+## Verifier: Checklist (in order) (2026-10-27)
 
 Source: `agents/VERIFIER.md` "Checklist (in order)"
 
@@ -1471,9 +1471,9 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; Codex default verifi
 6. **Assumptions against I.10 and I.11.** An assumption that belongs to the spawner or the user, or one that
    should have stopped the work, is a finding. So is building on a premise the read-back marked `refuted` or
    `unchecked` when it changes results, without an answer recorded in the task trail (I.12). (2026-10-14)
-7. **Hard-tier work, always:** the caller starts a second independent verifier (a Codex Sol task worker) as a
+7. **Hard-tier work, always:** the caller starts a second independent verifier (a Codex Terra task worker) as a
    sibling of the Opus verifier (I.14). You never launch another reviewer and form your first verdict without
-   seeing its verdict. For a verification of work that is not hard tier this step is N/A. (2026-10-15; 2026-10-23)
+   seeing its verdict. For a verification of work that is not hard tier this step is N/A. (2026-10-15; 2026-10-23) (2026-10-27)
 8. **End of a line of work only:** targeted mutation testing on the changed core modules (I.14), in the scratch
    review tree; report the mutation score and the tests that kill no mutant on their own. (2026-10-14; 2026-10-15)
 9. Read I.15 before reviewing a parallel merge. (2026-10-14)
@@ -1511,7 +1511,7 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 - commit, launch another reviewer, or write knowledge entries (propose them in the verdict); (2026-10-15)
 - Read I.13 before claiming verified results or reporting unchecked gaps. (2026-10-14)
 
-## I.4 Codex CLI (2026-10-23)
+## I.4 Codex CLI (2026-10-27)
 
 Source: `agents/CODEX.md` I.4
 
@@ -1558,7 +1558,7 @@ File append is immediate delivery to the watched channel; caller detection has t
 launch at preflight; a runtime channel failure is an anomaly subject to the existing owner-death/recovery
 procedure, never an implicit monitoring transfer. No Codex spawn rights or interactive answer polling is added. (2026-10-15)
 
-### Calling Codex (Claude agents) (2026-10-23)
+### Calling Codex (Claude agents) (2026-10-27)
 
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
@@ -1596,10 +1596,10 @@ timeout <secs> "$CODEX" [--search] exec --ephemeral -s <sandbox> [--add-dir <dir
 | job | model | flags |
 |---|---|---|
 | simple-tier task selected under I.3, including a purely mechanical verification (I.14) | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) (2026-10-23) |
-| general-tier task or check selected under I.3, including a default verification (I.14) | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) (2026-10-23) |
+| general-tier task or check selected under I.3, including a default verification (I.14) | Terra Medium | `-m gpt-6.1-terra -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) (2026-10-23) (2026-10-27) |
 | research lookup/summary selected under I.3 | Luna | `-m gpt-6-luna -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
-| research synthesis selected under I.3 | Sol Medium | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) |
-| deeper evidence checks and counterexamples within the assigned scope (I.3 decision rights unchanged) | Sol Medium+ | `-m gpt-6.1-sol -c model_reasoning_effort="medium"` (or `high`/`xhigh`) (2026-10-14) |
+| research synthesis selected under I.3 | Terra Medium | `-m gpt-6.1-terra -c model_reasoning_effort="medium"` (2026-10-14) (2026-10-15) (2026-10-27) |
+| deeper evidence checks and counterexamples within the assigned scope (I.3 decision rights unchanged) | Terra Medium+ | `-m gpt-6.1-terra -c model_reasoning_effort="medium"` (or `high`/`xhigh`) (2026-10-14) (2026-10-27) |
 
 ## Codex pitfalls (2026-10-15)
 
@@ -1726,7 +1726,7 @@ Source: `.claude/skills/claim-audit/SKILL.md`
 
 Trigger: Audit the claims and numbers of a write-up, handoff or paper against raw results before they are published or reported as findings. Use after a grid or experiment finishes and before any number goes into a paper or a result summary.
 
-### Claim audit (2026-10-23)
+### Claim audit (2026-10-27)
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus judging: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
@@ -1743,11 +1743,11 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus jud
    - Independently validate post-check kind and controls using `experiment-plan` The order, before the audit verdict; (2026-10-15)
    - Independently validate scoring and raw-read-on-miss using `experiment-plan` The order, before the audit verdict. (2026-10-14; 2026-10-15) (2026-10-15)
 4. **Wording check.** Independently check the text against the cards and the `experiment-plan` Wording requirements before the verdict, including exploratory labels, evidence for strong words and reporting misses honestly. (2026-10-15)
-5. **Zero-context audit.** A fresh independent verifier (I.3, I.14, read-only; Opus when the numbers enter a paper, a Codex Sol task worker otherwise), assigned by the caller, gets only the claims file, the cards and the raw result
+5. **Zero-context audit.** A fresh independent verifier (I.3, I.14, read-only; Opus when the numbers enter a paper, a Codex Terra task worker otherwise), assigned by the caller, gets only the claims file, the cards and the raw result
    paths, not our summary or reasoning, and checks: number provenance, the baseline is the stated one, no
    normalisation to our own output, the scope (n, seeds, rates, configurations) matches the wording, nothing
    claimed beyond the threshold, metrics actually computed. For citations: the cited work exists (two indexes)
-   and says what we attribute to it. (2026-10-14; 2026-10-23)
+   and says what we attribute to it. (2026-10-14; 2026-10-23) (2026-10-27)
 6. **Verdict per claim**: supported / weaken the wording / remove, returned with an F-verdict in the designated verdict artifact; missing noise evidence is never turned into an invented sd of 0. The writer applies it; disputes go to the user. Document or source claims mixed in take the `document-audit` skill too. (2026-10-14; 2026-10-15)
 7. Record the audit in the task trail. (2026-10-14)
 
@@ -1875,7 +1875,7 @@ Source: `.claude/skills/design-note/SKILL.md`
 
 Trigger: Write a decision-complete design note before hard-tier implementation, and run the builder check. Use before spawning an implementer for anything in the hard tier.
 
-### Design note and builder check (2026-10-23)
+### Design note and builder check (2026-10-27)
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus judging: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
@@ -1894,9 +1894,9 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus jud
 3. **Builder check.** A fresh independent Opus verifier (I.3, I.14) reads the note as the implementer would and lists every question it would
    have to answer; builder acceptance is a verification. Sort each: answered in the note / trivial (implementer's choice, I.10) / the user's. Put the
    answers into the note; take the user's questions to the user. (2026-10-14) Hard-tier work starts only from this decision-complete note, leaving the implementer no unsettled design decision; settle the user's questions before spawning (I.12). (2026-10-14) (2026-10-15)
-4. **Reader test.** The brief built on the note gets a separate comprehension probe (F-reader, I.24; Codex Sol
+4. **Reader test.** The brief built on the note gets a separate comprehension probe (F-reader, I.24; Codex Terra
    allowed, I.3); it reports only what it understands and what is ambiguous, and a reader that starts judging
-   correctness stops and goes back to the caller for a verification assignment (I.3). (2026-10-15; 2026-10-23)
+   correctness stops and goes back to the caller for a verification assignment (I.3). (2026-10-15; 2026-10-23) (2026-10-27)
 5. Only then spawn the implementer, with the note as its main document. A hard investigation may start earlier with
    a bounded question-and-evidence brief and a read-back, without implementation authority (I.12). (2026-10-14; 2026-10-15)
 
@@ -1906,7 +1906,7 @@ Source: `.claude/skills/document-audit/SKILL.md`
 
 Trigger: Audit decision-feeding document/source analysis and design against primary sources.
 
-### Document audit (2026-10-23)
+### Document audit (2026-10-27)
 
 Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
@@ -1914,10 +1914,10 @@ Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1
    artifact, its digest, the F-document-audit claim/source table and source snapshot as the review input
    artifact under I.14. Exclude author explanatory reasoning; the assessed document's own prose remains
    permitted evidence. (2026-10-15)
-2. A fresh independent verifier (I.3: a Codex Sol task worker by default, Opus for hard-tier work) opens the
+2. A fresh independent verifier (I.3: a Codex Terra task worker by default, Opus for hard-tier work) opens the
    primary source passages and checks provenance, applicability, inference boundaries, contradictions and design
    completeness. Record counterevidence and attempted refutation in F-document-audit; mark unavailable sources and
-   unsupported premises explicitly. (2026-10-15; 2026-10-23)
+   unsupported premises explicitly. (2026-10-15; 2026-10-23) (2026-10-27)
 3. Return F-verdict in the designated verdict artifact with the per-claim F-document-audit table and
    verification gaps. Mixed experimental or numerical claims also require claim-audit and
    F-experiment-audit; do not waive controls or fabricate run ids, cards or statistics for document claims.
@@ -2070,19 +2070,19 @@ Source: `.claude/skills/ideation/SKILL.md`
 
 Trigger: Generate and select design or research ideas for a discussion with the user. Use when the master and the user explore a design choice, an algorithm variant or a research direction.
 
-### Ideation (2026-10-23)
+### Ideation (2026-10-27)
 
 Approval of the Opus ranking and judging: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
 1. **Diverge in isolation.** Two or three independent generators (fresh agents or Codex calls that do not see each
-   other; Sol, Luna or Opus by the task's tier criterion) each propose candidates from a different lens (e.g. theory-first, systems-first, failure-first). (2026-10-14)
+   other; Terra, Luna or Opus by the task's tier criterion) each propose candidates from a different lens (e.g. theory-first, systems-first, failure-first). (2026-10-14) (2026-10-27)
 2. **Annotate, do not cull.** The generators drop a candidate only for an objective reason (violates a decision in
    force, infeasible within the stated budget, rests on a fact the knowledge base records as refuted); everything
    else is kept with notes. (2026-10-14)
-3. **Rank independently.** The caller assigns an independent verifier (I.3: Codex Sol by default, Opus when the
+3. **Rank independently.** The caller assigns an independent verifier (I.3: Codex Terra by default, Opus when the
    candidates are hard-tier work), which generated none of the
    candidates, to rank the pool against stated criteria (novelty against the literature, feasibility, expected
-   effect, cost); agreement among same-model generators is not evidence. (2026-10-14; 2026-10-15; 2026-10-23)
+   effect, cost); agreement among same-model generators is not evidence. (2026-10-14; 2026-10-15; 2026-10-23) (2026-10-27)
 4. **Kill argument.** For the top candidates, one reviewer writes the strongest single argument against each;
    a fresh independent verifier (the same model rule) judges whether each survives. (2026-10-14; 2026-10-15; 2026-10-23)
 5. **Present** the 2-3 survivors plus one contrarian option, each with its kill argument and what would show it
@@ -2094,12 +2094,12 @@ Source: `.claude/skills/lit-search/SKILL.md`
 
 Trigger: Literature, documentation or source-code research through Codex. Use whenever an agent needs papers, docs or how a deployed system implements something (AGENTS I.4).
 
-### Literature search (2026-10-23)
+### Literature search (2026-10-27)
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; formats and Opus judging: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
-1. **Brief Codex** (Luna for finding, Sol for judging) with: the question; 2-4 rephrasings to search in parallel;
-   where to search (paper indexes, official docs, the actual source code); the period; the answer language. (2026-10-14)
+1. **Brief Codex** (Luna for finding, Terra for judging) with: the question; 2-4 rephrasings to search in parallel;
+   where to search (paper indexes, official docs, the actual source code); the period; the answer language. (2026-10-14) (2026-10-27)
 2. **Output contract** to ask for: the F-research format (I.24), with an evidence table (claim, source URL, source type: paper / preprint / docs /
    code / blog, how it was checked: read / abstract only / not checked); claims labelled *verified*, *inferred*,
    *unverified*; contradictions kept, not resolved silently; a coverage status (what was searched, what was not,
@@ -2167,7 +2167,7 @@ Source: `.claude/skills/review/SKILL.md`
 
 Trigger: Assign independent verification (Codex by default, Opus for hard-tier work, builder checks and paper claim audits, I.3) of another agent's finished result and act on the verdict. Use for every correctness or acceptance check the upper tier orders under I.14 (verification on demand), routing document and experimental claims to their matching audit skills.
 
-### Review by an independent verifier (2026-10-23)
+### Review by an independent verifier (2026-10-27)
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; the procedure below: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list); simple verification below Opus: user, 2026-10-15: "모든 verifier를 opus로 하는 규칙에서, 간단한 검증은 sonnet 이하로 하도록 고쳐줘." and the choice "기준이 명시된 검증 (Recommended)" (the decisions list); verification on demand: user, 2026-10-15: "그리고 검증은 manager/agent 등 상위 계층이 내리는데, 검증이 필요한지 판단해서 필요 없으면 하지 않아도 되는걸로." then chose "큰 변경만 필수 (Recommended)" (the decisions list); Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list).
 
@@ -2179,22 +2179,22 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; the procedure below:
    here. (2026-10-15)
 1. **Assign independent review.** The master or manager acting as caller uses spawn-agent and I.3/I.12/I.15
    to assign the verifier I.3 and I.14 name for every correctness/acceptance check of another agent's result:
-   a Codex task worker by default (Sol medium; Luna medium for purely mechanical checks; read-only sandbox,
+   a Codex task worker by default (Terra medium; Luna medium for purely mechanical checks; read-only sandbox,
    verdict only), a Claude Opus `verifier` only for hard-tier work, builder checks and claim audits of numbers
-   that enter a paper, and a Claude Sonnet/Haiku `verifier` in place of Codex Sol/Luna when Codex is unusable.
+   that enter a paper, and a Claude Sonnet/Haiku `verifier` in place of Codex Terra/Luna when Codex is unusable.
    Supply only the permitted immutable review input artifact and a separate designated verdict artifact;
    omit author explanatory narrative and other reviewers' first verdicts. Neither manager nor master
    self-reviews a result it authored. Master and manager receive and relay the independent verdict;
-   they never substitute their own correctness/acceptance judgment. (2026-10-15; 2026-10-23)
+   they never substitute their own correctness/acceptance judgment. (2026-10-15; 2026-10-23) (2026-10-27)
 2. **Select checks.** Use I.14 and the complete verifier checklist for the artifact kind: code review,
    document-audit or claim-audit. State whether the task ends a line of work so required full/reference/
    mutation checks are selected. The caller prepares any permitted scratch review tree and output paths;
    the verifier preserves the reviewed HEAD/status and writes only its designated verdict artifact.
    (2026-10-15)
 3. **Hard-work independence.** The caller launches two independent verifier siblings, an Opus verifier and a
-   Codex Sol task worker, with the same permitted evidence, without either prior verdict or author reasoning.
+   Codex Terra task worker, with the same permitted evidence, without either prior verdict or author reasoning.
    Neither launches the other. Collect independent first verdicts before sharing them; preserve the I.14
-   capped fix/re-review loop and F-verdict independence metadata. (2026-10-15; 2026-10-23)
+   capped fix/re-review loop and F-verdict independence metadata. (2026-10-15; 2026-10-23) (2026-10-27)
 4. **Track direct review.** Only the master sets its direct F-ledger item to `review` and maintains its
    I.23 heartbeat. A non-master caller tracks the verifier in F-helper in its own trail; a manager also
    updates F-unit. The launcher monitors its own direct item exclusively under I.18. (2026-10-15)

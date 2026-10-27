@@ -1,6 +1,6 @@
 ---
 name: research-fallback
-description: Use only when the Codex CLI is unusable (authentication or availability failure) to replace one Codex research worker with identical authority and scope (AGENTS.md I.3, CODEX Core card — Fallback). Override the model to sonnet (medium) for a Sol replacement or haiku (medium) for a Luna replacement. Never for verification or management.
+description: Use only when the Codex CLI is unusable (authentication or availability failure) to replace one Codex research worker with identical authority and scope (AGENTS.md I.3, CODEX Core card — Fallback). Override the model to sonnet (medium) for a Terra replacement or haiku (medium) for a Luna replacement. Never for verification or management.
 tools: Read, Grep, Glob, Bash, WebFetch, WebSearch, SendMessage, ToolSearch
 model: sonnet
 ---
