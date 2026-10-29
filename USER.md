@@ -24,8 +24,8 @@ This contract is a readable view of the linked rule homes, not an independent po
   you a ready-to-paste input for a second session that runs the query advisor: it reads your exchanges with the
   master and tells you what an answer missed and which question to ask next (AGENTS.md 0.1, master row). (2026-10-23)
 - **Nothing that changes results is decided without you.** A result-changing, semantic, scope or interface
-  question comes to you as an escalation: the question, two or three options, what changes under each, a
-  recommendation. No agent guesses on your behalf (I.10, I.11). Cheap, reversible choices are made by the agents
+  question comes to you as an escalation: the situation in plain words with every new term explained, the
+  question, two or three options, what changes under each, a recommendation (I.11, 2026-10-30). No agent guesses on your behalf (I.10, I.11). Cheap, reversible choices are made by the agents
   and listed as assumptions with their cost if wrong. (2026-10-14)
 - **Rule changes need approval.** Any agent may edit the rule files, like code, but only an approved change: the
   master's own proposals and promotion candidates are approved by you; a subagent's proposal (from any depth) goes

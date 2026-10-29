@@ -200,7 +200,7 @@ entries; a proposal that revives one says so and quotes the entry. (2026-10-14)
 Three things are owned separately and every brief names each: the **files** the agent may write (artifact
 owner), the **decisions** it may take (this table), and the **report** it owes and to whom (its spawner). (2026-10-14)
 
-## I.11 Escalation (2026-10-15)
+## I.11 Escalation (2026-10-30)
 
 Source: `agents/INTERFACE.md` I.11
 
@@ -249,6 +249,7 @@ Two kinds of open decision (user, 2026-10-14):
   answer authorises exactly the actions listed for it; anything not listed is asked again. When the user's answer
   leaves the follow-up unclear, the master states in its next message what it is now doing and what it will still
   ask before doing it. (2026-10-15)
+- **Questions stand on their own** (user, 2026-10-30: "전체적으로 처음 나오는 단어에 대해서 의미를 생략하고 질문하고 있어. 그러면 판단할 수가 없어. 관련 agent rule을 갱신하고 다시 질문해줘."). Every question or escalation, and every question the master puts to the user, first states the situation in plain words: which part of the system, which case, what happens now and what the question is meant to decide or observe. Every term is explained at its first use in that message, or replaced by plain words: technical terms, internal names, abbreviations, question and option ids (e.g. Q-E, U2), stage, arm and run labels, and document sections. A question or option is never given only by its id or a section pointer. Each option says what it does in practice and what it changes (results, cost, scope). (2026-10-30)
 - Escalation is not failure. An agent that guessed a non-obvious decision has failed its brief even when the
   code works; the verifier rejects such a change (I.14). (2026-10-14)
 - **Propose before you follow.** When an agent sees a better rule, design or method than the one the user (or
@@ -902,7 +903,7 @@ Approval: user, 2026-10-15: "2. Manager duties 좋아." (the decisions list); si
    the master appends the authoritative line handoff. Retain I.19's data/instruction boundary and
    the role's report language and committed-prose rules. (2026-10-15)
 
-## I.24 Formats (2026-10-27)
+## I.24 Formats (2026-10-30)
 
 Source: `agents/FORMATS.md` I.24
 
@@ -1023,6 +1024,8 @@ Blocker category: <missing intent | missing evidence | missing capability | miss
 Search references only: <already available current standing decision/closed entries and dated historical
   quote/source; or not searched yet (immediate delivery); or searched <where> for <words>: nothing.
   Bounded lookup may supplement later; never delay delivery or adopt a historical answer>
+Situation: <plain words: the part of the system, the case, what happens now, what the answer decides; every
+  term, internal name and id explained at first use (I.11)>
 Options: <2–3; interpretation; effects/cost/risk>
 Recommendation: <option and evidence strength>
 Independent work done / remaining: <paths and boundaries>

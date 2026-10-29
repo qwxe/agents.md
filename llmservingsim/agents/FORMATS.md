@@ -2,7 +2,7 @@
 
 Scope: every role, when a card, rule or skill names an F-* format. I.24 is the only normative home of the field templates; cards and skills say when to use a format, I.24 says which fields it has. Sections marked `<!-- general -->` are generated into `GENERAL.md` (AGENTS.md 0.2). (2026-10-15)
 
-## I.24 Formats (2026-10-27)
+## I.24 Formats (2026-10-30)
 <!-- general -->
 
 Approval: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the role-restructuring design, the decisions list). Codex default verifier: user, 2026-10-23: "검증을 opus로 하라는 게 있을텐데. default는 codex로 하도록 해줘." then chose "hard 작업만 Opus (Recommended)" and fallback "Sonnet/Haiku" (the decisions list). Every format, field list and rule paragraph of this section was set on 2026-10-15, except the verifier-model wording of F-verdict, F-document-audit and F-reader, changed on 2026-10-23. (2026-10-15; 2026-10-23)
@@ -122,6 +122,8 @@ Blocker category: <missing intent | missing evidence | missing capability | miss
 Search references only: <already available current standing decision/closed entries and dated historical
   quote/source; or not searched yet (immediate delivery); or searched <where> for <words>: nothing.
   Bounded lookup may supplement later; never delay delivery or adopt a historical answer>
+Situation: <plain words: the part of the system, the case, what happens now, what the answer decides; every
+  term, internal name and id explained at first use (I.11)>
 Options: <2–3; interpretation; effects/cost/risk>
 Recommendation: <option and evidence strength>
 Independent work done / remaining: <paths and boundaries>

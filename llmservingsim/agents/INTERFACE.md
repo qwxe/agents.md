@@ -34,7 +34,7 @@ entries; a proposal that revives one says so and quotes the entry. (2026-10-14)
 Three things are owned separately and every brief names each: the **files** the agent may write (artifact
 owner), the **decisions** it may take (this table), and the **report** it owes and to whom (its spawner). (2026-10-14)
 
-## I.11 Escalation (2026-10-15)
+## I.11 Escalation (2026-10-30)
 <!-- general -->
 
 Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."; reference-only past records and immediate escalation: user, 2026-10-15, "o3. escalate는 과거 기록을 참조만 하도록. 애매한 부분은 바로 escalate하도록 강하게 명시해줘." and "1,2 추천대로." (the decisions list); escalation transport: role restructuring: user, 2026-10-15, "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list).
@@ -82,6 +82,7 @@ Two kinds of open decision (user, 2026-10-14):
   answer authorises exactly the actions listed for it; anything not listed is asked again. When the user's answer
   leaves the follow-up unclear, the master states in its next message what it is now doing and what it will still
   ask before doing it. (2026-10-15)
+- **Questions stand on their own** (user, 2026-10-30: "전체적으로 처음 나오는 단어에 대해서 의미를 생략하고 질문하고 있어. 그러면 판단할 수가 없어. 관련 agent rule을 갱신하고 다시 질문해줘."). Every question or escalation, and every question the master puts to the user, first states the situation in plain words: which part of the system, which case, what happens now and what the question is meant to decide or observe. Every term is explained at its first use in that message, or replaced by plain words: technical terms, internal names, abbreviations, question and option ids (e.g. Q-E, U2), stage, arm and run labels, and document sections. A question or option is never given only by its id or a section pointer. Each option says what it does in practice and what it changes (results, cost, scope). (2026-10-30)
 - Escalation is not failure. An agent that guessed a non-obvious decision has failed its brief even when the
   code works; the verifier rejects such a change (I.14). (2026-10-14)
 - **Propose before you follow.** When an agent sees a better rule, design or method than the one the user (or
