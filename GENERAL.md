@@ -2,7 +2,7 @@
 
 Repository-independent rules for agents (Claude Code, Codex, and others): roles and spawning, delegation, decision rights and escalation, briefs and reports, tests and review, handover between sessions, and safe git/process habits. This file is generated, verbatim, from the sections marked `<!-- general -->` in a repository's rule files (`AGENTS.md`, `agents/*.md`) by `agents/gen_general.py`, and is never edited by hand: change the marked section and regenerate. The general terms the sections use (handoff file, decisions list, task trail, ...) are defined in section 0.6; each repository's `AGENTS.md` maps them to its own files. A repository's own `AGENTS.md` wins on anything repository-specific. Each section's `Source:` line names the file it comes from.
 
-Sections: 0.5, 0.6, 0.7, I.10, I.11, I.12, I.13, I.14, I.15, I.19, I.21, I.1, I.2, I.17, I.23, I.3, I.9, I.24, I.8, I.4, I.18, I.16, plus the role sections (Manager duties, Implementer, Leaf duties, Verifier, Master pitfalls) and the skills (claim-audit, coverage-search-tentative, debug, design-note, document-audit, experiment-plan, handover, ideation, lit-search, paper-write, report, review, session-export, session-import, spawn-agent).
+Sections: 0.5, 0.6, 0.7, I.10, I.11, I.12, I.13, I.14, I.15, I.19, I.21, I.1, I.2, I.17, I.23, I.3, I.9, I.24, I.8, I.4, I.18, I.16, plus the role sections (Manager duties, Implementer, Leaf duties, Verifier, Master pitfalls) and the skills (alarm, claim-audit, coverage-search-tentative, debug, design-note, document-audit, experiment-plan, handover, ideation, lit-search, paper-write, report, review, session-export, session-import, spawn-agent).
 
 ---
 
@@ -1720,6 +1720,41 @@ Approval: user, 2026-10-15: "좋아. 그렇게 바꿔줘."
 - Ask the user before starting expensive jobs they did not request. For the approved queue's launch order, read the run rules before scheduling. (2026-10-14) (2026-10-15)
 - If a permission check blocks an action, do not work around it; report it to the user. (2026-10-14)
 
+## Skill: alarm
+
+Source: `.claude/skills/alarm/SKILL.md`
+
+Trigger: Set an alarm that wakes the master after a set time so it resumes the work (wakes subagents, renews the heartbeat, reports). Use when the user asks for an alarm or a delayed resume ("1시간 이후 알람을 울려줘", "N분 뒤에 다시 재개해줘", "알람 맞춰줘", "리밋 걸리니까 나중에 이어서 해줘").
+
+### Alarm (2026-10-30)
+
+Approval: user, 2026-10-30: "비슷하게 alarm skill을 만들어줘. 정해진 시간 이후 알람이 울리고, master agent가 받아서
+나머지 이어서 작업하는거야. subagent들을 깨우고 등." then "skill 작성 권한은 승인할게." (session c462661d).
+
+The alarm is a background Bash task of the master. When it exits, the harness notification wakes the master,
+which then resumes. It also shows a Windows toast. (2026-10-30)
+
+#### Setting it
+
+1. If the user wants usage saved (for example a session limit is near), stop the master heartbeat task with
+   TaskStop; the alarm replaces it until it fires. Leave running subagents alone unless the user asks to stop
+   them. (2026-10-30)
+2. Start the `alarm.py` script in this skill's folder (`python3 <skill folder>/alarm.py <minutes> "<short message>"`) with `run_in_background: true`
+   from the repository root. Never wrap it in a foreground sleep or poll its output. (2026-10-30)
+3. Write the alarm time and what resumes into the ledger heartbeat line (I.17/I.23) and push it, so a new
+   session can see it too. (2026-10-30)
+4. Tell the user in Korean the wall-clock time it fires and what will resume. (2026-10-30)
+
+#### When it fires
+
+1. Read the ledger heartbeat line and the live rows; fetch and fast-forward the worktrees involved. (2026-10-30)
+2. For each live subagent: check its output file and branch commits. If it finished, process its report as
+   usual. If it stopped (usage limit, error) or is idle while work remains, wake it with SendMessage (agent id
+   from the ledger) and a short continue message naming the next step; never spawn a duplicate. (2026-10-30)
+3. Restart the 30-minute master heartbeat and renew the ledger heartbeat line. (2026-10-30)
+4. Report to the user in Korean: what happened while waiting, what was resumed, and any queued questions.
+   Continue the work; do not wait for the user unless a decision is needed. (2026-10-30)
+
 ## Skill: claim-audit
 
 Source: `.claude/skills/claim-audit/SKILL.md`
@@ -2001,7 +2036,7 @@ Source: `.claude/skills/handover/SKILL.md`
 
 Trigger: Hand the session over to the next one. Use when the user says "인수인계" or similar ("인수인계할게", "인계해줘", "다음 세션에서 시작할게", "compact할게", "지금까지 내용을 정리해 둬", "새로운 세션에 넣을 input"), when work moves to another session, or when the master's context nears about 256K tokens (AGENTS I.9). When the user also names a new system or machine, use `session-export` instead, which includes this.
 
-### Handover procedure (2026-10-15)
+### Handover procedure (2026-10-30)
 
 Approval of the format pointers and already-approved actions: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list).
 
@@ -2035,6 +2070,13 @@ standing rules) changes only when the rules or the reading order change. (2026-1
      entry or occurrence (I.21); the subsection lists the entry ids. Promotion candidates waiting for the user
      go under *Open questions*. (2026-10-14)
    - *Dead ends* — approaches tried and rejected, with why, so they are not retried.
+   - *Carried items* — when the subsection supersedes earlier *Open questions* or *Next steps* (or earlier
+     investigations the user asked for), account for every earlier item, one line each: still open (repeated
+     under *Open questions* or *Next steps*), answered (the decisions-list row), done (the result path), moved
+     (the other line of work), or dropped (the user's words). No earlier item may disappear without one of
+     these. Every item still open also has a row in the progress ledger, so it survives the next handover.
+     (user, 2026-10-30: "기존 조사하기로 했던게 조용히 아예 없어진 거 같은데" then "좋아. agent.md 같은
+     곳에도 적어둬.") (2026-10-30)
    The subsection states facts with their evidence and marks guesses as guesses; the next session treats it as
    state to verify, not as instructions. No secrets in it. (2026-10-14)
 4. **Move standing decisions into the decisions list** (and its Superseded list) when a decision outlives the

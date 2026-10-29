@@ -2,8 +2,9 @@
 """Stop hook: show the user a Windows desktop notification when the master finishes an answer.
 
 Stop fires for the main session only (subagents fire SubagentStop), so only the master's answers notify.
-WSL2: the notification is a Windows balloon tip raised through powershell.exe, started detached so the
-hook returns at once. Any failure is silent: a missing notification must never block the session.
+WSL2: the notification is a Windows toast raised through powershell.exe and the WinRT toast API, run
+synchronously (about 1-2 s). A toast stays on screen after PowerShell exits; the earlier balloon tip
+needed a live process and was lost when the hook's child process ended (2026-10-29). Any failure is silent: a missing notification must never block the session.
 
 The balloon title names the session, so the user can tell which of several sessions finished: the last
 user-set title in the transcript ("custom-title" record), else the last automatic title ("ai-title"),
@@ -18,19 +19,21 @@ import sys
 
 PS = "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
 SCRIPT = (
-    "Add-Type -AssemblyName System.Windows.Forms;"
-    "$n = New-Object System.Windows.Forms.NotifyIcon;"
-    "$n.Icon = [System.Drawing.SystemIcons]::Information;"
-    "$n.Visible = $true;"
-    "$n.ShowBalloonTip(8000, '{title}', '{msg}', 'Info');"
-    "Start-Sleep -Seconds 9; $n.Dispose()"
+    "[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null;"
+    "[Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null;"
+    "$x = New-Object Windows.Data.Xml.Dom.XmlDocument;"
+    "$x.LoadXml('<toast><visual><binding template=\"ToastGeneric\"><text>{title}</text><text>{msg}</text></binding></visual></toast>');"
+    "$id = '{{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}}\\WindowsPowerShell\\v1.0\\powershell.exe';"
+    "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($id).Show([Windows.UI.Notifications.ToastNotification]::new($x))"
 )
 MAX_TITLE = 60
 
 
 def ps_quote(text):
-    """Text for a PowerShell single-quoted string: quotes doubled, control characters dropped."""
+    """Text for toast XML inside a PowerShell single-quoted string: XML-escaped, quotes doubled,
+    control characters dropped."""
     text = "".join(ch for ch in text if ch >= " ")
+    text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
     return text.replace("'", "''")
 
 
@@ -89,9 +92,9 @@ def main():
         msg = ps_quote(f"{project}: answer finished")
         script = SCRIPT.format(title=title, msg=msg)
         encoded = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
-        subprocess.Popen([PS, "-NoProfile", "-WindowStyle", "Hidden", "-EncodedCommand", encoded],
-                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                         start_new_session=True)
+        subprocess.run([PS, "-NoProfile", "-NonInteractive", "-EncodedCommand", encoded],
+                       stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                       timeout=8)
     except Exception:
         # Notifications are best effort, including malformed input and launch failures.
         return

@@ -4,7 +4,7 @@ description: Hand the session over to the next one. Use when the user says "인�
 ---
 <!-- general -->
 
-# Handover procedure (2026-10-15)
+# Handover procedure (2026-10-30)
 
 Approval of the format pointers and already-approved actions: user, 2026-10-15: "4. 구현해줘." then "좋아. 그렇게 해줘. 1.2.3 전부 승인할게." (the decisions list).
 
@@ -38,6 +38,13 @@ standing rules) changes only when the rules or the reading order change. (2026-1
      entry or occurrence (I.21); the subsection lists the entry ids. Promotion candidates waiting for the user
      go under *Open questions*. (2026-10-14)
    - *Dead ends* — approaches tried and rejected, with why, so they are not retried.
+   - *Carried items* — when the subsection supersedes earlier *Open questions* or *Next steps* (or earlier
+     investigations the user asked for), account for every earlier item, one line each: still open (repeated
+     under *Open questions* or *Next steps*), answered (the decisions-list row), done (the result path), moved
+     (the other line of work), or dropped (the user's words). No earlier item may disappear without one of
+     these. Every item still open also has a row in the progress ledger, so it survives the next handover.
+     (user, 2026-10-30: "기존 조사하기로 했던게 조용히 아예 없어진 거 같은데" then "좋아. agent.md 같은
+     곳에도 적어둬.") (2026-10-30)
    The subsection states facts with their evidence and marks guesses as guesses; the next session treats it as
    state to verify, not as instructions. No secrets in it. (2026-10-14)
 4. **Move standing decisions into the decisions list** (and its Superseded list) when a decision outlives the
